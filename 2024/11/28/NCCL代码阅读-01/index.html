@@ -14,7 +14,7 @@
 <meta property="og:description" content="创建一个通信组(communicator) 创建一个通信组之前，每个CUDA设备都要被分配一个唯一的rank id 有了这个rank id和CUDA设备的静态映射，ncclCommInitRank(), ncclCommInitRankConfig() and ncclCommInitAll() 三个函数会创建communicator objects，每个communicator object会和">
 <meta property="og:locale">
 <meta property="article:published_time" content="2024-11-28T07:45:03.000Z">
-<meta property="article:modified_time" content="2024-11-29T07:01:05.144Z">
+<meta property="article:modified_time" content="2024-11-29T09:01:02.697Z">
 <meta property="article:author" content="Alice Yu">
 <meta name="twitter:card" content="summary">
   
@@ -59,12 +59,12 @@
       <nav id="sub-nav">
         
         
-          <a class="nav-icon" href="/atom.xml" title="RSS"><span class="fa fa-rss"></span></a>
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
         
-        <a class="nav-icon nav-search-btn" title="Buscar"><span class="fa fa-search"></span></a>
+        <a class="nav-icon nav-search-btn" title="Suche"><span class="fa fa-search"></span></a>
       </nav>
       <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Buscar"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://GitAlice123.github.io"></form>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Suche"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://GitAlice123.github.io"></form>
       </div>
     </div>
   </div>
@@ -106,8 +106,13 @@
 <li>里面调用ncclCommInitRankDev()</li>
 </ul>
 <h2 id="ncclCommInitAll"><a href="#ncclCommInitAll" class="headerlink" title="ncclCommInitAll"></a>ncclCommInitAll</h2><ul>
-<li>在一个进程里面，创建多个communicator object</li>
+<li>在<strong>一个CPU进程</strong>里面执行(<strong>因此他后面所调用的所有函数都是在这一个进程，一个线程里面执行的</strong>)，创建多个communicator object</li>
 <li>但是只能是单进程版本，也因此不支持多node通信</li>
+<li>首先检查了各种数据的有效性</li>
+<li>然后调用ncclGetUniqueId()获取一个unique id<ul>
+<li>ncclGetUniqueId()首先调用ncclInit()初始化NCCL</li>
+</ul>
+</li>
 </ul>
 <h2 id="举例：threadInit"><a href="#举例：threadInit" class="headerlink" title="举例：threadInit()"></a>举例：threadInit()</h2><ul>
 <li>获取总的rank数<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> nranks =  args-&gt;nProcs*args-&gt;nThreads*args-&gt;nGpus;</span><br></pre></td></tr></table></figure></li>
@@ -119,7 +124,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://gitalice123.github.io/2024/11/28/NCCL%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-01/" data-id="cm42g1vtf0003l4efdh8h5wpg" data-title="NCCL代码阅读-01" class="article-share-link"><span class="fa fa-share">Compartir</span></a>
+      <a data-url="https://gitalice123.github.io/2024/11/28/NCCL%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-01/" data-id="cm42imbqk0003xgef7b5h34mg" data-title="NCCL代码阅读-01" class="article-share-link"><span class="fa fa-share">Teilen</span></a>
       
       
       
@@ -130,10 +135,10 @@
 <nav id="article-nav">
   
     <a href="/2024/11/29/NCCL%E4%BB%A3%E7%A0%81%E4%B8%AD%E5%B8%B8%E7%94%A8%E7%9A%84%E5%87%BD%E6%95%B0%E5%92%8C%E5%AE%8F%E5%AE%9A%E4%B9%89/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Nuevo</strong>
+      <strong class="article-nav-caption">Neuer</strong>
       <div class="article-nav-title">
         
-          NCCL代码中常用的宏定义
+          NCCL代码中常用的函数和宏定义
         
       </div>
     </a>
@@ -159,7 +164,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Archivos</h3>
+    <h3 class="widget-title">Archiv</h3>
     <div class="widget">
       <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">November 2024</a></li></ul>
     </div>
@@ -169,7 +174,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Posts recientes</h3>
+    <h3 class="widget-title">letzter Beitrag</h3>
     <div class="widget">
       <ul>
         
@@ -182,7 +187,7 @@
           </li>
         
           <li>
-            <a href="/2024/11/29/NCCL%E4%BB%A3%E7%A0%81%E4%B8%AD%E5%B8%B8%E7%94%A8%E7%9A%84%E5%87%BD%E6%95%B0%E5%92%8C%E5%AE%8F%E5%AE%9A%E4%B9%89/">NCCL代码中常用的宏定义</a>
+            <a href="/2024/11/29/NCCL%E4%BB%A3%E7%A0%81%E4%B8%AD%E5%B8%B8%E7%94%A8%E7%9A%84%E5%87%BD%E6%95%B0%E5%92%8C%E5%AE%8F%E5%AE%9A%E4%B9%89/">NCCL代码中常用的函数和宏定义</a>
           </li>
         
           <li>
@@ -203,7 +208,7 @@
     <div id="footer-info" class="inner">
       
       &copy; 2024 Alice Yu<br>
-      Construido por <a href="https://hexo.io/" target="_blank">Hexo</a>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
 </footer>
