@@ -4,15 +4,17 @@
   <meta charset="utf-8">
   
   
-  <title>About me | Alice&#39;s Notebook</title>
+  <title>NCCL使用示例 | Alice&#39;s Notebook</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="About me">
-<meta property="og:url" content="https://gitalice123.github.io/about/me.html">
+  <meta name="description" content="通信组创建和销毁一个进程，一个线程，多个设备 在这种单进程的场景下，可以使用ncclCommInitAll() 下面的例子创建了一个有四个设备的通信组123ncclComm_t comms[4];int devs[4] &#x3D; &#123; 0, 1, 2, 3 &#125;;ncclCommInitAll(comms, 4, devs);">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NCCL使用示例">
+<meta property="og:url" content="https://gitalice123.github.io/2024/11/29/NCCL%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B/index.html">
 <meta property="og:site_name" content="Alice&#39;s Notebook">
+<meta property="og:description" content="通信组创建和销毁一个进程，一个线程，多个设备 在这种单进程的场景下，可以使用ncclCommInitAll() 下面的例子创建了一个有四个设备的通信组123ncclComm_t comms[4];int devs[4] &#x3D; &#123; 0, 1, 2, 3 &#125;;ncclCommInitAll(comms, 4, devs);">
 <meta property="og:locale">
-<meta property="article:published_time" content="2024-11-28T04:10:30.000Z">
-<meta property="article:modified_time" content="2024-11-28T04:10:30.132Z">
+<meta property="article:published_time" content="2024-11-29T07:01:43.000Z">
+<meta property="article:modified_time" content="2024-11-29T07:03:45.870Z">
 <meta property="article:author" content="Alice Yu">
 <meta name="twitter:card" content="summary">
   
@@ -69,10 +71,10 @@
 </header>
 
       <div class="outer">
-        <section id="main"><article id="page-" class="h-entry article article-type-page" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+        <section id="main"><article id="post-NCCL使用示例" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
-    <a href="/about/me.html" class="article-date">
-  <time class="dt-published" datetime="2024-11-28T04:10:30.000Z" itemprop="datePublished">2024-11-28</time>
+    <a href="/2024/11/29/NCCL%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B/" class="article-date">
+  <time class="dt-published" datetime="2024-11-29T07:01:43.000Z" itemprop="datePublished">2024-11-29</time>
 </a>
     
   </div>
@@ -83,7 +85,7 @@
         
   
     <h1 class="p-name article-title" itemprop="headline name">
-      About me
+      NCCL使用示例
     </h1>
   
 
@@ -91,11 +93,15 @@
     
     <div class="e-content article-entry" itemprop="articleBody">
       
-        
+        <h1 id="通信组创建和销毁"><a href="#通信组创建和销毁" class="headerlink" title="通信组创建和销毁"></a>通信组创建和销毁</h1><h2 id="一个进程，一个线程，多个设备"><a href="#一个进程，一个线程，多个设备" class="headerlink" title="一个进程，一个线程，多个设备"></a>一个进程，一个线程，多个设备</h2><ul>
+<li>在这种单进程的场景下，可以使用ncclCommInitAll()</li>
+<li>下面的例子创建了一个有四个设备的通信组<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ncclComm_t comms[<span class="number">4</span>];</span><br><span class="line"><span class="type">int</span> devs[<span class="number">4</span>] = &#123; <span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span> &#125;;</span><br><span class="line">ncclCommInitAll(comms, <span class="number">4</span>, devs);</span><br></pre></td></tr></table></figure></li>
+</ul>
+
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://gitalice123.github.io/about/me.html" data-id="cm42g1vt90000l4ef1ubf6s5m" data-title="About me" class="article-share-link"><span class="fa fa-share">Compartir</span></a>
+      <a data-url="https://gitalice123.github.io/2024/11/29/NCCL%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B/" data-id="cm42g1vth0004l4ef1gyk91za" data-title="NCCL使用示例" class="article-share-link"><span class="fa fa-share">Compartir</span></a>
       
       
       
@@ -103,6 +109,16 @@
   </div>
   
     
+<nav id="article-nav">
+  
+  
+    <a href="/2024/11/29/NCCL%E4%B8%AD%E9%87%8D%E8%A6%81%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Viejo</strong>
+      <div class="article-nav-title">NCCL中重要的数据结构</div>
+    </a>
+  
+</nav>
+
   
 </article>
 
