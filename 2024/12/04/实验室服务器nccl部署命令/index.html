@@ -4,15 +4,17 @@
   <meta charset="utf-8">
   
   
-  <title>About me | Alice&#39;s Notebook</title>
+  <title>实验室服务器nccl部署命令 | Alice&#39;s Notebook</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="About me">
-<meta property="og:url" content="https://gitalice123.github.io/about/me.html">
+  <meta name="description" content="nccl编译1make src.build CUDA_HOME&#x3D;&#x2F;usr&#x2F;lib&#x2F;nvidia-cuda-toolkit&#x2F; NVCC_GENCODE&#x3D;&quot;-gencode&#x3D;arch&#x3D;compute_80,code&#x3D;sm_80&quot;  查看各种库的安装路径 由于管理员最初好像是用apt安装的，所以可以这样查找 以查找mpi为例1dpkg -S mpicc  nccl-test编译1ma">
+<meta property="og:type" content="article">
+<meta property="og:title" content="实验室服务器nccl部署命令">
+<meta property="og:url" content="https://gitalice123.github.io/2024/12/04/%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8nccl%E9%83%A8%E7%BD%B2%E5%91%BD%E4%BB%A4/index.html">
 <meta property="og:site_name" content="Alice&#39;s Notebook">
+<meta property="og:description" content="nccl编译1make src.build CUDA_HOME&#x3D;&#x2F;usr&#x2F;lib&#x2F;nvidia-cuda-toolkit&#x2F; NVCC_GENCODE&#x3D;&quot;-gencode&#x3D;arch&#x3D;compute_80,code&#x3D;sm_80&quot;  查看各种库的安装路径 由于管理员最初好像是用apt安装的，所以可以这样查找 以查找mpi为例1dpkg -S mpicc  nccl-test编译1ma">
 <meta property="og:locale">
-<meta property="article:published_time" content="2024-11-28T04:10:30.000Z">
-<meta property="article:modified_time" content="2024-11-28T04:10:30.132Z">
+<meta property="article:published_time" content="2024-12-04T08:53:34.000Z">
+<meta property="article:modified_time" content="2024-12-04T09:03:33.973Z">
 <meta property="article:author" content="Alice Yu">
 <meta name="twitter:card" content="summary">
   
@@ -69,10 +71,10 @@
 </header>
 
       <div class="outer">
-        <section id="main"><article id="page-" class="h-entry article article-type-page" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+        <section id="main"><article id="post-实验室服务器nccl部署命令" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
-    <a href="/about/me.html" class="article-date">
-  <time class="dt-published" datetime="2024-11-28T04:10:30.000Z" itemprop="datePublished">2024-11-28</time>
+    <a href="/2024/12/04/%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8nccl%E9%83%A8%E7%BD%B2%E5%91%BD%E4%BB%A4/" class="article-date">
+  <time class="dt-published" datetime="2024-12-04T08:53:34.000Z" itemprop="datePublished">2024-12-04</time>
 </a>
     
   </div>
@@ -83,7 +85,7 @@
         
   
     <h1 class="p-name article-title" itemprop="headline name">
-      About me
+      实验室服务器nccl部署命令
     </h1>
   
 
@@ -91,11 +93,19 @@
     
     <div class="e-content article-entry" itemprop="articleBody">
       
-        
+        <h1 id="nccl编译"><a href="#nccl编译" class="headerlink" title="nccl编译"></a>nccl编译</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make src.build CUDA_HOME=/usr/lib/nvidia-cuda-toolkit/ NVCC_GENCODE=<span class="string">&quot;-gencode=arch=compute_80,code=sm_80&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="查看各种库的安装路径"><a href="#查看各种库的安装路径" class="headerlink" title="查看各种库的安装路径"></a>查看各种库的安装路径</h1><ul>
+<li>由于管理员最初好像是用apt安装的，所以可以这样查找</li>
+<li>以查找mpi为例<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dpkg -S mpicc</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h1 id="nccl-test编译"><a href="#nccl-test编译" class="headerlink" title="nccl-test编译"></a>nccl-test编译</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make MPI=1 MPI_HOME=/usr/mpi/gcc/openmpi-4.1.7a1 CUDA_HOME=/usr/lib/nvidia-cuda-toolkit/ NCCL_HOME=/home/cyu/tccl-2024/nccl/build</span><br></pre></td></tr></table></figure>
+
+<h1 id="nccl-test测试"><a href="#nccl-test测试" class="headerlink" title="nccl-test测试"></a>nccl-test测试</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> LD_LIBRARY_PATH=/home/cyu/tccl-2024/nccl/build/lib:<span class="variable">$LD_LIBRARY_PATH</span></span><br><span class="line">./build/all_reduce_perf -b 8 -e 128M -f 2 -g 2</span><br></pre></td></tr></table></figure>
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://gitalice123.github.io/about/me.html" data-id="cm49nxf3x0000xsef3ci615mt" data-title="About me" class="article-share-link"><span class="fa fa-share">Teilen</span></a>
+      <a data-url="https://gitalice123.github.io/2024/12/04/%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8nccl%E9%83%A8%E7%BD%B2%E5%91%BD%E4%BB%A4/" data-id="cm49nxf460004xsefdjgxbpp6" data-title="实验室服务器nccl部署命令" class="article-share-link"><span class="fa fa-share">Teilen</span></a>
       
       
       
@@ -103,6 +113,16 @@
   </div>
   
     
+<nav id="article-nav">
+  
+  
+    <a href="/2024/12/04/hexo%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Älter</strong>
+      <div class="article-nav-title">hexo常用命令</div>
+    </a>
+  
+</nav>
+
   
 </article>
 
