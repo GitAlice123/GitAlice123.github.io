@@ -4,20 +4,14 @@
   <meta charset="utf-8">
   
   
-  <title>NCCL代码阅读-01 | Alice&#39;s Notebook</title>
+  <title>Tag: 实验室 | Alice&#39;s Notebook</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="创建一个通信组(communicator) 创建一个通信组之前，每个CUDA设备都要被分配一个唯一的rank id 有了这个rank id和CUDA设备的静态映射，ncclCommInitRank(), ncclCommInitRankConfig() and ncclCommInitAll() 三个函数会创建communicator objects，每个communicator object会和">
-<meta property="og:type" content="article">
-<meta property="og:title" content="NCCL代码阅读-01">
-<meta property="og:url" content="https://gitalice123.github.io/2024/11/28/NCCL%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-01/index.html">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Alice&#39;s Notebook">
+<meta property="og:url" content="https://gitalice123.github.io/tags/%E5%AE%9E%E9%AA%8C%E5%AE%A4/index.html">
 <meta property="og:site_name" content="Alice&#39;s Notebook">
-<meta property="og:description" content="创建一个通信组(communicator) 创建一个通信组之前，每个CUDA设备都要被分配一个唯一的rank id 有了这个rank id和CUDA设备的静态映射，ncclCommInitRank(), ncclCommInitRankConfig() and ncclCommInitAll() 三个函数会创建communicator objects，每个communicator object会和">
 <meta property="og:locale">
-<meta property="article:published_time" content="2024-11-28T07:45:03.000Z">
-<meta property="article:modified_time" content="2024-12-07T03:06:40.817Z">
 <meta property="article:author" content="Alice Yu">
-<meta property="article:tag" content="NCCL">
-<meta property="article:tag" content="代码阅读">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternate" href="/atom.xml" title="Alice's Notebook" type="application/atom+xml">
@@ -73,92 +67,39 @@
 </header>
 
       <div class="outer">
-        <section id="main"><article id="post-NCCL代码阅读-01" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2024/11/28/NCCL%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-01/" class="article-date">
-  <time class="dt-published" datetime="2024-11-28T07:45:03.000Z" itemprop="datePublished">2024-11-28</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/NCCL/">NCCL</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
+        <section id="main">
   
-    <h1 class="p-name article-title" itemprop="headline name">
-      NCCL代码阅读-01
+  
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2024" class="archive-year">2024</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      <a href="/2024/12/04/%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8nccl%E9%83%A8%E7%BD%B2%E5%91%BD%E4%BB%A4/" class="archive-article-date">
+  <time class="dt-published" datetime="2024-12-04T08:53:34.000Z" itemprop="datePublished">Dec 4</time>
+</a>
+      
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2024/12/04/%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8nccl%E9%83%A8%E7%BD%B2%E5%91%BD%E4%BB%A4/">实验室服务器nccl部署命令</a>
     </h1>
   
 
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <h1 id="创建一个通信组-communicator"><a href="#创建一个通信组-communicator" class="headerlink" title="创建一个通信组(communicator)"></a>创建一个通信组(communicator)</h1><ul>
-<li>创建一个通信组之前，每个CUDA设备都要被分配一个唯一的rank id</li>
-<li>有了这个rank id和CUDA设备的静态映射，ncclCommInitRank(), ncclCommInitRankConfig() and ncclCommInitAll() 三个函数会创建communicator objects，每个communicator object会和一个固定的rank（及一个CUDA设备）关联。</li>
-<li>在调用ncclCommInitRank之前，需要调用ncclGetUniqueId()来获取一个unique id，这个ID必须广播到所有参与通信的进程，让他们知道自己在communicator中</li>
-<li>比如有四个GPU互相通信，加入了一个通信组，那么这个通信组就需要一个通信上下文记录所有的信息</li>
-<li>类比四个人开会，那么这个通信上下文就是会议室</li>
-</ul>
-<h2 id="ncclCommInitRank"><a href="#ncclCommInitRank" class="headerlink" title="ncclCommInitRank"></a>ncclCommInitRank</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ncclResult_t <span class="title function_">ncclCommInitRank</span><span class="params">(ncclComm_t* comm, <span class="type">int</span> nranks, ncclUniqueId commId, <span class="type">int</span> rank)</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li>创建一个communicator object</li>
-<li>里面调用ncclCommInitRankDev()</li>
-</ul>
-<h2 id="ncclCommInitAll"><a href="#ncclCommInitAll" class="headerlink" title="ncclCommInitAll"></a>ncclCommInitAll</h2><ul>
-<li>在<strong>一个CPU进程</strong>里面执行(<strong>因此他后面所调用的所有函数都是在这一个进程，一个线程里面执行的</strong>)，创建多个communicator object</li>
-<li>但是只能是单进程版本，也因此不支持多node通信</li>
-<li>首先检查了各种数据的有效性</li>
-<li>然后调用ncclGetUniqueId()获取一个unique id<ul>
-<li>ncclGetUniqueId()首先调用ncclInit()初始化NCCL</li>
-</ul>
-</li>
-</ul>
-<h2 id="ncclInit"><a href="#ncclInit" class="headerlink" title="ncclInit()"></a>ncclInit()</h2><ul>
-<li>这是一个在所有线程中只会执行一次的函数</li>
-<li>在两个地方被调用：ncclGetUniqueId和ncclCommInitRankDev</li>
-<li>如果是ncclGetUniqueId调用的，那么分两种情况：<ul>
-<li>在ncclCommInitAll中调用，那其实就一个进程，一个线程，不用担心会被多次调用</li>
-<li>在ncclCommInitRank前面调用，那么就要限制只有第一个线程调用，后面的线程不会再调用</li>
-</ul>
-</li>
-</ul>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://gitalice123.github.io/2024/11/28/NCCL%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-01/" data-id="cm4dwp6sl0007o4efgg6c9dr2" data-title="NCCL代码阅读-01" class="article-share-link"><span class="fa fa-share">Teilen</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/NCCL/" rel="tag">NCCL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB/" rel="tag">代码阅读</a></li></ul>
-
-    </footer>
+    </header>
   </div>
-  
-    
-<nav id="article-nav">
-  
-    <a href="/2024/11/29/NCCL%E4%BB%A3%E7%A0%81%E4%B8%AD%E5%B8%B8%E7%94%A8%E7%9A%84%E5%87%BD%E6%95%B0%E5%92%8C%E5%AE%8F%E5%AE%9A%E4%B9%89/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Neuer</strong>
-      <div class="article-nav-title">
-        
-          NCCL代码中常用的函数和宏定义
-        
-      </div>
-    </a>
-  
-  
-</nav>
-
-  
 </article>
+  
+  
+    </div></section>
+  
 
 
 </section>
