@@ -2,6 +2,10 @@
 title: NCCL中重要的数据结构
 date: 2024-11-29 10:06:36
 tags:
+- NCCL
+- 代码阅读
+categories:
+- NCCL
 ---
 
 # struct ncclComm

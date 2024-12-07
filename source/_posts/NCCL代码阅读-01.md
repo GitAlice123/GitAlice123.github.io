@@ -2,6 +2,10 @@
 title: NCCL代码阅读-01
 date: 2024-11-28 15:45:03
 tags:
+- NCCL
+- 代码阅读
+categories:
+- NCCL
 ---
 # 创建一个通信组(communicator)                                                 
 * 创建一个通信组之前，每个CUDA设备都要被分配一个唯一的rank id
@@ -22,14 +26,13 @@ ncclResult_t ncclCommInitRank(ncclComm_t* comm, int nranks, ncclUniqueId commId,
 * 但是只能是单进程版本，也因此不支持多node通信
 * 首先检查了各种数据的有效性
 * 然后调用ncclGetUniqueId()获取一个unique id
+    * ncclGetUniqueId()首先调用ncclInit()初始化NCCL
 
-## 举例：threadInit()
-* 获取总的rank数
-```c
-int nranks =  args->nProcs*args->nThreads*args->nGpus;
-```
-* 判断是否为主线程
-* ncclGroupStart()
-* 对每个设备，传入要给他分配的rank号，调用ncclCommInitRank()
+## ncclInit()
+* 这是一个在所有线程中只会执行一次的函数
+* 在两个地方被调用：ncclGetUniqueId和ncclCommInitRankDev
+* 如果是ncclGetUniqueId调用的，那么分两种情况：
+    * 在ncclCommInitAll中调用，那其实就一个进程，一个线程，不用担心会被多次调用
+    * 在ncclCommInitRank前面调用，那么就要限制只有第一个线程调用，后面的线程不会再调用
 
 
