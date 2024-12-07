@@ -14,8 +14,10 @@
 <meta property="og:description" content="创建一个通信组(communicator) 创建一个通信组之前，每个CUDA设备都要被分配一个唯一的rank id 有了这个rank id和CUDA设备的静态映射，ncclCommInitRank(), ncclCommInitRankConfig() and ncclCommInitAll() 三个函数会创建communicator objects，每个communicator object会和">
 <meta property="og:locale">
 <meta property="article:published_time" content="2024-11-28T07:45:03.000Z">
-<meta property="article:modified_time" content="2024-11-29T09:12:35.730Z">
+<meta property="article:modified_time" content="2024-12-07T03:06:40.817Z">
 <meta property="article:author" content="Alice Yu">
+<meta property="article:tag" content="NCCL">
+<meta property="article:tag" content="代码阅读">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternate" href="/atom.xml" title="Alice's Notebook" type="application/atom+xml">
@@ -77,6 +79,10 @@
   <time class="dt-published" datetime="2024-11-28T07:45:03.000Z" itemprop="datePublished">2024-11-28</time>
 </a>
     
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/NCCL/">NCCL</a>
+  </div>
+
   </div>
   <div class="article-inner">
     
@@ -127,10 +133,12 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://gitalice123.github.io/2024/11/28/NCCL%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-01/" data-id="cm49nxf410002xsef6gyshxzy" data-title="NCCL代码阅读-01" class="article-share-link"><span class="fa fa-share">Teilen</span></a>
+      <a data-url="https://gitalice123.github.io/2024/11/28/NCCL%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-01/" data-id="cm4dlio9100085sefc3uwdkg6" data-title="NCCL代码阅读-01" class="article-share-link"><span class="fa fa-share">Teilen</span></a>
       
       
       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/NCCL/" rel="tag">NCCL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB/" rel="tag">代码阅读</a></li></ul>
+
     </footer>
   </div>
   
@@ -158,12 +166,33 @@
           <aside id="sidebar">
   
     
+  <div class="widget-wrap">
+    <h3 class="widget-title">Kategorien</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/NCCL/">NCCL</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/hexo/">hexo</a></li></ul>
+    </div>
+  </div>
+
 
   
     
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/NCCL/" rel="tag">NCCL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/" rel="tag">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB/" rel="tag">代码阅读</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%83%A8%E7%BD%B2/" rel="tag">部署</a></li></ul>
+    </div>
+  </div>
+
 
   
     
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/NCCL/" style="font-size: 20px;">NCCL</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB/" style="font-size: 20px;">代码阅读</a> <a href="/tags/%E9%83%A8%E7%BD%B2/" style="font-size: 10px;">部署</a>
+    </div>
+  </div>
+
   
     
   <div class="widget-wrap">
