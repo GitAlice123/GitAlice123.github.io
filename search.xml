@@ -19,6 +19,48 @@
       </tags>
   </entry>
   <entry>
+    <title>NCCL代码阅读-01</title>
+    <url>/2024/11/28/NCCL%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-01/</url>
+    <content><![CDATA[<h1 id="创建一个通信组-communicator"><a href="#创建一个通信组-communicator" class="headerlink" title="创建一个通信组(communicator)"></a>创建一个通信组(communicator)</h1><ul>
+<li>创建一个通信组之前，每个CUDA设备都要被分配一个唯一的rank id</li>
+<li>有了这个rank id和CUDA设备的静态映射，ncclCommInitRank(), ncclCommInitRankConfig() and ncclCommInitAll() 三个函数会创建communicator objects，每个communicator object会和一个固定的rank（及一个CUDA设备）关联。</li>
+<li>在调用ncclCommInitRank之前，需要调用ncclGetUniqueId()来获取一个unique id，这个ID必须广播到所有参与通信的进程，让他们知道自己在communicator中</li>
+<li>比如有四个GPU互相通信，加入了一个通信组，那么这个通信组就需要一个通信上下文记录所有的信息</li>
+<li>类比四个人开会，那么这个通信上下文就是会议室</li>
+</ul>
+<h2 id="ncclCommInitRank"><a href="#ncclCommInitRank" class="headerlink" title="ncclCommInitRank"></a>ncclCommInitRank</h2><div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="code"><pre><span class="line">ncclResult_t <span class="title function_">ncclCommInitRank</span><span class="params">(ncclComm_t* comm, <span class="type">int</span> nranks, ncclUniqueId commId, <span class="type">int</span> rank)</span></span><br></pre></td></tr></table></figure></div>
+<ul>
+<li>创建一个communicator object</li>
+<li>里面调用ncclCommInitRankDev()</li>
+</ul>
+<h2 id="ncclCommInitAll"><a href="#ncclCommInitAll" class="headerlink" title="ncclCommInitAll"></a>ncclCommInitAll</h2><ul>
+<li>在<strong>一个CPU进程</strong>里面执行(<strong>因此他后面所调用的所有函数都是在这一个进程，一个线程里面执行的</strong>)，创建多个communicator object</li>
+<li>但是只能是单进程版本，也因此不支持多node通信</li>
+<li>首先检查了各种数据的有效性</li>
+<li>然后调用ncclGetUniqueId()获取一个unique id<ul>
+<li>ncclGetUniqueId()首先调用ncclInit()初始化NCCL</li>
+</ul>
+</li>
+</ul>
+<h2 id="ncclInit"><a href="#ncclInit" class="headerlink" title="ncclInit()"></a>ncclInit()</h2><ul>
+<li>这是一个在所有线程中只会执行一次的函数</li>
+<li>在两个地方被调用：ncclGetUniqueId和ncclCommInitRankDev</li>
+<li>如果是ncclGetUniqueId调用的，那么分两种情况：<ul>
+<li>在ncclCommInitAll中调用，那其实就一个进程，一个线程，不用担心会被多次调用</li>
+<li>在ncclCommInitRank前面调用，那么就要限制只有第一个线程调用，后面的线程不会再调用</li>
+</ul>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>NCCL</category>
+      </categories>
+      <tags>
+        <tag>NCCL</tag>
+        <tag>代码阅读</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>NCCL代码中常用的函数和宏定义</title>
     <url>/2024/11/29/NCCL%E4%BB%A3%E7%A0%81%E4%B8%AD%E5%B8%B8%E7%94%A8%E7%9A%84%E5%87%BD%E6%95%B0%E5%92%8C%E5%AE%8F%E5%AE%9A%E4%B9%89/</url>
     <content><![CDATA[<h1 id="NCCLCHECK"><a href="#NCCLCHECK" class="headerlink" title="NCCLCHECK"></a>NCCLCHECK</h1><p><code>NCCLCHECK</code> 是一个宏，用于简化 NCCL 函数调用后的错误检查。在 NCCL 和许多 C&#x2F;C++ 编程环境中，错误处理通常是一个关键部分，而通过宏封装可以使代码更加简洁和易于维护。</p>
@@ -247,22 +289,6 @@
       </tags>
   </entry>
   <entry>
-    <title>hexo常用命令</title>
-    <url>/2024/12/04/hexo%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
-    <content><![CDATA[<h1 id="新建一篇文章"><a href="#新建一篇文章" class="headerlink" title="新建一篇文章"></a>新建一篇文章</h1><div class="code-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">hexo new <span class="string">&quot;文章标题&quot;</span></span><br></pre></td></tr></table></figure></div>
-
-<h1 id="本地重新生成静态文件"><a href="#本地重新生成静态文件" class="headerlink" title="本地重新生成静态文件"></a>本地重新生成静态文件</h1><div class="code-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br></pre></td></tr></table></figure></div>
-
-<h1 id="发布到github-io"><a href="#发布到github-io" class="headerlink" title="发布到github.io"></a>发布到github.io</h1><div class="code-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">hexo d</span><br></pre></td></tr></table></figure></div>]]></content>
-      <categories>
-        <category>hexo</category>
-      </categories>
-      <tags>
-        <tag>hexo</tag>
-        <tag>部署</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>NCCL使用示例</title>
     <url>/2024/11/29/NCCL%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B/</url>
     <content><![CDATA[<h1 id="通信组创建和销毁"><a href="#通信组创建和销毁" class="headerlink" title="通信组创建和销毁"></a>通信组创建和销毁</h1><h2 id="一个进程，一个线程，多个设备"><a href="#一个进程，一个线程，多个设备" class="headerlink" title="一个进程，一个线程，多个设备"></a>一个进程，一个线程，多个设备</h2><ul>
@@ -278,45 +304,19 @@
       </tags>
   </entry>
   <entry>
-    <title>NCCL代码阅读-01</title>
-    <url>/2024/11/28/NCCL%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-01/</url>
-    <content><![CDATA[<h1 id="创建一个通信组-communicator"><a href="#创建一个通信组-communicator" class="headerlink" title="创建一个通信组(communicator)"></a>创建一个通信组(communicator)</h1><ul>
-<li>创建一个通信组之前，每个CUDA设备都要被分配一个唯一的rank id</li>
-<li>有了这个rank id和CUDA设备的静态映射，ncclCommInitRank(), ncclCommInitRankConfig() and ncclCommInitAll() 三个函数会创建communicator objects，每个communicator object会和一个固定的rank（及一个CUDA设备）关联。</li>
-<li>在调用ncclCommInitRank之前，需要调用ncclGetUniqueId()来获取一个unique id，这个ID必须广播到所有参与通信的进程，让他们知道自己在communicator中</li>
-<li>比如有四个GPU互相通信，加入了一个通信组，那么这个通信组就需要一个通信上下文记录所有的信息</li>
-<li>类比四个人开会，那么这个通信上下文就是会议室</li>
-</ul>
-<h2 id="ncclCommInitRank"><a href="#ncclCommInitRank" class="headerlink" title="ncclCommInitRank"></a>ncclCommInitRank</h2><div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="code"><pre><span class="line">ncclResult_t <span class="title function_">ncclCommInitRank</span><span class="params">(ncclComm_t* comm, <span class="type">int</span> nranks, ncclUniqueId commId, <span class="type">int</span> rank)</span></span><br></pre></td></tr></table></figure></div>
-<ul>
-<li>创建一个communicator object</li>
-<li>里面调用ncclCommInitRankDev()</li>
-</ul>
-<h2 id="ncclCommInitAll"><a href="#ncclCommInitAll" class="headerlink" title="ncclCommInitAll"></a>ncclCommInitAll</h2><ul>
-<li>在<strong>一个CPU进程</strong>里面执行(<strong>因此他后面所调用的所有函数都是在这一个进程，一个线程里面执行的</strong>)，创建多个communicator object</li>
-<li>但是只能是单进程版本，也因此不支持多node通信</li>
-<li>首先检查了各种数据的有效性</li>
-<li>然后调用ncclGetUniqueId()获取一个unique id<ul>
-<li>ncclGetUniqueId()首先调用ncclInit()初始化NCCL</li>
-</ul>
-</li>
-</ul>
-<h2 id="ncclInit"><a href="#ncclInit" class="headerlink" title="ncclInit()"></a>ncclInit()</h2><ul>
-<li>这是一个在所有线程中只会执行一次的函数</li>
-<li>在两个地方被调用：ncclGetUniqueId和ncclCommInitRankDev</li>
-<li>如果是ncclGetUniqueId调用的，那么分两种情况：<ul>
-<li>在ncclCommInitAll中调用，那其实就一个进程，一个线程，不用担心会被多次调用</li>
-<li>在ncclCommInitRank前面调用，那么就要限制只有第一个线程调用，后面的线程不会再调用</li>
-</ul>
-</li>
-</ul>
-]]></content>
+    <title>hexo常用命令</title>
+    <url>/2024/12/04/hexo%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
+    <content><![CDATA[<h1 id="新建一篇文章"><a href="#新建一篇文章" class="headerlink" title="新建一篇文章"></a>新建一篇文章</h1><div class="code-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">hexo new <span class="string">&quot;文章标题&quot;</span></span><br></pre></td></tr></table></figure></div>
+
+<h1 id="本地重新生成静态文件"><a href="#本地重新生成静态文件" class="headerlink" title="本地重新生成静态文件"></a>本地重新生成静态文件</h1><div class="code-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br></pre></td></tr></table></figure></div>
+
+<h1 id="发布到github-io"><a href="#发布到github-io" class="headerlink" title="发布到github.io"></a>发布到github.io</h1><div class="code-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">hexo d</span><br></pre></td></tr></table></figure></div>]]></content>
       <categories>
-        <category>NCCL</category>
+        <category>hexo</category>
       </categories>
       <tags>
-        <tag>NCCL</tag>
-        <tag>代码阅读</tag>
+        <tag>hexo</tag>
+        <tag>部署</tag>
       </tags>
   </entry>
   <entry>
