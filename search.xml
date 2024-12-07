@@ -1,24 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>NCCL中重要的数据结构</title>
-    <url>/2024/11/29/NCCL%E4%B8%AD%E9%87%8D%E8%A6%81%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/</url>
-    <content><![CDATA[<h1 id="struct-ncclComm"><a href="#struct-ncclComm" class="headerlink" title="struct ncclComm"></a>struct ncclComm</h1><p>实际使用的时候是</p>
-<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">ncclComm</span>* <span class="title">ncclComm_t</span>;</span></span><br></pre></td></tr></table></figure></div>
-<ul>
-<li>在src\nccl.h.in</li>
-<li>通信上下文<br>开会，那么这个通信上下文就是会议室</li>
-</ul>
-<h1 id="struct-ncclInfo"><a href="#struct-ncclInfo" class="headerlink" title="struct ncclInfo"></a>struct ncclInfo</h1>]]></content>
-      <categories>
-        <category>NCCL</category>
-      </categories>
-      <tags>
-        <tag>NCCL</tag>
-        <tag>代码阅读</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>NCCL代码阅读-01</title>
     <url>/2024/11/28/NCCL%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-01/</url>
     <content><![CDATA[<h1 id="创建一个通信组-communicator"><a href="#创建一个通信组-communicator" class="headerlink" title="创建一个通信组(communicator)"></a>创建一个通信组(communicator)</h1><ul>
@@ -52,6 +34,24 @@
 </li>
 </ul>
 ]]></content>
+      <categories>
+        <category>NCCL</category>
+      </categories>
+      <tags>
+        <tag>NCCL</tag>
+        <tag>代码阅读</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>NCCL中重要的数据结构</title>
+    <url>/2024/11/29/NCCL%E4%B8%AD%E9%87%8D%E8%A6%81%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/</url>
+    <content><![CDATA[<h1 id="struct-ncclComm"><a href="#struct-ncclComm" class="headerlink" title="struct ncclComm"></a>struct ncclComm</h1><p>实际使用的时候是</p>
+<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">ncclComm</span>* <span class="title">ncclComm_t</span>;</span></span><br></pre></td></tr></table></figure></div>
+<ul>
+<li>在src\nccl.h.in</li>
+<li>通信上下文<br>开会，那么这个通信上下文就是会议室</li>
+</ul>
+<h1 id="struct-ncclInfo"><a href="#struct-ncclInfo" class="headerlink" title="struct ncclInfo"></a>struct ncclInfo</h1>]]></content>
       <categories>
         <category>NCCL</category>
       </categories>
