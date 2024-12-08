@@ -19,48 +19,6 @@
       </tags>
   </entry>
   <entry>
-    <title>NCCL代码阅读-01</title>
-    <url>/2024/11/28/NCCL%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-01/</url>
-    <content><![CDATA[<h1 id="创建一个通信组-communicator"><a href="#创建一个通信组-communicator" class="headerlink" title="创建一个通信组(communicator)"></a>创建一个通信组(communicator)</h1><ul>
-<li>创建一个通信组之前，每个CUDA设备都要被分配一个唯一的rank id</li>
-<li>有了这个rank id和CUDA设备的静态映射，ncclCommInitRank(), ncclCommInitRankConfig() and ncclCommInitAll() 三个函数会创建communicator objects，每个communicator object会和一个固定的rank（及一个CUDA设备）关联。</li>
-<li>在调用ncclCommInitRank之前，需要调用ncclGetUniqueId()来获取一个unique id，这个ID必须广播到所有参与通信的进程，让他们知道自己在communicator中</li>
-<li>比如有四个GPU互相通信，加入了一个通信组，那么这个通信组就需要一个通信上下文记录所有的信息</li>
-<li>类比四个人开会，那么这个通信上下文就是会议室</li>
-</ul>
-<h2 id="ncclCommInitRank"><a href="#ncclCommInitRank" class="headerlink" title="ncclCommInitRank"></a>ncclCommInitRank</h2><div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="code"><pre><span class="line">ncclResult_t <span class="title function_">ncclCommInitRank</span><span class="params">(ncclComm_t* comm, <span class="type">int</span> nranks, ncclUniqueId commId, <span class="type">int</span> rank)</span></span><br></pre></td></tr></table></figure></div>
-<ul>
-<li>创建一个communicator object</li>
-<li>里面调用ncclCommInitRankDev()</li>
-</ul>
-<h2 id="ncclCommInitAll"><a href="#ncclCommInitAll" class="headerlink" title="ncclCommInitAll"></a>ncclCommInitAll</h2><ul>
-<li>在<strong>一个CPU进程</strong>里面执行(<strong>因此他后面所调用的所有函数都是在这一个进程，一个线程里面执行的</strong>)，创建多个communicator object</li>
-<li>但是只能是单进程版本，也因此不支持多node通信</li>
-<li>首先检查了各种数据的有效性</li>
-<li>然后调用ncclGetUniqueId()获取一个unique id<ul>
-<li>ncclGetUniqueId()首先调用ncclInit()初始化NCCL</li>
-</ul>
-</li>
-</ul>
-<h2 id="ncclInit"><a href="#ncclInit" class="headerlink" title="ncclInit()"></a>ncclInit()</h2><ul>
-<li>这是一个在所有线程中只会执行一次的函数</li>
-<li>在两个地方被调用：ncclGetUniqueId和ncclCommInitRankDev</li>
-<li>如果是ncclGetUniqueId调用的，那么分两种情况：<ul>
-<li>在ncclCommInitAll中调用，那其实就一个进程，一个线程，不用担心会被多次调用</li>
-<li>在ncclCommInitRank前面调用，那么就要限制只有第一个线程调用，后面的线程不会再调用</li>
-</ul>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>NCCL</category>
-      </categories>
-      <tags>
-        <tag>NCCL</tag>
-        <tag>代码阅读</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>NCCL代码中常用的函数和宏定义</title>
     <url>/2024/11/29/NCCL%E4%BB%A3%E7%A0%81%E4%B8%AD%E5%B8%B8%E7%94%A8%E7%9A%84%E5%87%BD%E6%95%B0%E5%92%8C%E5%AE%8F%E5%AE%9A%E4%B9%89/</url>
     <content><![CDATA[<h1 id="NCCLCHECK"><a href="#NCCLCHECK" class="headerlink" title="NCCLCHECK"></a>NCCLCHECK</h1><p><code>NCCLCHECK</code> 是一个宏，用于简化 NCCL 函数调用后的错误检查。在 NCCL 和许多 C&#x2F;C++ 编程环境中，错误处理通常是一个关键部分，而通过宏封装可以使代码更加简洁和易于维护。</p>
@@ -289,6 +247,48 @@
       </tags>
   </entry>
   <entry>
+    <title>NCCL代码阅读-01</title>
+    <url>/2024/11/28/NCCL%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-01/</url>
+    <content><![CDATA[<h1 id="创建一个通信组-communicator"><a href="#创建一个通信组-communicator" class="headerlink" title="创建一个通信组(communicator)"></a>创建一个通信组(communicator)</h1><ul>
+<li>创建一个通信组之前，每个CUDA设备都要被分配一个唯一的rank id</li>
+<li>有了这个rank id和CUDA设备的静态映射，ncclCommInitRank(), ncclCommInitRankConfig() and ncclCommInitAll() 三个函数会创建communicator objects，每个communicator object会和一个固定的rank（及一个CUDA设备）关联。</li>
+<li>在调用ncclCommInitRank之前，需要调用ncclGetUniqueId()来获取一个unique id，这个ID必须广播到所有参与通信的进程，让他们知道自己在communicator中</li>
+<li>比如有四个GPU互相通信，加入了一个通信组，那么这个通信组就需要一个通信上下文记录所有的信息</li>
+<li>类比四个人开会，那么这个通信上下文就是会议室</li>
+</ul>
+<h2 id="ncclCommInitRank"><a href="#ncclCommInitRank" class="headerlink" title="ncclCommInitRank"></a>ncclCommInitRank</h2><div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="code"><pre><span class="line">ncclResult_t <span class="title function_">ncclCommInitRank</span><span class="params">(ncclComm_t* comm, <span class="type">int</span> nranks, ncclUniqueId commId, <span class="type">int</span> rank)</span></span><br></pre></td></tr></table></figure></div>
+<ul>
+<li>创建一个communicator object</li>
+<li>里面调用ncclCommInitRankDev()</li>
+</ul>
+<h2 id="ncclCommInitAll"><a href="#ncclCommInitAll" class="headerlink" title="ncclCommInitAll"></a>ncclCommInitAll</h2><ul>
+<li>在<strong>一个CPU进程</strong>里面执行(<strong>因此他后面所调用的所有函数都是在这一个进程，一个线程里面执行的</strong>)，创建多个communicator object</li>
+<li>但是只能是单进程版本，也因此不支持多node通信</li>
+<li>首先检查了各种数据的有效性</li>
+<li>然后调用ncclGetUniqueId()获取一个unique id<ul>
+<li>ncclGetUniqueId()首先调用ncclInit()初始化NCCL</li>
+</ul>
+</li>
+</ul>
+<h2 id="ncclInit"><a href="#ncclInit" class="headerlink" title="ncclInit()"></a>ncclInit()</h2><ul>
+<li>这是一个在所有线程中只会执行一次的函数</li>
+<li>在两个地方被调用：ncclGetUniqueId和ncclCommInitRankDev</li>
+<li>如果是ncclGetUniqueId调用的，那么分两种情况：<ul>
+<li>在ncclCommInitAll中调用，那其实就一个进程，一个线程，不用担心会被多次调用</li>
+<li>在ncclCommInitRank前面调用，那么就要限制只有第一个线程调用，后面的线程不会再调用</li>
+</ul>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>NCCL</category>
+      </categories>
+      <tags>
+        <tag>NCCL</tag>
+        <tag>代码阅读</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>NCCL使用示例</title>
     <url>/2024/11/29/NCCL%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B/</url>
     <content><![CDATA[<h1 id="通信组创建和销毁"><a href="#通信组创建和销毁" class="headerlink" title="通信组创建和销毁"></a>通信组创建和销毁</h1><h2 id="一个进程，一个线程，多个设备"><a href="#一个进程，一个线程，多个设备" class="headerlink" title="一个进程，一个线程，多个设备"></a>一个进程，一个线程，多个设备</h2><ul>
@@ -301,6 +301,72 @@
       <tags>
         <tag>NCCL</tag>
         <tag>代码阅读</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>同步机制</title>
+    <url>/2024/12/08/%E5%90%8C%E6%AD%A5%E6%9C%BA%E5%88%B6/</url>
+    <content><![CDATA[<h2 id="barrier"><a href="#barrier" class="headerlink" title="barrier"></a>barrier</h2><p>在计算机科学和并行计算中，<strong>barrier</strong>（屏障）是一种同步机制，用于确保一组线程或进程在某个特定点之前都完成其任务，然后才能继续执行后续操作。它的核心功能是强制所有线程或进程“汇合”到某个同步点，并等待所有参与者都到达该点后，才能继续执行。</p>
+<h3 id="详细解释"><a href="#详细解释" class="headerlink" title="详细解释"></a>详细解释</h3><h4 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h4><ol>
+<li><strong>屏障点</strong>:<ul>
+<li>程序中设置一个“屏障点”，所有线程或进程在到达这个点后都会停下来。</li>
+<li>只有当所有线程或进程都到达这个屏障点后，它们才可以继续执行。</li>
+</ul>
+</li>
+<li><strong>同步控制</strong>:<ul>
+<li>如果有任何线程或进程未到达屏障点，已经到达的线程或进程会被阻塞（等待）。</li>
+<li>当最后一个线程或进程到达屏障点时，屏障被解除，所有线程或进程继续执行。</li>
+</ul>
+</li>
+</ol>
+<h4 id="用途"><a href="#用途" class="headerlink" title="用途"></a>用途</h4><ul>
+<li>确保多个线程或进程在并行计算中同步某个步骤。</li>
+<li>协调计算任务的不同阶段，例如：<ul>
+<li>数据准备</li>
+<li>中间计算</li>
+<li>结果合并</li>
+</ul>
+</li>
+</ul>
+<h4 id="示例场景"><a href="#示例场景" class="headerlink" title="示例场景"></a>示例场景</h4><p>在并行程序中，每个线程可能负责不同的数据块进行计算。例如，进行矩阵乘法时，每个线程计算一部分矩阵。为了确保所有线程都完成其部分计算（阶段1），可以在阶段结束时使用屏障。只有所有线程都完成了阶段1，程序才能进入阶段2。</p>
+<hr>
+<h3 id="实现方式"><a href="#实现方式" class="headerlink" title="实现方式"></a>实现方式</h3><h4 id="1-线程级屏障"><a href="#1-线程级屏障" class="headerlink" title="1. 线程级屏障"></a>1. <strong>线程级屏障</strong></h4><p>   在多线程程序中（如使用 <code>pthreads</code> 或 OpenMP），可以使用内置屏障机制：</p>
+<ul>
+<li><strong>Pthreads</strong>:<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">pthread_barrier_t</span> barrier;</span><br><span class="line">pthread_barrier_init(&amp;barrier, <span class="literal">NULL</span>, num_threads);</span><br><span class="line">pthread_barrier_wait(&amp;barrier);</span><br></pre></td></tr></table></figure></div></li>
+<li><strong>OpenMP</strong>:<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">pragma</span> omp barrier</span></span><br></pre></td></tr></table></figure></div></li>
+</ul>
+<h4 id="2-进程级屏障"><a href="#2-进程级屏障" class="headerlink" title="2. 进程级屏障"></a>2. <strong>进程级屏障</strong></h4><p>   在分布式计算中（如使用 MPI），可以使用通信库提供的屏障函数：</p>
+<ul>
+<li><strong>MPI</strong>:<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="code"><pre><span class="line">MPI_Barrier(MPI_COMM_WORLD);</span><br></pre></td></tr></table></figure></div></li>
+</ul>
+<h4 id="3-CUDA-中的屏障"><a href="#3-CUDA-中的屏障" class="headerlink" title="3. CUDA 中的屏障"></a>3. <strong>CUDA 中的屏障</strong></h4><p>   在 CUDA 程序中，可以通过以下方式实现屏障：</p>
+<ul>
+<li><strong>线程块内屏障</strong>:<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="code"><pre><span class="line">__syncthreads();</span><br></pre></td></tr></table></figure></div></li>
+<li>注意：<code>__syncthreads</code> 只能用于同一线程块中的线程同步，不能跨线程块。</li>
+</ul>
+<hr>
+<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><ol>
+<li><strong>性能问题</strong>: <ul>
+<li>屏障可能会引入性能瓶颈，因为所有线程必须等待最慢的线程到达屏障点。</li>
+<li>如果线程工作负载不均衡，屏障可能导致资源浪费。</li>
+</ul>
+</li>
+<li><strong>死锁风险</strong>:<ul>
+<li>如果部分线程无法到达屏障点（如因错误退出或逻辑问题），整个程序会挂起。</li>
+</ul>
+</li>
+<li><strong>多级屏障</strong>:<ul>
+<li>在复杂并行任务中，可以需要设置多级屏障以协调不同的同步点。</li>
+</ul>
+</li>
+</ol>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>Barrier 是一种用来同步线程或进程的机制，常用于并行和分布式计算中，确保所有参与者都完成某一阶段任务后再进入下一阶段。这在高性能计算中是一个非常重要的概念。</p>
+]]></content>
+      <categories>
+        <category>操作系统知识</category>
+      </categories>
+      <tags>
+        <tag>系统</tag>
       </tags>
   </entry>
   <entry>
