@@ -30,7 +30,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://gitalice123.github.io/images/redefine-og.webp">
 <meta property="article:published_time" content="2024-11-29T02:05:31.000Z">
-<meta property="article:modified_time" content="2024-12-07T03:06:59.145Z">
+<meta property="article:modified_time" content="2024-12-08T01:49:13.828Z">
 <meta property="article:author" content="Alice Yu">
 <meta property="article:tag" content="NCCL">
 <meta property="article:tag" content="代码阅读">
@@ -413,8 +413,8 @@
     
         <span class="article-date article-meta-item">
             <i class="fa-regular fa-wrench"></i>&nbsp;
-            <span class="desktop">2024-12-07 11:06:59</span>
-            <span class="mobile">2024-12-07 11:06:59</span>
+            <span class="desktop">2024-12-08 09:49:13</span>
+            <span class="mobile">2024-12-08 09:49:13</span>
             <span class="hover-info">更新</span>
         </span>
     
@@ -529,14 +529,12 @@
 <li>devPtr是一个指向指针的指针，指向的指针存的是分配的内存的地址</li>
 <li>举例：<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// allocating and initializing device buffers</span></span><br><span class="line"><span class="type">float</span> **sendbuff = (<span class="type">float</span> **)<span class="built_in">malloc</span>(nDev * <span class="keyword">sizeof</span>(<span class="type">float</span> *));</span><br><span class="line"><span class="type">float</span> **recvbuff = (<span class="type">float</span> **)<span class="built_in">malloc</span>(nDev * <span class="keyword">sizeof</span>(<span class="type">float</span> *));</span><br><span class="line">cudaStream_t *s = (cudaStream_t *)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(cudaStream_t) * nDev);</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; nDev; ++i)</span><br><span class="line">&#123;</span><br><span class="line">    CUDACHECK(cudaSetDevice(i));</span><br><span class="line">    CUDACHECK(cudaMalloc((<span class="type">void</span> **)sendbuff + i, size * <span class="keyword">sizeof</span>(<span class="type">float</span>)));</span><br><span class="line">    CUDACHECK(cudaMalloc((<span class="type">void</span> **)recvbuff + i, size * <span class="keyword">sizeof</span>(<span class="type">float</span>)));</span><br><span class="line">    CUDACHECK(cudaMemset(sendbuff[i], <span class="number">1</span>, size * <span class="keyword">sizeof</span>(<span class="type">float</span>)));</span><br><span class="line">    CUDACHECK(cudaMemset(recvbuff[i], <span class="number">0</span>, size * <span class="keyword">sizeof</span>(<span class="type">float</span>)));</span><br><span class="line">    CUDACHECK(cudaStreamCreate(s + i));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></li>
 </ul>
-<img  
+<p><img  
                      lazyload
                      src="/images/loading.svg"
-                     data-src="./NCCL代码中常用的函数和宏定义/3a3ee784d1c88e46f7bd139614358f46.jpg"
-                      width="50%"
-                >
-
-
+                     data-src="/image.png"
+                      alt="alt text"
+                ></p>
 <h1 id="group-API"><a href="#group-API" class="headerlink" title="group API"></a>group API</h1><h3 id="1-Group-Calls-组调用-的概念"><a href="#1-Group-Calls-组调用-的概念" class="headerlink" title="1. Group Calls (组调用) 的概念"></a>1. <strong>Group Calls (组调用) 的概念</strong></h3><p><code>ncclGroupStart()</code> 和 <code>ncclGroupEnd()</code> 是 NCCL 提供的两个函数，用于将多个 NCCL 操作合并成一个操作进行执行。这些操作会在同一个 <strong>NCCL group</strong> 内顺序执行，从而减少了多次启动 NCCL 操作时的开销。通过使用组调用，NCCL 可以更高效地管理并发操作，尤其是在涉及多个 GPU 或多线程的场景下。</p>
 <ul>
 <li><p>**<code>ncclGroupStart()</code>**：启动一个 NCCL 操作组。所有在这个调用后到 <code>ncclGroupEnd()</code> 之前的 NCCL 操作都会被视作同一个组的一部分。</p>
