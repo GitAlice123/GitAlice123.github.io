@@ -81,7 +81,7 @@
 <img  
                      lazyload
                      src="/images/loading.svg"
-                     data-src="/source/images//3a3ee784d1c88e46f7bd139614358f46.jpg"
+                     data-src="/source/images/3a3ee784d1c88e46f7bd139614358f46.jpg"
                       width="50%"
                 >
 
@@ -247,21 +247,6 @@
       </tags>
   </entry>
   <entry>
-    <title>NCCL使用示例</title>
-    <url>/2024/11/29/NCCL%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B/</url>
-    <content><![CDATA[<h1 id="通信组创建和销毁"><a href="#通信组创建和销毁" class="headerlink" title="通信组创建和销毁"></a>通信组创建和销毁</h1><h2 id="一个进程，一个线程，多个设备"><a href="#一个进程，一个线程，多个设备" class="headerlink" title="一个进程，一个线程，多个设备"></a>一个进程，一个线程，多个设备</h2><ul>
-<li>在这种单进程的场景下，可以使用ncclCommInitAll()<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span><br><span class="line">&#123;</span><br><span class="line">    ncclComm_t comms[<span class="number">4</span>];</span><br><span class="line"></span><br><span class="line">    <span class="comment">// managing 4 devices</span></span><br><span class="line">    <span class="type">int</span> nDev = <span class="number">4</span>;</span><br><span class="line">    <span class="type">int</span> size = <span class="number">32</span> * <span class="number">1024</span> * <span class="number">1024</span>;</span><br><span class="line">    <span class="type">int</span> devs[<span class="number">4</span>] = &#123;<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>&#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 这部分的解释见《NCCL代码中NCCL代码中常用的函数和宏定义》的cudaAlloc部分</span></span><br><span class="line">    <span class="comment">// allocating and initializing device buffers</span></span><br><span class="line">    <span class="type">float</span> **sendbuff = (<span class="type">float</span> **)<span class="built_in">malloc</span>(nDev * <span class="keyword">sizeof</span>(<span class="type">float</span> *));</span><br><span class="line">    <span class="type">float</span> **recvbuff = (<span class="type">float</span> **)<span class="built_in">malloc</span>(nDev * <span class="keyword">sizeof</span>(<span class="type">float</span> *));</span><br><span class="line">    cudaStream_t *s = (cudaStream_t *)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(cudaStream_t) * nDev);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; nDev; ++i)</span><br><span class="line">    &#123;</span><br><span class="line">        CUDACHECK(cudaSetDevice(i));</span><br><span class="line">        CUDACHECK(cudaMalloc((<span class="type">void</span> **)sendbuff + i, size * <span class="keyword">sizeof</span>(<span class="type">float</span>)));</span><br><span class="line">        CUDACHECK(cudaMalloc((<span class="type">void</span> **)recvbuff + i, size * <span class="keyword">sizeof</span>(<span class="type">float</span>)));</span><br><span class="line">        CUDACHECK(cudaMemset(sendbuff[i], <span class="number">1</span>, size * <span class="keyword">sizeof</span>(<span class="type">float</span>)));</span><br><span class="line">        CUDACHECK(cudaMemset(recvbuff[i], <span class="number">0</span>, size * <span class="keyword">sizeof</span>(<span class="type">float</span>)));</span><br><span class="line">        CUDACHECK(cudaStreamCreate(s + i));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// initializing NCCL</span></span><br><span class="line">    NCCLCHECK(ncclCommInitAll(comms, nDev, devs));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// calling NCCL communication API. Group API is required when using</span></span><br><span class="line">    <span class="comment">// multiple devices per thread</span></span><br><span class="line">    <span class="comment">// 单线程控制多个GPU时必须要用group API，否则会死锁</span></span><br><span class="line">    NCCLCHECK(ncclGroupStart());</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; nDev; ++i)</span><br><span class="line">        NCCLCHECK(ncclAllReduce((<span class="type">const</span> <span class="type">void</span> *)sendbuff[i], (<span class="type">void</span> *)recvbuff[i], size, ncclFloat, ncclSum,</span><br><span class="line">                                comms[i], s[i]));</span><br><span class="line">    NCCLCHECK(ncclGroupEnd());</span><br><span class="line"></span><br><span class="line">    <span class="comment">// synchronizing on CUDA streams to wait for completion of NCCL operation</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; nDev; ++i)</span><br><span class="line">    &#123;</span><br><span class="line">        CUDACHECK(cudaSetDevice(i));</span><br><span class="line">        CUDACHECK(cudaStreamSynchronize(s[i]));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// free device buffers</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; nDev; ++i)</span><br><span class="line">    &#123;</span><br><span class="line">        CUDACHECK(cudaSetDevice(i));</span><br><span class="line">        CUDACHECK(cudaFree(sendbuff[i]));</span><br><span class="line">        CUDACHECK(cudaFree(recvbuff[i]));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// finalizing NCCL</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; nDev; ++i)</span><br><span class="line">        ncclCommDestroy(comms[i]);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Success \n&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></li>
-</ul>
-]]></content>
-      <categories>
-        <category>NCCL</category>
-      </categories>
-      <tags>
-        <tag>NCCL</tag>
-        <tag>代码阅读</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>NCCL代码阅读-01</title>
     <url>/2024/11/28/NCCL%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-01/</url>
     <content><![CDATA[<h1 id="创建一个通信组-communicator"><a href="#创建一个通信组-communicator" class="headerlink" title="创建一个通信组(communicator)"></a>创建一个通信组(communicator)</h1><ul>
@@ -304,19 +289,18 @@
       </tags>
   </entry>
   <entry>
-    <title>hexo常用命令</title>
-    <url>/2024/12/04/hexo%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
-    <content><![CDATA[<h1 id="新建一篇文章"><a href="#新建一篇文章" class="headerlink" title="新建一篇文章"></a>新建一篇文章</h1><div class="code-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">hexo new <span class="string">&quot;文章标题&quot;</span></span><br></pre></td></tr></table></figure></div>
-
-<h1 id="本地重新生成静态文件"><a href="#本地重新生成静态文件" class="headerlink" title="本地重新生成静态文件"></a>本地重新生成静态文件</h1><div class="code-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br></pre></td></tr></table></figure></div>
-
-<h1 id="发布到github-io"><a href="#发布到github-io" class="headerlink" title="发布到github.io"></a>发布到github.io</h1><div class="code-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">hexo d</span><br></pre></td></tr></table></figure></div>]]></content>
+    <title>NCCL使用示例</title>
+    <url>/2024/11/29/NCCL%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B/</url>
+    <content><![CDATA[<h1 id="通信组创建和销毁"><a href="#通信组创建和销毁" class="headerlink" title="通信组创建和销毁"></a>通信组创建和销毁</h1><h2 id="一个进程，一个线程，多个设备"><a href="#一个进程，一个线程，多个设备" class="headerlink" title="一个进程，一个线程，多个设备"></a>一个进程，一个线程，多个设备</h2><ul>
+<li>在这种单进程的场景下，可以使用ncclCommInitAll()<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span><br><span class="line">&#123;</span><br><span class="line">    ncclComm_t comms[<span class="number">4</span>];</span><br><span class="line"></span><br><span class="line">    <span class="comment">// managing 4 devices</span></span><br><span class="line">    <span class="type">int</span> nDev = <span class="number">4</span>;</span><br><span class="line">    <span class="type">int</span> size = <span class="number">32</span> * <span class="number">1024</span> * <span class="number">1024</span>;</span><br><span class="line">    <span class="type">int</span> devs[<span class="number">4</span>] = &#123;<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>&#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 这部分的解释见《NCCL代码中NCCL代码中常用的函数和宏定义》的cudaAlloc部分</span></span><br><span class="line">    <span class="comment">// allocating and initializing device buffers</span></span><br><span class="line">    <span class="type">float</span> **sendbuff = (<span class="type">float</span> **)<span class="built_in">malloc</span>(nDev * <span class="keyword">sizeof</span>(<span class="type">float</span> *));</span><br><span class="line">    <span class="type">float</span> **recvbuff = (<span class="type">float</span> **)<span class="built_in">malloc</span>(nDev * <span class="keyword">sizeof</span>(<span class="type">float</span> *));</span><br><span class="line">    cudaStream_t *s = (cudaStream_t *)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(cudaStream_t) * nDev);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; nDev; ++i)</span><br><span class="line">    &#123;</span><br><span class="line">        CUDACHECK(cudaSetDevice(i));</span><br><span class="line">        CUDACHECK(cudaMalloc((<span class="type">void</span> **)sendbuff + i, size * <span class="keyword">sizeof</span>(<span class="type">float</span>)));</span><br><span class="line">        CUDACHECK(cudaMalloc((<span class="type">void</span> **)recvbuff + i, size * <span class="keyword">sizeof</span>(<span class="type">float</span>)));</span><br><span class="line">        CUDACHECK(cudaMemset(sendbuff[i], <span class="number">1</span>, size * <span class="keyword">sizeof</span>(<span class="type">float</span>)));</span><br><span class="line">        CUDACHECK(cudaMemset(recvbuff[i], <span class="number">0</span>, size * <span class="keyword">sizeof</span>(<span class="type">float</span>)));</span><br><span class="line">        CUDACHECK(cudaStreamCreate(s + i));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// initializing NCCL</span></span><br><span class="line">    NCCLCHECK(ncclCommInitAll(comms, nDev, devs));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// calling NCCL communication API. Group API is required when using</span></span><br><span class="line">    <span class="comment">// multiple devices per thread</span></span><br><span class="line">    <span class="comment">// 单线程控制多个GPU时必须要用group API，否则会死锁</span></span><br><span class="line">    NCCLCHECK(ncclGroupStart());</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; nDev; ++i)</span><br><span class="line">        NCCLCHECK(ncclAllReduce((<span class="type">const</span> <span class="type">void</span> *)sendbuff[i], (<span class="type">void</span> *)recvbuff[i], size, ncclFloat, ncclSum,</span><br><span class="line">                                comms[i], s[i]));</span><br><span class="line">    NCCLCHECK(ncclGroupEnd());</span><br><span class="line"></span><br><span class="line">    <span class="comment">// synchronizing on CUDA streams to wait for completion of NCCL operation</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; nDev; ++i)</span><br><span class="line">    &#123;</span><br><span class="line">        CUDACHECK(cudaSetDevice(i));</span><br><span class="line">        CUDACHECK(cudaStreamSynchronize(s[i]));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// free device buffers</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; nDev; ++i)</span><br><span class="line">    &#123;</span><br><span class="line">        CUDACHECK(cudaSetDevice(i));</span><br><span class="line">        CUDACHECK(cudaFree(sendbuff[i]));</span><br><span class="line">        CUDACHECK(cudaFree(recvbuff[i]));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// finalizing NCCL</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; nDev; ++i)</span><br><span class="line">        ncclCommDestroy(comms[i]);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Success \n&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></li>
+</ul>
+]]></content>
       <categories>
-        <category>hexo</category>
+        <category>NCCL</category>
       </categories>
       <tags>
-        <tag>hexo</tag>
-        <tag>部署</tag>
+        <tag>NCCL</tag>
+        <tag>代码阅读</tag>
       </tags>
   </entry>
   <entry>
@@ -337,6 +321,22 @@
       <tags>
         <tag>nccl</tag>
         <tag>实验室</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>hexo常用命令</title>
+    <url>/2024/12/04/hexo%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
+    <content><![CDATA[<h1 id="新建一篇文章"><a href="#新建一篇文章" class="headerlink" title="新建一篇文章"></a>新建一篇文章</h1><div class="code-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">hexo new <span class="string">&quot;文章标题&quot;</span></span><br></pre></td></tr></table></figure></div>
+
+<h1 id="本地重新生成静态文件"><a href="#本地重新生成静态文件" class="headerlink" title="本地重新生成静态文件"></a>本地重新生成静态文件</h1><div class="code-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br></pre></td></tr></table></figure></div>
+
+<h1 id="发布到github-io"><a href="#发布到github-io" class="headerlink" title="发布到github.io"></a>发布到github.io</h1><div class="code-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">hexo d</span><br></pre></td></tr></table></figure></div>]]></content>
+      <categories>
+        <category>hexo</category>
+      </categories>
+      <tags>
+        <tag>hexo</tag>
+        <tag>部署</tag>
       </tags>
   </entry>
 </search>
