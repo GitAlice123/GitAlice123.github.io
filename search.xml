@@ -81,7 +81,7 @@
 <img  
                      lazyload
                      src="/images/loading.svg"
-                     data-src="/source/images/3a3ee784d1c88e46f7bd139614358f46.jpg"
+                     data-src="/images/3a3ee784d1c88e46f7bd139614358f46.jpg"
                       width="50%"
                 >
 
@@ -304,6 +304,22 @@
       </tags>
   </entry>
   <entry>
+    <title>hexo常用命令</title>
+    <url>/2024/12/04/hexo%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
+    <content><![CDATA[<h1 id="新建一篇文章"><a href="#新建一篇文章" class="headerlink" title="新建一篇文章"></a>新建一篇文章</h1><div class="code-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">hexo new <span class="string">&quot;文章标题&quot;</span></span><br></pre></td></tr></table></figure></div>
+
+<h1 id="本地重新生成静态文件"><a href="#本地重新生成静态文件" class="headerlink" title="本地重新生成静态文件"></a>本地重新生成静态文件</h1><div class="code-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br></pre></td></tr></table></figure></div>
+
+<h1 id="发布到github-io"><a href="#发布到github-io" class="headerlink" title="发布到github.io"></a>发布到github.io</h1><div class="code-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">hexo d</span><br></pre></td></tr></table></figure></div>]]></content>
+      <categories>
+        <category>hexo</category>
+      </categories>
+      <tags>
+        <tag>hexo</tag>
+        <tag>部署</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>实验室服务器nccl部署命令</title>
     <url>/2024/12/04/%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8nccl%E9%83%A8%E7%BD%B2%E5%91%BD%E4%BB%A4/</url>
     <content><![CDATA[<h1 id="nccl编译"><a href="#nccl编译" class="headerlink" title="nccl编译"></a>nccl编译</h1><div class="code-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">make src.build CUDA_HOME=/usr/lib/nvidia-cuda-toolkit/ NVCC_GENCODE=<span class="string">&quot;-gencode=arch=compute_80,code=sm_80&quot;</span></span><br></pre></td></tr></table></figure></div>
@@ -321,22 +337,6 @@
       <tags>
         <tag>nccl</tag>
         <tag>实验室</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>hexo常用命令</title>
-    <url>/2024/12/04/hexo%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
-    <content><![CDATA[<h1 id="新建一篇文章"><a href="#新建一篇文章" class="headerlink" title="新建一篇文章"></a>新建一篇文章</h1><div class="code-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">hexo new <span class="string">&quot;文章标题&quot;</span></span><br></pre></td></tr></table></figure></div>
-
-<h1 id="本地重新生成静态文件"><a href="#本地重新生成静态文件" class="headerlink" title="本地重新生成静态文件"></a>本地重新生成静态文件</h1><div class="code-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br></pre></td></tr></table></figure></div>
-
-<h1 id="发布到github-io"><a href="#发布到github-io" class="headerlink" title="发布到github.io"></a>发布到github.io</h1><div class="code-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">hexo d</span><br></pre></td></tr></table></figure></div>]]></content>
-      <categories>
-        <category>hexo</category>
-      </categories>
-      <tags>
-        <tag>hexo</tag>
-        <tag>部署</tag>
       </tags>
   </entry>
 </search>
