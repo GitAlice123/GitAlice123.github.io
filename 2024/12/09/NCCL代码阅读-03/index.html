@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="Hexo Theme Redefine">
+    
+    <meta name="author" content="Alice Yu">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="https://GitAlice123.github.io/2024/12/09/nccl代码阅读-03/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+    
+    
+        
+        <meta name="description" content="Hexo Theme Redefine, Redefine Your Hexo Journey.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NCCL代码阅读-03">
+<meta property="og:url" content="https://gitalice123.github.io/2024/12/09/NCCL%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-03/index.html">
+<meta property="og:site_name" content="Alice&#39;s Notebook">
+<meta property="og:description" content="Hexo Theme Redefine, Redefine Your Hexo Journey.">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitalice123.github.io/images/redefine-og.webp">
+<meta property="article:published_time" content="2024-12-09T09:57:36.000Z">
+<meta property="article:modified_time" content="2024-12-09T12:20:08.807Z">
+<meta property="article:author" content="Alice Yu">
+<meta property="article:tag" content="NCCL">
+<meta property="article:tag" content="代码阅读">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitalice123.github.io/images/redefine-og.webp">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/images/myicon.jpg" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/myicon.jpg">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/images/myicon.jpg">
+    <!--- Page Info-->
+    
+    <title>
+        
+            NCCL代码阅读-03 | Alice&#39;s Notebook
+        
+    </title>
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/css/build/tailwind.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/GeistMono/geist-mono.css">
+
+    
+<link rel="stylesheet" href="/fonts/Geist/geist.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+    
+    
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"gitalice123.github.io","root":"/","language":"zh-CN","path":"search.xml"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"delete_mask":false,"title_alignment":"left","headings_top_spacing":{"h1":"3.2rem","h2":"2.4rem","h3":"1.9rem","h4":"1.6rem","h5":"1.4rem","h6":"1.3rem"}},"word_count":{"enable":true,"count":true,"min2read":true},"author_label":{"enable":true,"auto":false,"list":[]},"code_block":{"copy":true,"style":"mac","highlight_theme":{"light":"github","dark":"vs2015"},"font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":false,"default":"cc_by_nc_sa"},"lazyload":true,"pangu_js":false,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null},"title":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":true,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":{"enable":false,"custom_message":null},"open_graph":{"enable":true,"image":"/images/redefine-og.webp","description":"Hexo Theme Redefine, Redefine Your Hexo Journey."},"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/images/wallhaven-wqery6-light.webp","dark":"/images/wallhaven-wqery6-dark.webp"},"title":"Alice's Notebook","subtitle":{"text":["你当像鸟，飞往你的山"],"hitokoto":{"enable":false,"show_author":true,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":true,"smart_backspace":true},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":false,"style":"default","links":{"github":"https://github.com/GitAlice123","instagram":null,"zhihu":null,"twitter":null,"email":"2822983966@qq.com"},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"11.4.1"}},"version":"2.8.2","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"About":{"icon":"fa-regular fa-user","submenus":{"Me":"/about","Github":"https://github.com/GitAlice123","Blog":"https://www.alicesnotebook.cn/"}}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":{"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"Tags":{"path":"/tags","icon":"fa-regular fa-tags"},"Categories":{"path":"/categories","icon":"fa-regular fa-folder"}}},"article_date_format":"auto","excerpt_length":200,"categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2024/12/7 11:45:14"};
+    window.lang_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+
+<body>
+	<div class="progress-bar-container">
+	
+
+	
+	<span class="pjax-progress-bar"></span>
+	<!--        <span class="swup-progress-icon">-->
+	<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+	<!--        </span>-->
+	
+</div>
+
+<main class="page-container" id="swup">
+
+	
+
+	<div class="main-content-container flex flex-col justify-between min-h-dvh">
+		<div class="main-content-header">
+			<header class="navbar-container px-6 md:px-12">
+    <div class="navbar-content transition-navbar ">
+        <div class="left">
+            
+                <a class="logo-image h-8 w-8 sm:w-10 sm:h-10 mr-3" href="/">
+                    <img src="/images/myicon.jpg" class="w-full h-full rounded-sm">
+                </a>
+            
+            <a class="logo-title" href="/">
+                
+                Alice&#39;s Notebook
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    首页
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archives"
+                                        >
+                                    <i class="fa-regular fa-archive fa-fw"></i>
+                                    归档
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class="has-dropdown"
+                                   href="#"
+                                        onClick=&#34;return false;&#34;>
+                                    <i class="fa-regular fa-user fa-fw"></i>
+                                    关于
+                                    <i class="fa-solid fa-chevron-down fa-fw"></i>
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                                    <ul class="sub-menu">
+                                        
+                                            <li>
+                                                <a href="/about">
+                                                    ME
+                                                </a>
+                                            </li>
+                                        
+                                            <li>
+                                                <a target="_blank" rel="noopener" href="https://github.com/GitAlice123">
+                                                    GITHUB
+                                                </a>
+                                            </li>
+                                        
+                                            <li>
+                                                <a target="_blank" rel="noopener" href="https://www.alicesnotebook.cn/">
+                                                    BLOG
+                                                </a>
+                                            </li>
+                                        
+                                    </ul>
+                                
+                            </li>
+                    
+                    
+                        <li class="navbar-item search search-popup-trigger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-dvh w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                首页
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archives"
+                        >
+                            <span>
+                                归档
+                            </span>
+                            
+                                <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item-sub text-base my-1.5 flex flex-col w-full">
+                        
+                        <div class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary cursor-pointer text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                             navbar-data-toggle="submenu-About"
+                        >
+                            <span>
+                                关于
+                            </span>
+                            
+                                <i class="fa-solid fa-chevron-right fa-sm fa-fw transition-all"></i>
+                            
+                        </div>
+                        
+
+                        
+                            <div class="flex-col items-start px-2 py-2 hidden" data-target="submenu-About">
+                                
+                                    <div class="drawer-navbar-item text-base flex flex-col justify-center items-start hover:underline active:underline hover:underline-offset-1 rounded-3xl">
+                                        <a class=" text-third-text-color text-xl"
+                                           href="/about">ME</a>
+                                    </div>
+                                
+                                    <div class="drawer-navbar-item text-base flex flex-col justify-center items-start hover:underline active:underline hover:underline-offset-1 rounded-3xl">
+                                        <a class=" text-third-text-color text-xl"
+                                           target="_blank" rel="noopener" href="https://github.com/GitAlice123">GITHUB</a>
+                                    </div>
+                                
+                                    <div class="drawer-navbar-item text-base flex flex-col justify-center items-start hover:underline active:underline hover:underline-offset-1 rounded-3xl">
+                                        <a class=" text-third-text-color text-xl"
+                                           target="_blank" rel="noopener" href="https://www.alicesnotebook.cn/">BLOG</a>
+                                    </div>
+                                
+                            </div>
+                        
+                    </li>
+            
+
+            
+            
+                
+                    
+                    
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full active"
+                           href="/tags"
+                        >
+                            <span>Tags</span>
+                            <i class="fa-regular fa-tags fa-sm fa-fw"></i>
+                        </a>
+                    </li>
+                
+                    
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full active"
+                           href="/categories"
+                        >
+                            <span>Categories</span>
+                            <i class="fa-regular fa-folder fa-sm fa-fw"></i>
+                        </a>
+                    </li>
+                
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">8</div>
+        <div class="label text-third-text-color text-sm">标签</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">5</div>
+        <div class="label text-third-text-color text-sm">分类</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">7</div>
+        <div class="label text-third-text-color text-sm">文章</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+		</div>
+
+		<div class="main-content-body transition-fade-up">
+			
+
+			<div class="main-content">
+				<div class="post-page-container flex relative justify-between box-border w-full h-full">
+	<div class="article-content-container">
+
+		<div class="article-title relative w-full">
+			
+			<div class="w-full flex items-center pt-6 justify-start">
+				<h1 class="article-title-regular text-second-text-color tracking-tight text-4xl md:text-6xl font-semibold px-2 sm:px-6 md:px-8 py-3">NCCL代码阅读-03</h1>
+			</div>
+			
+		</div>
+
+		
+		<div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+			<div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+				<img src="/images/myicon.jpg">
+			</div>
+			<div class="info flex flex-col justify-between">
+				<div class="author flex items-center">
+					<span class="name text-default-text-color text-lg font-semibold">Alice Yu</span>
+					
+					<span class="author-label ml-1.5 text-xs px-2 py-0.5 rounded-small text-third-text-color border border-shadow-color-1">Lv1</span>
+					
+				</div>
+				<div class="meta-info">
+					<div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2024-12-09 17:57:36</span>
+        <span class="mobile">2024-12-09 17:57:36</span>
+        <span class="hover-info">创建</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2024-12-09 20:20:08</span>
+            <span class="mobile">2024-12-09 20:20:08</span>
+            <span class="hover-info">更新</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/NCCL/">NCCL</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fa-regular fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/NCCL/">NCCL</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB/">代码阅读</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fa-regular fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+				</div>
+			</div>
+		</div>
+		
+
+		
+
+
+		<div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+			<h2 id="通信组创建和销毁-官网给的例子，解释看注释"><a href="#通信组创建和销毁-官网给的例子，解释看注释" class="headerlink" title="通信组创建和销毁(官网给的例子，解释看注释)"></a>通信组创建和销毁(官网给的例子，解释看注释)</h2><h3 id="一个进程，一个线程，多个设备"><a href="#一个进程，一个线程，多个设备" class="headerlink" title="一个进程，一个线程，多个设备"></a>一个进程，一个线程，多个设备</h3><ul>
+<li>在这种单进程的场景下，可以使用ncclCommInitAll()<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span><br><span class="line">&#123;</span><br><span class="line">    ncclComm_t comms[<span class="number">4</span>];</span><br><span class="line"></span><br><span class="line">    <span class="comment">// managing 4 devices</span></span><br><span class="line">    <span class="type">int</span> nDev = <span class="number">4</span>;</span><br><span class="line">    <span class="type">int</span> size = <span class="number">32</span> * <span class="number">1024</span> * <span class="number">1024</span>;</span><br><span class="line">    <span class="type">int</span> devs[<span class="number">4</span>] = &#123;<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>&#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 这部分的解释见《NCCL代码阅读-02》的cudaAlloc部分</span></span><br><span class="line">    <span class="comment">// allocating and initializing device buffers</span></span><br><span class="line">    <span class="type">float</span> **sendbuff = (<span class="type">float</span> **)<span class="built_in">malloc</span>(nDev * <span class="keyword">sizeof</span>(<span class="type">float</span> *));</span><br><span class="line">    <span class="type">float</span> **recvbuff = (<span class="type">float</span> **)<span class="built_in">malloc</span>(nDev * <span class="keyword">sizeof</span>(<span class="type">float</span> *));</span><br><span class="line">    cudaStream_t *s = (cudaStream_t *)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(cudaStream_t) * nDev);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; nDev; ++i)</span><br><span class="line">    &#123;</span><br><span class="line">        CUDACHECK(cudaSetDevice(i));</span><br><span class="line">        CUDACHECK(cudaMalloc((<span class="type">void</span> **)sendbuff + i, size * <span class="keyword">sizeof</span>(<span class="type">float</span>)));</span><br><span class="line">        CUDACHECK(cudaMalloc((<span class="type">void</span> **)recvbuff + i, size * <span class="keyword">sizeof</span>(<span class="type">float</span>)));</span><br><span class="line">        CUDACHECK(cudaMemset(sendbuff[i], <span class="number">1</span>, size * <span class="keyword">sizeof</span>(<span class="type">float</span>)));</span><br><span class="line">        CUDACHECK(cudaMemset(recvbuff[i], <span class="number">0</span>, size * <span class="keyword">sizeof</span>(<span class="type">float</span>)));</span><br><span class="line">        CUDACHECK(cudaStreamCreate(s + i));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// initializing NCCL</span></span><br><span class="line">    NCCLCHECK(ncclCommInitAll(comms, nDev, devs));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// calling NCCL communication API. Group API is required when using</span></span><br><span class="line">    <span class="comment">// multiple devices per thread</span></span><br><span class="line">    <span class="comment">// 单线程控制多个GPU时必须要用group API，否则会死锁</span></span><br><span class="line">    NCCLCHECK(ncclGroupStart());</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; nDev; ++i)</span><br><span class="line">        NCCLCHECK(ncclAllReduce((<span class="type">const</span> <span class="type">void</span> *)sendbuff[i], (<span class="type">void</span> *)recvbuff[i], size, ncclFloat, ncclSum,</span><br><span class="line">                                comms[i], s[i]));</span><br><span class="line">    NCCLCHECK(ncclGroupEnd());</span><br><span class="line"></span><br><span class="line">    <span class="comment">// synchronizing on CUDA streams to wait for completion of NCCL operation</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; nDev; ++i)</span><br><span class="line">    &#123;</span><br><span class="line">        CUDACHECK(cudaSetDevice(i));</span><br><span class="line">        CUDACHECK(cudaStreamSynchronize(s[i]));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// free device buffers</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; nDev; ++i)</span><br><span class="line">    &#123;</span><br><span class="line">        CUDACHECK(cudaSetDevice(i));</span><br><span class="line">        CUDACHECK(cudaFree(sendbuff[i]));</span><br><span class="line">        CUDACHECK(cudaFree(recvbuff[i]));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// finalizing NCCL</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; nDev; ++i)</span><br><span class="line">        ncclCommDestroy(comms[i]);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Success \n&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></li>
+</ul>
+<h2 id="一个具体的调用路径：sendrecv操作"><a href="#一个具体的调用路径：sendrecv操作" class="headerlink" title="一个具体的调用路径：sendrecv操作"></a>一个具体的调用路径：sendrecv操作</h2><ul>
+<li>不得不说nccl的调用真是够复杂的……</li>
+<li>我们就从nccl-test（官方给的测试代码）入手，看看sendrecv这个最简单的操作是怎么做的</li>
+</ul>
+<h3 id="SendRecvRunColl"><a href="#SendRecvRunColl" class="headerlink" title="SendRecvRunColl"></a>SendRecvRunColl</h3><ul>
+<li>这个函数是nccl-test里面的一个测试函数，用于测试sendrecv操作<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">testResult_t <span class="title function_">SendRecvRunColl</span><span class="params">(<span class="type">void</span> *sendbuff, <span class="type">void</span> *recvbuff, <span class="type">size_t</span> count, ncclDataType_t type, ncclRedOp_t op, <span class="type">int</span> root, ncclComm_t comm, cudaStream_t stream)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">int</span> nRanks;</span><br><span class="line">    NCCLCHECK(ncclCommCount(comm, &amp;nRanks));</span><br><span class="line">    <span class="type">int</span> rank;</span><br><span class="line">    NCCLCHECK(ncclCommUserRank(comm, &amp;rank));</span><br><span class="line">    <span class="type">int</span> recvPeer = (rank - <span class="number">1</span> + nRanks) % nRanks;</span><br><span class="line">    <span class="type">int</span> sendPeer = (rank + <span class="number">1</span>) % nRanks;</span><br><span class="line"></span><br><span class="line">    NCCLCHECK(ncclGroupStart());</span><br><span class="line">    NCCLCHECK(ncclSend(sendbuff, count, type, sendPeer, comm, stream));</span><br><span class="line">    NCCLCHECK(ncclRecv(recvbuff, count, type, recvPeer, comm, stream));</span><br><span class="line">    NCCLCHECK(ncclGroupEnd());</span><br><span class="line">    <span class="keyword">return</span> testSuccess;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></li>
+<li>这里可以很明显的看到，接收方和发送方，都要显式调用一次操作，ncclSend和ncclRecv</li>
+<li>ncclSend和ncclRecv被包裹在了ncclGroupStart和ncclGroupEnd里面</li>
+</ul>
+<h3 id="ncclSend和ncclRecv（以ncclSend为例）"><a href="#ncclSend和ncclRecv（以ncclSend为例）" class="headerlink" title="ncclSend和ncclRecv（以ncclSend为例）"></a>ncclSend和ncclRecv（以ncclSend为例）</h3><div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">ncclResult_t <span class="title function_">ncclSend</span><span class="params">(<span class="type">const</span> <span class="type">void</span> *sendbuff, <span class="type">size_t</span> count, ncclDataType_t datatype, <span class="type">int</span> peer,</span></span><br><span class="line"><span class="params">                      ncclComm_t comm, cudaStream_t stream)</span></span><br><span class="line">&#123;</span><br><span class="line">    NvtxParamsSendRecv payload&#123;count * <span class="title function_">ncclTypeSize</span><span class="params">(datatype)</span>, peer&#125;;</span><br><span class="line">    NVTX3_FUNC_WITH_PARAMS(Send, SendRecvSchema, payload)</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">ncclInfo</span> <span class="title">info</span> =</span> &#123;ncclFuncSend, <span class="string">&quot;Send&quot;</span>,</span><br><span class="line">                            <span class="literal">NULL</span>, (<span class="type">void</span> *)sendbuff, count, datatype, ncclSum, peer, comm, stream, <span class="comment">/* Args */</span></span><br><span class="line">                            <span class="number">1</span>, <span class="number">1</span>&#125;;</span><br><span class="line">    ncclResult_t ret;</span><br><span class="line">    NCCLCHECK(ncclGroupStart());</span><br><span class="line">    NCCLCHECKGOTO(ncclEnqueueCheck(&amp;info), ret, <span class="built_in">exit</span>);</span><br><span class="line"><span class="built_in">exit</span>:</span><br><span class="line">    NCCLCHECK(ncclGroupEnd());</span><br><span class="line">    <span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+<ul>
+<li>这边可以看到，在ncclSend里面有一个很重要的数据结构<strong>ncclInfo</strong>，这个结构体里面包含了这次通信的所有信息，其中<strong>操作种类</strong>是被第一个参数传进去的，ncclInfo这个数据结构的介绍见《NCCL代码阅读-02》</li>
+</ul>
+<h3 id="ncclEnqueueCheck"><a href="#ncclEnqueueCheck" class="headerlink" title="ncclEnqueueCheck"></a>ncclEnqueueCheck</h3><div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">ncclResult_t <span class="title function_">ncclEnqueueCheck</span><span class="params">(<span class="keyword">struct</span> ncclInfo *info)</span></span><br><span class="line">&#123;</span><br><span class="line">    NCCLCHECK(ncclGroupStartInternal());</span><br><span class="line">    ncclResult_t ret = ncclSuccess;</span><br><span class="line">    <span class="type">int</span> devOld = <span class="number">-1</span>;</span><br><span class="line"></span><br><span class="line">    NCCLCHECKGOTO(CommCheck(info-&gt;comm, info-&gt;opName, <span class="string">&quot;comm&quot;</span>), ret, fail);</span><br><span class="line">    <span class="comment">// Check whether communicator is ready to communicate</span></span><br><span class="line">    NCCLCHECKGOTO(ncclCommEnsureReady(info-&gt;comm), ret, fail);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (info-&gt;comm-&gt;checkPointers)</span><br><span class="line">    &#123;</span><br><span class="line">        CUDACHECKGOTO(cudaGetDevice(&amp;devOld), ret, fail);</span><br><span class="line">        CUDACHECKGOTO(cudaSetDevice(info-&gt;comm-&gt;cudaDev), ret, fail);</span><br><span class="line">    &#125;</span><br><span class="line">    NCCLCHECKGOTO(ArgsCheck(info), ret, fail);</span><br><span class="line"></span><br><span class="line">    INFO(NCCL_COLL, <span class="string">&quot;%s: opCount %lx sendbuff %p recvbuff %p count %zu datatype %d op %d root %d comm %p [nranks=%d] stream %p&quot;</span>,</span><br><span class="line">         info-&gt;opName, info-&gt;comm-&gt;opCount, info-&gt;sendbuff, info-&gt;recvbuff, info-&gt;count,</span><br><span class="line">         info-&gt;datatype, info-&gt;op, info-&gt;root, info-&gt;comm, info-&gt;comm-&gt;nRanks, info-&gt;stream);</span><br><span class="line">    TRACE_CALL(<span class="string">&quot;nccl%s(%&quot;</span> PRIx64 <span class="string">&quot;,%&quot;</span> PRIx64 <span class="string">&quot;,%zu,%d,%d,%d,%p,%p)&quot;</span>, info-&gt;opName, reinterpret_cast&lt;<span class="type">int64_t</span>&gt;(info-&gt;sendbuff), reinterpret_cast&lt;<span class="type">int64_t</span>&gt;(info-&gt;recvbuff), info-&gt;count, info-&gt;datatype, info-&gt;op, info-&gt;root, info-&gt;comm, info-&gt;stream);</span><br><span class="line"></span><br><span class="line">    NCCLCHECKGOTO(taskAppend(info-&gt;comm, info), ret, fail);</span><br><span class="line"></span><br><span class="line"><span class="built_in">exit</span>:</span><br><span class="line">    <span class="keyword">if</span> (devOld != <span class="number">-1</span>)</span><br><span class="line">        CUDACHECK(cudaSetDevice(devOld));</span><br><span class="line">    ncclGroupErrCheck(ret);</span><br><span class="line">    NCCLCHECK(ncclGroupEndInternal());</span><br><span class="line">    <span class="comment">/* if depth is 1, ncclGroupEndInternal() will trigger group ops. The state can change</span></span><br><span class="line"><span class="comment">     * so we have to check state here. */</span></span><br><span class="line">    <span class="keyword">if</span> (info-&gt;comm &amp;&amp; !info-&gt;comm-&gt;config.blocking)</span><br><span class="line">    &#123;</span><br><span class="line">        NCCLCHECK(ncclCommGetAsyncError(info-&gt;comm, &amp;ret));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ret;</span><br><span class="line">fail:</span><br><span class="line">    <span class="keyword">if</span> (info-&gt;comm &amp;&amp; !info-&gt;comm-&gt;config.blocking)</span><br><span class="line">        (<span class="type">void</span>)ncclCommSetAsyncError(info-&gt;comm, ret);</span><br><span class="line">    <span class="keyword">goto</span> <span class="built_in">exit</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+<ul>
+<li>前面就是做了一些入队的检查，真正进行入队操作的是<strong>taskAppend</strong>函数</li>
+<li>taskAppend函数将info转换成了一个task，并且将这个task放入对应comm的comm-&gt;planner中，这个planner，即ncclKernelPlanner，是一个比较复杂的数据结构，简要来说就是一个comm上任务的调度器，这个数据结构的介绍后续会放入《NCCL代码阅读-02》</li>
+<li>在<strong>ncclGroupEndInternal</strong>里面，调用了<strong>groupLaunch</strong>，<strong>groupLaunch</strong>中的<strong>doLaunches</strong>调用了**ncclLaunchKernel(comm, plan)**，这个函数就是真正的调用CUDA kernel的地方</li>
+</ul>
+<h3 id="ncclLaunchKernel"><a href="#ncclLaunchKernel" class="headerlink" title="ncclLaunchKernel"></a>ncclLaunchKernel</h3><div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line">ncclResult_t <span class="title function_">ncclLaunchKernel</span><span class="params">(<span class="keyword">struct</span> ncclComm *comm, <span class="keyword">struct</span> ncclKernelPlan *plan)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">ncclKernelPlanner</span> *<span class="title">planner</span> =</span> &amp;comm-&gt;planner;</span><br><span class="line">    <span class="type">int</span> nChannels = countOneBits(plan-&gt;channelMask);</span><br><span class="line">    <span class="type">void</span> *sym = plan-&gt;kernelFn;</span><br><span class="line">    dim3 grid = &#123;(<span class="type">unsigned</span>)nChannels, <span class="number">1</span>, <span class="number">1</span>&#125;;</span><br><span class="line">    dim3 block = &#123;(<span class="type">unsigned</span>)plan-&gt;threadPerBlock, <span class="number">1</span>, <span class="number">1</span>&#125;;</span><br><span class="line">    <span class="type">int</span> smem = ncclShmemDynamicSize(comm-&gt;cudaArch);</span><br><span class="line">    cudaStream_t launchStream = planner-&gt;streams-&gt;stream;</span><br><span class="line">    <span class="type">void</span> *extra[] = &#123;</span><br><span class="line">        CU_LAUNCH_PARAM_BUFFER_POINTER, plan-&gt;kernelArgs,</span><br><span class="line">        CU_LAUNCH_PARAM_BUFFER_SIZE, &amp;plan-&gt;kernelArgsSize,</span><br><span class="line">        CU_LAUNCH_PARAM_END&#125;;</span><br><span class="line"></span><br><span class="line">    CUfunction fn;</span><br><span class="line">    CUDACHECK(cudaGetFuncBySymbol(&amp;fn, sym));</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">if</span> CUDART_VERSION &gt;= 11080</span></span><br><span class="line">    <span class="type">int</span> driverVersion;</span><br><span class="line">    NCCLCHECK(ncclCudaDriverVersion(&amp;driverVersion));</span><br><span class="line">    <span class="keyword">if</span> (driverVersion &gt;= <span class="number">11080</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">int</span> compCap = comm-&gt;compCap;</span><br><span class="line">        <span class="type">unsigned</span> <span class="type">int</span> clusterSize = (compCap == <span class="number">90</span>) ? comm-&gt;config.cgaClusterSize : <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        CUlaunchConfig launchConfig = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">        CUlaunchAttribute launchAttrs[<span class="number">3</span>];</span><br><span class="line">        <span class="type">int</span> attrs = <span class="number">0</span>;</span><br><span class="line">        <span class="comment">/* Cooperative Group Array (CGA)</span></span><br><span class="line"><span class="comment">         * On sm90 and later we have an extra level of hierarchy where we</span></span><br><span class="line"><span class="comment">         * can group together several blocks within the Grid, called</span></span><br><span class="line"><span class="comment">         * Thread Block Clusters.</span></span><br><span class="line"><span class="comment">         * Clusters enable multiple thread blocks running concurrently</span></span><br><span class="line"><span class="comment">         * across multiple SMs to synchronize and collaboratively fetch</span></span><br><span class="line"><span class="comment">         * and exchange data. A cluster of blocks are guaranteed to be</span></span><br><span class="line"><span class="comment">         * concurrently scheduled onto a group of SMs.</span></span><br><span class="line"><span class="comment">         * The maximum value is 8 and it must be divisible into the grid dimensions</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="keyword">if</span> (clusterSize)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// Grid dimension must be divisible by clusterSize</span></span><br><span class="line">            <span class="keyword">if</span> (grid.x % clusterSize)</span><br><span class="line">                clusterSize = <span class="number">1</span>;</span><br><span class="line">            launchAttrs[attrs].id = CU_LAUNCH_ATTRIBUTE_CLUSTER_DIMENSION;</span><br><span class="line">            launchAttrs[attrs++].value.clusterDim = &#123;clusterSize, <span class="number">1</span>, <span class="number">1</span>&#125;;</span><br><span class="line">            launchAttrs[attrs].id = CU_LAUNCH_ATTRIBUTE_CLUSTER_SCHEDULING_POLICY_PREFERENCE;</span><br><span class="line">            launchAttrs[attrs++].value.clusterSchedulingPolicyPreference = CU_CLUSTER_SCHEDULING_POLICY_SPREAD;</span><br><span class="line">        &#125;</span><br><span class="line"><span class="meta">#<span class="keyword">if</span> CUDART_VERSION &gt;= 12000</span></span><br><span class="line">        <span class="keyword">if</span> (compCap &gt;= <span class="number">90</span> &amp;&amp; driverVersion &gt;= <span class="number">12000</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// Set the NCCL Mem Sync domain on CUDA 12.0 and later (sm90)</span></span><br><span class="line">            launchAttrs[attrs].id = CU_LAUNCH_ATTRIBUTE_MEM_SYNC_DOMAIN;</span><br><span class="line">            launchAttrs[attrs++].value.memSyncDomain = (CUlaunchMemSyncDomain)ncclParamMemSyncDomain();</span><br><span class="line">        &#125;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">        launchConfig.gridDimX = grid.x;</span><br><span class="line">        launchConfig.gridDimY = grid.y;</span><br><span class="line">        launchConfig.gridDimZ = grid.z;</span><br><span class="line">        launchConfig.blockDimX = block.x;</span><br><span class="line">        launchConfig.blockDimY = block.y;</span><br><span class="line">        launchConfig.blockDimZ = block.z;</span><br><span class="line">        launchConfig.sharedMemBytes = smem;</span><br><span class="line">        launchConfig.attrs = launchAttrs;</span><br><span class="line">        launchConfig.numAttrs = attrs;</span><br><span class="line">        launchConfig.hStream = launchStream;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// CUDACHECK(cudaLaunchKernelExC(&amp;launchConfig, fnAddr, args));</span></span><br><span class="line">        CUCHECK(cuLaunchKernelEx(&amp;launchConfig, fn, nullptr, extra));</span><br><span class="line">        <span class="keyword">return</span> ncclSuccess;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">    <span class="comment">// Standard kernel launch</span></span><br><span class="line">    CUCHECK(cuLaunchKernel(fn, grid.x, grid.y, grid.z, block.x, block.y, block.z, smem, launchStream, nullptr, extra));</span><br><span class="line">    <span class="comment">// CUDACHECK(cudaLaunchKernel(fnAddr, grid, block, args, smem, launchStream));</span></span><br><span class="line">    <span class="keyword">return</span> ncclSuccess;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+<ul>
+<li>这里面最后调用的是cuLaunchKernel，其中fn是通过cudaGetFuncBySymbol获取的，这个symbol就是nccl的kernel函数</li>
+<li>这个sym来自plan-&gt;kernelFn，它在<strong>scheduleP2pTasksToPlan</strong>中被赋值:<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (!plan-&gt;kernelSpecialized)</span><br><span class="line">&#123;</span><br><span class="line">    plan-&gt;kernelFn = ncclDevKernelForFunc[ncclDevFuncId_P2p()];</span><br><span class="line">    plan-&gt;kernelSpecialized = ncclDevKernelForFuncIsSpecialized[ncclDevFuncId_P2p()];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></li>
+<li>其中ncclDevFunId_P2p()是这样的：<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">inline</span> <span class="type">int</span> <span class="title function_">ncclDevFuncId_P2p</span><span class="params">()</span> &#123; <span class="keyword">return</span> ncclDevFuncRowToId[<span class="number">0</span>]; &#125;</span><br></pre></td></tr></table></figure></div></li>
+<li>这个ncclDevFuncRowToId是一个映射表，填写这个映射表的位置还挺难找，在nccl&#x2F;src&#x2F;device&#x2F;下面，有一个<strong>generate.py</strong>，会在build里面生成一个nccl&#x2F;build&#x2F;obj&#x2F;device&#x2F;gensrc&#x2F;host_table.cc</li>
+<li>那CUDA是怎么通过fn去找到对应的kernel函数的呢？我们仍然要看generate.py，这个脚本还会生成一组文件，其中一个是nccl&#x2F;build&#x2F;obj&#x2F;device&#x2F;gensrc&#x2F;sendrecv.cu，这里面的内容是这样的：<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;common.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;sendrecv.h&quot;</span></span></span><br><span class="line">DEFINE_ncclDevKernel(SendRecv, ncclFuncSendRecv, FuncCopy, <span class="type">int8_t</span>, NCCL_ALGO_RING, NCCL_PROTO_SIMPLE, <span class="number">589</span>)</span><br><span class="line">DEFINE_ncclDevFunc(SendRecv, ncclFuncSendRecv, FuncCopy, <span class="type">int8_t</span>, NCCL_ALGO_RING, NCCL_PROTO_SIMPLE)</span><br></pre></td></tr></table></figure></div></li>
+<li>这里面的两个宏定义在nccl&#x2F;src&#x2F;device&#x2F;common.h里面：<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> DEFINE_ncclDevKernel(suffix, coll, redop, ty, algo, proto, specializedFnId)                    \</span></span><br><span class="line"><span class="meta">    __global__ void ncclDevKernel_##suffix(ncclDevKernelArgs4K NCCL_GRID_CONSTANT const args4K)        \</span></span><br><span class="line"><span class="meta">    &#123;                                                                                                  \</span></span><br><span class="line"><span class="meta">        ncclKernelMain<span class="string">&lt;specializedFnId, RunWorkBatch&lt;coll, ty, redop&lt;ty&gt;</span>, algo, proto&gt;&gt;(&amp;args4K.args); \</span></span><br><span class="line"><span class="meta">    &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> DEFINE_ncclDevFunc(suffix, coll, redop, ty, algo, proto) \</span></span><br><span class="line"><span class="meta">    __device__ void ncclDevFunc_##suffix()                       \</span></span><br><span class="line"><span class="meta">    &#123;                                                            \</span></span><br><span class="line"><span class="meta">        RunWorkBatch<span class="string">&lt;coll, ty, redop&lt;ty&gt;</span>, algo, proto&gt;().run();  \</span></span><br><span class="line"><span class="meta">    &#125;</span></span><br></pre></td></tr></table></figure></div></li>
+<li>CUDA会通过查找刚刚的<strong>host_table.cc</strong>找到这个<strong>ncclDevKernel_SendRecv</strong>，然后通过这个函数去调用真正的kernel函数（去文件里面搜一下”ncclDevKernel_SendRecv”看一下就大概知道了）</li>
+<li>下面我们看看RunWorkBatch是什么东西</li>
+</ul>
+<h3 id="RunWorkBatch"><a href="#RunWorkBatch" class="headerlink" title="RunWorkBatch"></a>RunWorkBatch</h3><div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">template &lt;ncclFunc_t Fn, typename T, typename RedOp, <span class="type">int</span> Algo, <span class="type">int</span> Proto&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">RunWorkBatch</span>;</span></span><br></pre></td></tr></table></figure></div>
+<ul>
+<li>这是他的最初原型，在nccl&#x2F;src&#x2F;device&#x2F;sendrecv.h里面，我们可以看到他的一个针对sendrecv的特化：<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br></pre></td><td class="code"><pre><span class="line">template &lt;typename T, typename RedOp&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">RunWorkBatch</span>&lt;</span>ncclFuncSendRecv, T, RedOp, NCCL_ALGO_RING, NCCL_PROTO_SIMPLE&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">static_assert</span>(<span class="keyword">sizeof</span>(T) == <span class="number">1</span>, <span class="string">&quot;SendRecv only works on single byte types T.&quot;</span>);</span><br><span class="line"></span><br><span class="line">    template &lt;typename Proto&gt;</span><br><span class="line">    __device__ <span class="type">void</span> <span class="title function_">runSend</span><span class="params">(<span class="type">int</span> tid, <span class="type">int</span> tn, <span class="type">int</span> group, <span class="keyword">struct</span> ncclDevWorkP2p *work)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">size_t</span> bytes = work-&gt;sendBytes;</span><br><span class="line">        <span class="type">int</span> chunkSize = work-&gt;sendIpcReg &amp;&amp; ncclShmem.comm.isNvlink ? (<span class="number">1</span> &lt;&lt; <span class="number">30</span>) : u32fp8Decode(work-&gt;sendChunkSize_u32fp8);</span><br><span class="line">        Primitives&lt;T, RedOp, FanAsymmetric&lt;<span class="number">0</span>, <span class="number">1</span>&gt;, <span class="number">1</span>, Proto, <span class="number">1</span>&gt;</span><br><span class="line">            prims(tid, tn, nullptr, &amp;work-&gt;sendRank, work-&gt;sendAddr, nullptr,</span><br><span class="line">                  <span class="comment">/*redOpArg(ignored)=*/</span><span class="number">0</span>, group, <span class="number">1</span>, <span class="number">1</span>, nullptr,</span><br><span class="line">                  <span class="comment">/*ipcReg=*/</span>work-&gt;sendIpcReg, <span class="comment">/*netReg=*/</span>work-&gt;sendRegistered, ncclShmem.comm.p2pChunkSize);</span><br><span class="line">        <span class="type">size_t</span> cursor = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">do</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="type">int</span> n = min(<span class="type">size_t</span>(chunkSize), bytes - cursor);</span><br><span class="line">            prims.directSend(cursor, cursor, n);</span><br><span class="line">            cursor += n;</span><br><span class="line">        &#125; <span class="keyword">while</span> (cursor &lt; bytes &amp;&amp; work-&gt;sendRegistered == <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    template &lt;typename Proto&gt;</span><br><span class="line">    __device__ <span class="type">void</span> <span class="title function_">runRecv</span><span class="params">(<span class="type">int</span> tid, <span class="type">int</span> tn, <span class="type">int</span> group, <span class="keyword">struct</span> ncclDevWorkP2p *work)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">size_t</span> bytes = work-&gt;recvBytes;</span><br><span class="line">        <span class="type">int</span> chunkSize = work-&gt;recvIpcReg &amp;&amp; ncclShmem.comm.isNvlink ? (<span class="number">1</span> &lt;&lt; <span class="number">30</span>) : u32fp8Decode(work-&gt;recvChunkSize_u32fp8);</span><br><span class="line">        Primitives&lt;T, RedOp, FanAsymmetric&lt;<span class="number">1</span>, <span class="number">0</span>&gt;, <span class="number">1</span>, Proto, <span class="number">1</span>&gt;</span><br><span class="line">            prims(tid, tn, &amp;work-&gt;recvRank, nullptr, nullptr, work-&gt;recvAddr,</span><br><span class="line">                  <span class="comment">/*redOpArg(ignored)=*/</span><span class="number">0</span>, group, <span class="number">1</span>, <span class="number">1</span>, nullptr,</span><br><span class="line">                  <span class="comment">/*ipcReg=*/</span>work-&gt;recvIpcReg, <span class="comment">/*netReg=*/</span>work-&gt;recvRegistered, ncclShmem.comm.p2pChunkSize);</span><br><span class="line">        <span class="type">size_t</span> cursor = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">do</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="type">int</span> n = min(<span class="type">size_t</span>(chunkSize), bytes - cursor);</span><br><span class="line">            prims.directRecv(cursor, cursor, n);</span><br><span class="line">            cursor += n;</span><br><span class="line">        &#125; <span class="keyword">while</span> (cursor &lt; bytes &amp;&amp; work-&gt;recvRegistered == <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    __device__ __forceinline__ <span class="type">void</span> <span class="title function_">run</span><span class="params">()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">const</span> <span class="type">int</span> tid = threadIdx.x;</span><br><span class="line">        <span class="type">const</span> <span class="type">int</span> tn = blockDim.x;</span><br><span class="line">        <span class="type">const</span> <span class="type">int</span> wid = tid / WARP_SIZE;</span><br><span class="line">        <span class="type">const</span> <span class="type">int</span> nWarps = tn / WARP_SIZE;</span><br><span class="line">        <span class="type">const</span> <span class="type">int</span> lane = tid % WARP_SIZE;</span><br><span class="line"></span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">Shared</span></span></span><br><span class="line"><span class="class">        &#123;</span></span><br><span class="line">            <span class="type">uint32_t</span> workSendMask; <span class="comment">// bitmasks of which work indices have send/recv</span></span><br><span class="line">            <span class="type">uint32_t</span> workRecvMask;</span><br><span class="line">        &#125;;</span><br><span class="line">        Shared *shared = (Shared *)ncclScratchForWarp(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">ncclDevWorkP2p</span> *<span class="title">works</span> =</span> (ncclDevWorkP2p *)ncclShmem.workStorage;</span><br><span class="line">        <span class="type">int</span> nWorks = ncclShmem.nWorks;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (wid == <span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// Modify the memory range of each work[] to reflect this channel&#x27;s</span></span><br><span class="line">            <span class="comment">// partition of the work. Since integer divides are very heavy it&#x27;s</span></span><br><span class="line">            <span class="comment">// best to do them all in one warp.</span></span><br><span class="line">            <span class="type">int</span> workIx = lane % <span class="number">16</span>;</span><br><span class="line">            <span class="type">int</span> isSend = lane &lt; <span class="number">16</span> ? <span class="number">0</span> : <span class="number">1</span>;</span><br><span class="line">            <span class="type">bool</span> hasWork = <span class="literal">false</span>;</span><br><span class="line">            <span class="keyword">if</span> (workIx &lt; nWorks)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="class"><span class="keyword">struct</span> <span class="title">ncclDevWorkP2p</span> *<span class="title">work</span> =</span> &amp;works[workIx];</span><br><span class="line">                <span class="type">size_t</span> bytes = isSend ? work-&gt;sendBytes : work-&gt;recvBytes;</span><br><span class="line">                <span class="type">int</span> nParts = isSend ? work-&gt;nSendChannels : work-&gt;nRecvChannels;</span><br><span class="line">                <span class="type">int</span> part = ncclP2pChannelToPart(work-&gt;nP2pChannels, work-&gt;channelBase, ncclShmem.channelId);</span><br><span class="line">                hasWork = (part &lt; nParts);</span><br><span class="line">                <span class="keyword">if</span> (nParts != <span class="number">0</span>)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="type">size_t</span> partBeg, partEnd;</span><br><span class="line">                    ncclP2pPartBounds(nParts, part, bytes, &amp;partBeg, &amp;partEnd);</span><br><span class="line">                    (isSend ? work-&gt;sendAddr : work-&gt;recvAddr) = (<span class="type">char</span> *)(isSend ? work-&gt;sendAddr : work-&gt;recvAddr) + partBeg;</span><br><span class="line">                    (isSend ? work-&gt;sendBytes : work-&gt;recvBytes) = partEnd - partBeg;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// Coverity reports a possible thread divergence due to not all threads participating in the collective.</span></span><br><span class="line">            <span class="comment">// However, the code ensures that the participation is on a per-warp basis.</span></span><br><span class="line">            <span class="comment">// coverity[device_thread_diverged:FALSE]</span></span><br><span class="line">            <span class="type">uint32_t</span> mask = __ballot_sync(~<span class="number">0u</span>, hasWork);</span><br><span class="line">            <span class="keyword">if</span> (lane == <span class="number">0</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                shared-&gt;workSendMask = mask &gt;&gt; <span class="number">16</span>;</span><br><span class="line">                shared-&gt;workRecvMask = mask &amp; <span class="number">0xffff</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// The fastest way to compute a warp uniform division x/y in [0,32) is to</span></span><br><span class="line">        <span class="comment">// use each lane to guess a solution and count the ones that don&#x27;t exceed</span></span><br><span class="line">        <span class="comment">// the numerator:</span></span><br><span class="line">        <span class="comment">//   __popc(__ballot_sync(~0u, y*(lane+1) &lt;= x))</span></span><br><span class="line">        <span class="comment">// That takes 1/3 the time of standard division and about 3/4 the time of</span></span><br><span class="line">        <span class="comment">// approximate floating point division:</span></span><br><span class="line">        <span class="comment">//   __float2int_rd(__fdividef(float(x),float(y))).</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// nWarpPerWork = nWarps/nWorks</span></span><br><span class="line">        <span class="type">int</span> nWarpPerWork = __popc(__ballot_sync(~<span class="number">0u</span>, nWorks * (lane + <span class="number">1</span>) &lt;= nWarps));</span><br><span class="line">        <span class="type">int</span> nRecvWarpPerWork = nWarpPerWork &lt;= <span class="number">4</span> ? nWarpPerWork / <span class="number">2</span> : (nWarpPerWork - <span class="number">1</span>) / <span class="number">2</span>;</span><br><span class="line">        <span class="type">int</span> nSendWarpPerWork = nWarpPerWork &lt;= <span class="number">4</span> ? nRecvWarpPerWork : nRecvWarpPerWork + <span class="number">1</span>;</span><br><span class="line">        <span class="comment">// This might reduce nWarpPerWork which is probably desirable. It is better</span></span><br><span class="line">        <span class="comment">// to have a balanced number of reading and writing threads even if that</span></span><br><span class="line">        <span class="comment">// leaves warps unused.</span></span><br><span class="line">        nWarpPerWork = nSendWarpPerWork + nRecvWarpPerWork;</span><br><span class="line">        <span class="comment">// The work index this warp belongs to: workIx = wid/nWarpPerWork</span></span><br><span class="line">        <span class="type">int</span> workIx = __popc(__ballot_sync(~<span class="number">0u</span>, (lane + <span class="number">1</span>) * nWarpPerWork &lt;= wid));</span><br><span class="line"></span><br><span class="line">        __syncthreads(); <span class="comment">// Wait for works[] and shared-&gt;* to be updated by warp=0</span></span><br><span class="line"></span><br><span class="line">        <span class="type">uint32_t</span> workSendMask = shared-&gt;workSendMask;</span><br><span class="line">        <span class="type">uint32_t</span> workRecvMask = shared-&gt;workRecvMask;</span><br><span class="line"></span><br><span class="line">        __syncthreads(); <span class="comment">// release scratch space used by shared-&gt;*</span></span><br><span class="line">        <span class="keyword">if</span> (nWorks &lt;= workIx)</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Thread range for whole work (send &amp; recv combined)</span></span><br><span class="line">        <span class="type">int</span> subtid = tid - workIx * nWarpPerWork * WARP_SIZE;</span><br><span class="line">        <span class="type">int</span> subtn = nWarpPerWork * WARP_SIZE;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// A send primtive of sufficient size requires 2 cuda barrier ids.</span></span><br><span class="line">        <span class="type">constexpr</span> <span class="type">int</span> nSendWarpsForExtraGroup = NCCL_SIMPLE_EXTRA_GROUP_IF_NTHREADS_GE / WARP_SIZE;</span><br><span class="line">        <span class="comment">// Count up all group ids used below this workIx:</span></span><br><span class="line">        <span class="type">int</span> group, extra;</span><br><span class="line">        <span class="comment">// Each recv gets one group id:</span></span><br><span class="line">        group = __popc(workRecvMask &amp; ((<span class="number">1</span> &lt;&lt; workIx) - <span class="number">1</span>));</span><br><span class="line">        <span class="comment">// Sends accompanying recvs get one and maybe an extra:</span></span><br><span class="line">        extra = (nSendWarpPerWork &gt;= nSendWarpsForExtraGroup) ? <span class="number">1</span> : <span class="number">0</span>;</span><br><span class="line">        group += __popc((workSendMask &amp; workRecvMask) &amp; ((<span class="number">1</span> &lt;&lt; workIx) - <span class="number">1</span>)) * (<span class="number">1</span> + extra);</span><br><span class="line">        <span class="comment">// Sends without recvs use more warps so compute extra accordingly:</span></span><br><span class="line">        extra = (nWarpPerWork &gt;= nSendWarpsForExtraGroup) ? <span class="number">1</span> : <span class="number">0</span>;</span><br><span class="line">        group += __popc((workSendMask &amp; ~workRecvMask) &amp; ((<span class="number">1</span> &lt;&lt; workIx) - <span class="number">1</span>)) * (<span class="number">1</span> + extra);</span><br><span class="line"></span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">ncclDevWorkP2p</span> *<span class="title">work</span> =</span> &amp;works[workIx];</span><br><span class="line">        <span class="type">bool</span> hasSend = <span class="number">1</span> &amp; (workSendMask &gt;&gt; workIx);</span><br><span class="line">        <span class="type">bool</span> hasRecv = <span class="number">1</span> &amp; (workRecvMask &gt;&gt; workIx);</span><br><span class="line">        <span class="type">bool</span> isCopy = work-&gt;sendRank == ncclShmem.comm.rank;</span><br><span class="line">        <span class="type">bool</span> isSend = !hasRecv || (hasSend &amp;&amp; subtid &lt; nSendWarpPerWork * WARP_SIZE);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!isCopy &amp;&amp; hasSend &amp;&amp; hasRecv)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// Translate thread ids to reflect just this send or recv as opposed to whole work.</span></span><br><span class="line">            <span class="keyword">if</span> (isSend)</span><br><span class="line">            &#123;</span><br><span class="line">                subtn = nSendWarpPerWork * WARP_SIZE;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                subtid -= nSendWarpPerWork * WARP_SIZE;</span><br><span class="line">                subtn = nRecvWarpPerWork * WARP_SIZE;</span><br><span class="line">                group += <span class="number">1</span> + (nSendWarpPerWork &gt;= nSendWarpsForExtraGroup ? <span class="number">1</span> : <span class="number">0</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (isCopy)</span><br><span class="line">        &#123;</span><br><span class="line">            reduceCopy&lt;COLL_UNROLL, RedOp, T, <span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="comment">/*PreOpSrcs=*/</span><span class="number">0</span>&gt;(subtid, subtn, <span class="number">0</span>, nullptr, <span class="literal">false</span>, <span class="number">1</span>, &amp;work-&gt;sendAddr, <span class="number">1</span>, &amp;work-&gt;recvAddr, (<span class="type">ssize_t</span>)work-&gt;sendBytes);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (isSend)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (work-&gt;sendProtoLL)</span><br><span class="line">            &#123;</span><br><span class="line">                runSend&lt;ProtoLL&gt;(subtid, subtn, group, work);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                runSend&lt;ProtoSimple&lt;<span class="number">1</span>, <span class="number">1</span>&gt;&gt;(subtid, subtn, group, work);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (work-&gt;recvProtoLL)</span><br><span class="line">            &#123;</span><br><span class="line">                runRecv&lt;ProtoLL&gt;(subtid, subtn, group, work);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                runRecv&lt;ProtoSimple&lt;<span class="number">1</span>, <span class="number">1</span>&gt;&gt;(subtid, subtn, group, work);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></div></li>
+<li>run里面调用了runSend,runRecv，里面调用了primitives原语，接下来可以前往nccl&#x2F;src&#x2F;device&#x2F;prims_ll128.h等文件查看相关内容</li>
+</ul>
+
+		</div>
+
+		
+
+		
+		<ul class="post-tags-box text-lg mt-1.5 flex-wrap justify-center flex md:hidden">
+			
+			<li class="tag-item mx-0.5">
+				<a href="/tags/NCCL/">#NCCL</a>&nbsp;
+			</li>
+			
+			<li class="tag-item mx-0.5">
+				<a href="/tags/%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB/">#代码阅读</a>&nbsp;
+			</li>
+			
+		</ul>
+		
+
+		
+
+		
+		<div class="article-nav my-8 flex justify-between items-center px-2 sm:px-6 md:px-8">
+			
+			
+			<div class="article-next border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+				<a class="next" rel="next" href="/2024/12/09/NCCL%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-02/">
+					<span class="title flex justify-center items-center">
+						<span class="post-nav-title-item">NCCL代码阅读-02</span>
+						<span class="post-nav-item">下一篇</span>
+					</span>
+					<span class="right arrow-icon flex justify-center items-center">
+						<i class="fa-solid fa-chevron-right"></i>
+					</span>
+				</a>
+			</div>
+			
+		</div>
+		
+
+
+		
+	</div>
+
+	
+	<div class="toc-content-container">
+		<div class="post-toc-wrap">
+	<div class="post-toc">
+		<div class="toc-title">目录</div>
+		<div class="page-title">NCCL代码阅读-03</div>
+		<ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%9A%E4%BF%A1%E7%BB%84%E5%88%9B%E5%BB%BA%E5%92%8C%E9%94%80%E6%AF%81-%E5%AE%98%E7%BD%91%E7%BB%99%E7%9A%84%E4%BE%8B%E5%AD%90%EF%BC%8C%E8%A7%A3%E9%87%8A%E7%9C%8B%E6%B3%A8%E9%87%8A"><span class="nav-text">通信组创建和销毁(官网给的例子，解释看注释)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E8%BF%9B%E7%A8%8B%EF%BC%8C%E4%B8%80%E4%B8%AA%E7%BA%BF%E7%A8%8B%EF%BC%8C%E5%A4%9A%E4%B8%AA%E8%AE%BE%E5%A4%87"><span class="nav-text">一个进程，一个线程，多个设备</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E5%85%B7%E4%BD%93%E7%9A%84%E8%B0%83%E7%94%A8%E8%B7%AF%E5%BE%84%EF%BC%9Asendrecv%E6%93%8D%E4%BD%9C"><span class="nav-text">一个具体的调用路径：sendrecv操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SendRecvRunColl"><span class="nav-text">SendRecvRunColl</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ncclSend%E5%92%8CncclRecv%EF%BC%88%E4%BB%A5ncclSend%E4%B8%BA%E4%BE%8B%EF%BC%89"><span class="nav-text">ncclSend和ncclRecv（以ncclSend为例）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ncclEnqueueCheck"><span class="nav-text">ncclEnqueueCheck</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ncclLaunchKernel"><span class="nav-text">ncclLaunchKernel</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RunWorkBatch"><span class="nav-text">RunWorkBatch</span></a></li></ol></li></ol>
+
+	</div>
+</div>
+	</div>
+	
+</div>
+			</div>
+
+			
+		</div>
+
+		<div class="main-content-footer">
+			<footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2024</span>
+              -
+            
+            2024&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">Alice Yu</a>
+            
+                
+                <p class="post-count space-x-0.5">
+                    <span>
+                        共撰写了 7 篇文章
+                    </span>
+                    
+                </p>
+            
+        </div>
+        
+            <script data-swup-reload-script src="https://cn.vercount.one/js"></script>
+            <div class="relative text-center lg:absolute lg:right-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-right">
+                
+                    <span id="busuanzi_container_site_uv" class="lg:!block">
+                        <span class="text-sm">访问人数</span>
+                        <span id="busuanzi_value_site_uv"></span>
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv" class="lg:!block">
+                        <span class="text-sm">总访问量</span>
+                        <span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">由 <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a> 驱动</span>
+            <span class="text-sm lg:block">主题&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.8.2</a></span>
+        </div>
+        
+        
+            <div>
+                博客已运行 <span class="odometer" id="runtime_days" ></span> 天 <span class="odometer" id="runtime_hours"></span> 小时 <span class="odometer" id="runtime_minutes"></span> 分钟 <span class="odometer" id="runtime_seconds"></span> 秒
+            </div>
+        
+        
+            <script data-swup-reload-script>
+                try {
+                    function odometer_init() {
+                    const elements = document.querySelectorAll('.odometer');
+                    elements.forEach(el => {
+                        new Odometer({
+                            el,
+                            format: '( ddd).dd',
+                            duration: 200
+                        });
+                    });
+                    }
+                    odometer_init();
+                } catch (error) {}
+            </script>
+        
+        
+        
+    </div>  
+</footer>
+		</div>
+	</div>
+
+	
+	<div class="post-tools">
+		<div class="post-tools-container">
+	<ul class="article-tools-list">
+		<!-- TOC aside toggle -->
+		
+		<li class="right-bottom-tools page-aside-toggle">
+			<i class="fa-regular fa-outdent"></i>
+		</li>
+		
+
+		<!-- go comment -->
+		
+	</ul>
+</div>
+	</div>
+	
+
+	<div class="right-side-tools-container">
+		<div class="side-tools-container">
+	<ul class="hidden-tools-list">
+		<li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+			<i class="fa-regular fa-magnifying-glass-plus"></i>
+		</li>
+
+		<li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+			<i class="fa-regular fa-magnifying-glass-minus"></i>
+		</li>
+
+		<li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+			<i class="fa-regular fa-moon"></i>
+		</li>
+
+		<!-- rss -->
+		
+
+		
+
+		<li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+			<i class="fa-regular fa-arrow-down"></i>
+		</li>
+	</ul>
+
+	<ul class="visible-tools-list">
+		<li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+			<i class="fa-regular fa-cog fa-spin"></i>
+		</li>
+		
+		<li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+			<i class="arrow-up fas fa-arrow-up"></i>
+			<span class="percent"></span>
+		</li>
+		
+		
+	</ul>
+</div>
+	</div>
+
+	<div class="image-viewer-container">
+	<img src="">
+</div>
+
+	
+	<div class="search-pop-overlay">
+	<div class="popup search-popup">
+		<div class="search-header">
+			<span class="search-input-field-pre">
+				<i class="fa-solid fa-keyboard"></i>
+			</span>
+			<div class="search-input-container">
+				<input autocomplete="off" autocorrect="off" autocapitalize="off" placeholder="站内搜索您需要的内容..." spellcheck="false" type="search" class="search-input">
+			</div>
+			<span class="popup-btn-close">
+				<i class="fa-solid fa-times"></i>
+			</span>
+		</div>
+		<div id="search-result">
+			<div id="no-result">
+				<i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
+			</div>
+		</div>
+	</div>
+</div>
+	
+
+</main>
+
+
+
+<script src="/js/build/libs/Swup.min.js"></script>
+
+<script src="/js/build/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/build/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+	
+<script src="/js/build/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/build/utils.js" type="module"></script>
+
+<script src="/js/build/main.js" type="module"></script>
+
+<script src="/js/build/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/build/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/build/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/build/layouts/categoryList.js" type="module"></script>
+
+
+
+    
+<script src="/js/build/tools/localSearch.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/build/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/build/layouts/lazyload.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/build/tools/runtime.js"></script>
+
+    
+<script src="/js/build/libs/odometer.min.js"></script>
+
+    
+<link rel="stylesheet" href="/assets/odometer-theme-minimal.css">
+
+
+
+
+  
+<script src="/js/build/libs/Typed.min.js"></script>
+
+  
+<script src="/js/build/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+
+    
+<script src="/js/build/libs/anime.min.js"></script>
+
+
+
+
+
+    
+<script src="/js/build/tools/tocToggle.js" type="module" data-swup-reload-script=""></script>
+
+<script src="/js/build/layouts/toc.js" type="module" data-swup-reload-script=""></script>
+
+<script src="/js/build/plugins/tabs.js" type="module" data-swup-reload-script=""></script>
+
+
+
+
+<script src="/js/build/libs/moment-with-locales.min.js" data-swup-reload-script=""></script>
+
+
+<script src="/js/build/layouts/essays.js" type="module" data-swup-reload-script=""></script>
+
+
+
+
+
+	
+</body>
+
+</html>
