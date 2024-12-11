@@ -238,28 +238,6 @@
       </tags>
   </entry>
   <entry>
-    <title>hexo常用命令</title>
-    <url>/2024/12/04/hexo%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
-    <content><![CDATA[<h2 id="新建一篇文章"><a href="#新建一篇文章" class="headerlink" title="新建一篇文章"></a>新建一篇文章</h2><div class="code-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">hexo new <span class="string">&quot;文章标题&quot;</span></span><br></pre></td></tr></table></figure></div>
-
-<h2 id="本地重新生成静态文件"><a href="#本地重新生成静态文件" class="headerlink" title="本地重新生成静态文件"></a>本地重新生成静态文件</h2><div class="code-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br></pre></td></tr></table></figure></div>
-
-<h2 id="发布到github-io"><a href="#发布到github-io" class="headerlink" title="发布到github.io"></a>发布到github.io</h2><div class="code-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">hexo d</span><br></pre></td></tr></table></figure></div>
-
-<h2 id="在文章里面插入图片"><a href="#在文章里面插入图片" class="headerlink" title="在文章里面插入图片"></a>在文章里面插入图片</h2><ul>
-<li>首先把图片放到source&#x2F;images下面</li>
-<li>然后文章里插入：<div class="code-container" data-rel="Markdown"><figure class="iseeu highlight markdown"><table><tr><td class="code"><pre><span class="line"><span class="language-xml"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;/images/图片文件名&quot;</span> <span class="attr">width</span>=<span class="string">&quot;50%&quot;</span>&gt;</span></span></span><br></pre></td></tr></table></figure></div></li>
-</ul>
-]]></content>
-      <categories>
-        <category>hexo</category>
-      </categories>
-      <tags>
-        <tag>hexo</tag>
-        <tag>部署</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>NCCL代码阅读-03</title>
     <url>/2024/12/09/NCCL%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-03/</url>
     <content><![CDATA[<h2 id="通信组创建和销毁-官网给的例子，解释看注释"><a href="#通信组创建和销毁-官网给的例子，解释看注释" class="headerlink" title="通信组创建和销毁(官网给的例子，解释看注释)"></a>通信组创建和销毁(官网给的例子，解释看注释)</h2><h3 id="一个进程，一个线程，多个设备"><a href="#一个进程，一个线程，多个设备" class="headerlink" title="一个进程，一个线程，多个设备"></a>一个进程，一个线程，多个设备</h3><ul>
@@ -307,6 +285,28 @@
       <tags>
         <tag>NCCL</tag>
         <tag>代码阅读</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>hexo常用命令</title>
+    <url>/2024/12/04/hexo%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
+    <content><![CDATA[<h2 id="新建一篇文章"><a href="#新建一篇文章" class="headerlink" title="新建一篇文章"></a>新建一篇文章</h2><div class="code-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">hexo new <span class="string">&quot;文章标题&quot;</span></span><br></pre></td></tr></table></figure></div>
+
+<h2 id="本地重新生成静态文件"><a href="#本地重新生成静态文件" class="headerlink" title="本地重新生成静态文件"></a>本地重新生成静态文件</h2><div class="code-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br></pre></td></tr></table></figure></div>
+
+<h2 id="发布到github-io"><a href="#发布到github-io" class="headerlink" title="发布到github.io"></a>发布到github.io</h2><div class="code-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">hexo d</span><br></pre></td></tr></table></figure></div>
+
+<h2 id="在文章里面插入图片"><a href="#在文章里面插入图片" class="headerlink" title="在文章里面插入图片"></a>在文章里面插入图片</h2><ul>
+<li>首先把图片放到source&#x2F;images下面</li>
+<li>然后文章里插入：<div class="code-container" data-rel="Markdown"><figure class="iseeu highlight markdown"><table><tr><td class="code"><pre><span class="line"><span class="language-xml"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;/images/图片文件名&quot;</span> <span class="attr">width</span>=<span class="string">&quot;50%&quot;</span>&gt;</span></span></span><br></pre></td></tr></table></figure></div></li>
+</ul>
+]]></content>
+      <categories>
+        <category>hexo</category>
+      </categories>
+      <tags>
+        <tag>hexo</tag>
+        <tag>部署</tag>
       </tags>
   </entry>
   <entry>
