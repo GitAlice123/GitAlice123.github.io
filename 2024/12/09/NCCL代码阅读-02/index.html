@@ -30,7 +30,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://gitalice123.github.io/images/redefine-og.webp">
 <meta property="article:published_time" content="2024-12-09T09:43:36.000Z">
-<meta property="article:modified_time" content="2024-12-09T11:49:38.069Z">
+<meta property="article:modified_time" content="2024-12-15T09:32:02.926Z">
 <meta property="article:author" content="Alice Yu">
 <meta property="article:tag" content="NCCL">
 <meta property="article:tag" content="代码阅读">
@@ -354,7 +354,7 @@
 
         <div class="statistics flex justify-around my-2.5">
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">9</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">10</div>
         <div class="label text-third-text-color text-sm">标签</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
@@ -362,7 +362,7 @@
         <div class="label text-third-text-color text-sm">分类</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">8</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">10</div>
         <div class="label text-third-text-color text-sm">文章</div>
     </a>
 </div>
@@ -413,8 +413,8 @@
     
         <span class="article-date article-meta-item">
             <i class="fa-regular fa-wrench"></i>&nbsp;
-            <span class="desktop">2024-12-09 19:49:38</span>
-            <span class="mobile">2024-12-09 19:49:38</span>
+            <span class="desktop">2024-12-15 17:32:02</span>
+            <span class="mobile">2024-12-15 17:32:02</span>
             <span class="hover-info">更新</span>
         </span>
     
@@ -482,7 +482,107 @@
 <h2 id="struct-ncclInfo"><a href="#struct-ncclInfo" class="headerlink" title="struct ncclInfo"></a>struct ncclInfo</h2><ul>
 <li>这个结构一直用到最后….功能很多，后面慢慢加</li>
 </ul>
-<h2 id="struct-ncclKernelPlanner"><a href="#struct-ncclKernelPlanner" class="headerlink" title="struct ncclKernelPlanner"></a>struct ncclKernelPlanner</h2><h1 id="NCCL代码中常用的函数和宏定义"><a href="#NCCL代码中常用的函数和宏定义" class="headerlink" title="NCCL代码中常用的函数和宏定义"></a>NCCL代码中常用的函数和宏定义</h1><h2 id="NCCLCHECK"><a href="#NCCLCHECK" class="headerlink" title="NCCLCHECK"></a>NCCLCHECK</h2><p><code>NCCLCHECK</code> 是一个宏，用于简化 NCCL 函数调用后的错误检查。在 NCCL 和许多 C&#x2F;C++ 编程环境中，错误处理通常是一个关键部分，而通过宏封装可以使代码更加简洁和易于维护。</p>
+<h2 id="struct-ncclKernelPlanner"><a href="#struct-ncclKernelPlanner" class="headerlink" title="struct ncclKernelPlanner"></a>struct ncclKernelPlanner</h2><h2 id="BytePack"><a href="#BytePack" class="headerlink" title="BytePack"></a>BytePack</h2><p>这个 <code>BytePack&lt;16&gt;</code> 是一个 <strong>联合体</strong> (union)，主要用于在内存中以对齐和打包的方式操作数据。下面是对这个联合体的详细解析：</p>
+<hr>
+<h3 id="1-用途"><a href="#1-用途" class="headerlink" title="1. 用途"></a>1. <strong>用途</strong></h3><p><code>BytePack&lt;16&gt;</code> 是一个能够表示 <strong>16 字节（128 位）数据块</strong> 的数据结构，提供了多种访问方式，适用于高性能代码中高效的内存操作和数据对齐。</p>
+<hr>
+<h3 id="2-结构解析"><a href="#2-结构解析" class="headerlink" title="2. 结构解析"></a>2. <strong>结构解析</strong></h3><h4 id="alignas-16"><a href="#alignas-16" class="headerlink" title="alignas(16)"></a><strong><code>alignas(16)</code></strong></h4><ul>
+<li><strong>含义</strong>：该联合体的起始地址在内存中会被对齐到 <strong>16 字节边界</strong>。</li>
+<li><strong>目的</strong>：确保硬件在访问该数据时，可以利用内存对齐的特性实现更高效的读写操作（特别是在 SIMD 或 GPU 中很重要）。</li>
+</ul>
+<h4 id="成员列表"><a href="#成员列表" class="headerlink" title="成员列表"></a><strong>成员列表</strong></h4><ol>
+<li><p><strong><code>BytePack&lt;8&gt; half[2]</code></strong></p>
+<ul>
+<li><strong>含义</strong>：将 16 字节的数据分为两个 8 字节的 <code>BytePack&lt;8&gt;</code>。</li>
+<li><strong>用途</strong>：可以将 16 字节的数据一分为二进行单独处理。</li>
+</ul>
+</li>
+<li><p><strong><code>uint8_t u8[16]</code></strong></p>
+<ul>
+<li><strong>含义</strong>：按字节访问 16 字节的数据。</li>
+<li><strong>用途</strong>：用于逐字节操作，例如处理非对齐的原始数据流。</li>
+</ul>
+</li>
+<li><p><strong><code>uint16_t u16[8]</code></strong></p>
+<ul>
+<li><strong>含义</strong>：按 2 字节（16 位）为单位访问数据，总共有 8 个 16 位数据。</li>
+<li><strong>用途</strong>：适合操作 16 位的数据类型，如半精度浮点数（fp16）。</li>
+</ul>
+</li>
+<li><p><strong><code>uint32_t u32[4]</code></strong></p>
+<ul>
+<li><strong>含义</strong>：按 4 字节（32 位）为单位访问数据，总共有 4 个 32 位数据。</li>
+<li><strong>用途</strong>：适合操作 32 位数据类型，例如单精度浮点数（fp32）或整数。</li>
+</ul>
+</li>
+<li><p><strong><code>uint64_t u64[2]</code></strong></p>
+<ul>
+<li><strong>含义</strong>：按 8 字节（64 位）为单位访问数据，总共有 2 个 64 位数据。</li>
+<li><strong>用途</strong>：适合操作 64 位的数据类型，例如双精度浮点数（fp64）。</li>
+</ul>
+</li>
+<li><p><strong><code>ulong2 ul2, native</code></strong></p>
+<ul>
+<li><strong>含义</strong>：将 16 字节的数据看作两个 64 位的值组成的矢量（<code>ulong2</code> 是 CUDA&#x2F;NVIDIA 数据类型，表示 2 个 64 位无符号整数的结构体）。</li>
+<li><strong>用途</strong>：适合矢量化操作，例如在 GPU 上使用 <code>vectorized</code> 数据访问。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="3-为何使用联合体"><a href="#3-为何使用联合体" class="headerlink" title="3. 为何使用联合体"></a>3. <strong>为何使用联合体</strong></h3><ul>
+<li><p><strong>联合体的特点</strong>：<br>联合体中的所有成员共享同一段内存空间（16 字节），但提供了多种不同的访问方式。</p>
+</li>
+<li><p><strong>目的</strong>：</p>
+<ul>
+<li>通过共享内存节省空间。</li>
+<li>提供灵活的内存操作接口：<ul>
+<li>可以以 8 位、16 位、32 位、64 位或矢量的方式操作数据。</li>
+</ul>
+</li>
+<li>对齐至 16 字节边界，优化硬件访问性能。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="4-典型用途"><a href="#4-典型用途" class="headerlink" title="4. 典型用途"></a>4. <strong>典型用途</strong></h3><h4 id="高性能数据传输"><a href="#高性能数据传输" class="headerlink" title="高性能数据传输"></a><strong>高性能数据传输</strong></h4><p>在 NCCL 或类似 GPU 通信库中，常见的需求是以大块数据为单位（如 16 字节或 128 位）进行高效的数据传输，同时能够支持多种数据类型。</p>
+<ul>
+<li>例如：<ul>
+<li>将 16 字节数据传输到 GPU 的全局内存时：<ul>
+<li><code>u64[2]</code> 可以以两个 64 位为单位高效操作。</li>
+</ul>
+</li>
+<li>处理每个字节的内容时：<ul>
+<li>使用 <code>u8[16]</code> 逐字节访问。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="SIMD-和-GPU-内存访问"><a href="#SIMD-和-GPU-内存访问" class="headerlink" title="SIMD 和 GPU 内存访问"></a><strong>SIMD 和 GPU 内存访问</strong></h4><ul>
+<li>在 SIMD（单指令多数据）或 GPU 中，硬件通常要求对齐访问。例如，某些 GPU 指令只能对齐到 16 字节。</li>
+<li>使用 <code>BytePack&lt;16&gt;</code> 确保数据对齐，并提供多种访问方式，适合不同场景下的优化。</li>
+</ul>
+<hr>
+<h3 id="5-示例"><a href="#5-示例" class="headerlink" title="5. 示例"></a>5. <strong>示例</strong></h3><p>假设我们有一个 <code>BytePack&lt;16&gt;</code> 对象 <code>pack</code>：</p>
+<div class="code-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">BytePack&lt;<span class="number">16</span>&gt; pack;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 通过不同的方式访问数据</span></span><br><span class="line">pack.u8[<span class="number">0</span>] = <span class="number">0xFF</span>;           <span class="comment">// 按字节访问第 1 个字节</span></span><br><span class="line">pack.u16[<span class="number">1</span>] = <span class="number">0xABCD</span>;        <span class="comment">// 按 2 字节单位访问第 2 个数据</span></span><br><span class="line">pack.u32[<span class="number">0</span>] = <span class="number">0x12345678</span>;    <span class="comment">// 按 4 字节单位访问第 1 个数据</span></span><br><span class="line">pack.u64[<span class="number">1</span>] = <span class="number">0x1122334455667788</span>; <span class="comment">// 按 8 字节单位访问第 2 个数据</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 按矢量方式访问</span></span><br><span class="line">pack.ul<span class="number">2.</span>x = <span class="number">0xAAAAAAAAAAAAAAAA</span>;</span><br><span class="line">pack.ul<span class="number">2.</span>y = <span class="number">0xBBBBBBBBBBBBBBBB</span>;</span><br></pre></td></tr></table></figure></div>
+
+<hr>
+<h3 id="6-总结"><a href="#6-总结" class="headerlink" title="6. 总结"></a>6. <strong>总结</strong></h3><ul>
+<li><p><strong><code>BytePack&lt;16&gt;</code> 的功能：</strong></p>
+<ul>
+<li>提供灵活的接口操作 <strong>16 字节的数据块</strong>。</li>
+<li>确保对齐性能，适配高效内存访问。</li>
+</ul>
+</li>
+<li><p><strong>典型场景：</strong></p>
+<ul>
+<li>高性能计算中的数据传输、规约。</li>
+<li>GPU 上的矢量化操作。</li>
+<li>SIMD 或其他对齐要求的硬件加速任务。</li>
+</ul>
+</li>
+</ul>
+<h1 id="NCCL代码中常用的函数和宏定义"><a href="#NCCL代码中常用的函数和宏定义" class="headerlink" title="NCCL代码中常用的函数和宏定义"></a>NCCL代码中常用的函数和宏定义</h1><h2 id="NCCLCHECK"><a href="#NCCLCHECK" class="headerlink" title="NCCLCHECK"></a>NCCLCHECK</h2><p><code>NCCLCHECK</code> 是一个宏，用于简化 NCCL 函数调用后的错误检查。在 NCCL 和许多 C&#x2F;C++ 编程环境中，错误处理通常是一个关键部分，而通过宏封装可以使代码更加简洁和易于维护。</p>
 <hr>
 <h3 id="NCCLCHECK-的典型定义"><a href="#NCCLCHECK-的典型定义" class="headerlink" title="NCCLCHECK 的典型定义"></a><strong>NCCLCHECK 的典型定义</strong></h3><p>在 NCCL 的代码中，<code>NCCLCHECK</code> 通常是定义为类似下面的宏：</p>
 <div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> NCCLCHECK(call) do &#123; \</span></span><br><span class="line"><span class="meta">  ncclResult_t result = call; \</span></span><br><span class="line"><span class="meta">  <span class="keyword">if</span> (result != ncclSuccess) &#123; \</span></span><br><span class="line"><span class="meta">    printf(<span class="string">&quot;NCCL error at %s:%d: %s\n&quot;</span>, __FILE__, __LINE__, ncclGetErrorString(result)); \</span></span><br><span class="line"><span class="meta">    return result; \</span></span><br><span class="line"><span class="meta">  &#125; \</span></span><br><span class="line"><span class="meta">&#125; while(0)</span></span><br></pre></td></tr></table></figure></div>
@@ -661,7 +761,7 @@
 	<div class="post-toc">
 		<div class="toc-title">目录</div>
 		<div class="page-title">NCCL代码阅读-02</div>
-		<ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#NCCL%E4%B8%AD%E9%87%8D%E8%A6%81%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%EF%BC%88%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0%EF%BC%89"><span class="nav-text">NCCL中重要的数据结构（持续更新）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#struct-ncclComm"><span class="nav-text">struct ncclComm</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#struct-ncclInfo"><span class="nav-text">struct ncclInfo</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#struct-ncclKernelPlanner"><span class="nav-text">struct ncclKernelPlanner</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#NCCL%E4%BB%A3%E7%A0%81%E4%B8%AD%E5%B8%B8%E7%94%A8%E7%9A%84%E5%87%BD%E6%95%B0%E5%92%8C%E5%AE%8F%E5%AE%9A%E4%B9%89"><span class="nav-text">NCCL代码中常用的函数和宏定义</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#NCCLCHECK"><span class="nav-text">NCCLCHECK</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#NCCLCHECK-%E7%9A%84%E5%85%B8%E5%9E%8B%E5%AE%9A%E4%B9%89"><span class="nav-text">NCCLCHECK 的典型定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%9F%E8%83%BD"><span class="nav-text">功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B"><span class="nav-text">使用示例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cudaSetDevice"><span class="nav-text">cudaSetDevice</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cudaMalloc"><span class="nav-text">cudaMalloc</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#group-API"><span class="nav-text">group API</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Group-Calls-%E7%BB%84%E8%B0%83%E7%94%A8-%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="nav-text">1. Group Calls (组调用) 的概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%BB%84%E8%B0%83%E7%94%A8%E4%BD%9C%E7%94%A8%E4%B9%8B%E4%B8%80%EF%BC%9A%E7%AE%A1%E7%90%86%E5%A4%9A%E4%B8%AA-GPU-%E7%9A%84%E9%80%9A%E4%BF%A1%E6%93%8D%E4%BD%9C"><span class="nav-text">2. 组调用作用之一：管理多个 GPU 的通信操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E7%BB%84%E8%B0%83%E7%94%A8%E4%BD%9C%E7%94%A8%E4%B9%8B%E4%BA%8C%EF%BC%9A%E5%9C%A8%E5%88%9B%E5%BB%BA%E9%80%9A%E4%BF%A1%E5%99%A8%E6%97%B6%E4%BD%BF%E7%94%A8-Group-Calls"><span class="nav-text">3. 组调用作用之二：在创建通信器时使用 Group Calls</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E7%BB%84%E8%B0%83%E7%94%A8%E4%BD%9C%E7%94%A8%E4%B9%8B%E4%B8%89%EF%BC%9A%E8%81%9A%E5%90%88%E9%80%9A%E4%BF%A1%E6%93%8D%E4%BD%9C"><span class="nav-text">3. 组调用作用之三：聚合通信操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E9%A2%9D%E5%A4%96%E8%A1%A5%E5%85%85%EF%BC%9A%E9%98%BB%E5%A1%9E%E7%BB%84%E5%92%8C%E9%9D%9E%E9%98%BB%E5%A1%9E%E7%BB%84"><span class="nav-text">4. 额外补充：阻塞组和非阻塞组</span></a></li></ol></li></ol></li></ol>
+		<ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#NCCL%E4%B8%AD%E9%87%8D%E8%A6%81%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%EF%BC%88%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0%EF%BC%89"><span class="nav-text">NCCL中重要的数据结构（持续更新）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#struct-ncclComm"><span class="nav-text">struct ncclComm</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#struct-ncclInfo"><span class="nav-text">struct ncclInfo</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#struct-ncclKernelPlanner"><span class="nav-text">struct ncclKernelPlanner</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BytePack"><span class="nav-text">BytePack</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%94%A8%E9%80%94"><span class="nav-text">1. 用途</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%BB%93%E6%9E%84%E8%A7%A3%E6%9E%90"><span class="nav-text">2. 结构解析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E4%B8%BA%E4%BD%95%E4%BD%BF%E7%94%A8%E8%81%94%E5%90%88%E4%BD%93"><span class="nav-text">3. 为何使用联合体</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%85%B8%E5%9E%8B%E7%94%A8%E9%80%94"><span class="nav-text">4. 典型用途</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E7%A4%BA%E4%BE%8B"><span class="nav-text">5. 示例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E6%80%BB%E7%BB%93"><span class="nav-text">6. 总结</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#NCCL%E4%BB%A3%E7%A0%81%E4%B8%AD%E5%B8%B8%E7%94%A8%E7%9A%84%E5%87%BD%E6%95%B0%E5%92%8C%E5%AE%8F%E5%AE%9A%E4%B9%89"><span class="nav-text">NCCL代码中常用的函数和宏定义</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#NCCLCHECK"><span class="nav-text">NCCLCHECK</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#NCCLCHECK-%E7%9A%84%E5%85%B8%E5%9E%8B%E5%AE%9A%E4%B9%89"><span class="nav-text">NCCLCHECK 的典型定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%9F%E8%83%BD"><span class="nav-text">功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B"><span class="nav-text">使用示例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cudaSetDevice"><span class="nav-text">cudaSetDevice</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cudaMalloc"><span class="nav-text">cudaMalloc</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#group-API"><span class="nav-text">group API</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Group-Calls-%E7%BB%84%E8%B0%83%E7%94%A8-%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="nav-text">1. Group Calls (组调用) 的概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%BB%84%E8%B0%83%E7%94%A8%E4%BD%9C%E7%94%A8%E4%B9%8B%E4%B8%80%EF%BC%9A%E7%AE%A1%E7%90%86%E5%A4%9A%E4%B8%AA-GPU-%E7%9A%84%E9%80%9A%E4%BF%A1%E6%93%8D%E4%BD%9C"><span class="nav-text">2. 组调用作用之一：管理多个 GPU 的通信操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E7%BB%84%E8%B0%83%E7%94%A8%E4%BD%9C%E7%94%A8%E4%B9%8B%E4%BA%8C%EF%BC%9A%E5%9C%A8%E5%88%9B%E5%BB%BA%E9%80%9A%E4%BF%A1%E5%99%A8%E6%97%B6%E4%BD%BF%E7%94%A8-Group-Calls"><span class="nav-text">3. 组调用作用之二：在创建通信器时使用 Group Calls</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E7%BB%84%E8%B0%83%E7%94%A8%E4%BD%9C%E7%94%A8%E4%B9%8B%E4%B8%89%EF%BC%9A%E8%81%9A%E5%90%88%E9%80%9A%E4%BF%A1%E6%93%8D%E4%BD%9C"><span class="nav-text">3. 组调用作用之三：聚合通信操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E9%A2%9D%E5%A4%96%E8%A1%A5%E5%85%85%EF%BC%9A%E9%98%BB%E5%A1%9E%E7%BB%84%E5%92%8C%E9%9D%9E%E9%98%BB%E5%A1%9E%E7%BB%84"><span class="nav-text">4. 额外补充：阻塞组和非阻塞组</span></a></li></ol></li></ol></li></ol>
 
 	</div>
 </div>
@@ -688,7 +788,7 @@
                 
                 <p class="post-count space-x-0.5">
                     <span>
-                        共撰写了 8 篇文章
+                        共撰写了 10 篇文章
                     </span>
                     
                 </p>
