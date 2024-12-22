@@ -13,7 +13,7 @@
     
     <!--- Seo Part-->
     
-    <link rel="canonical" href="https://GitAlice123.github.io/2024/12/15/tmux使用/"/>
+    <link rel="canonical" href="https://GitAlice123.github.io/2024/12/19/nccl代码阅读-05/"/>
     <meta name="robots" content="index,follow">
     <meta name="googlebot" content="index,follow">
     <meta name="revisit-after" content="1 days">
@@ -23,16 +23,17 @@
         
         <meta name="description" content="Hexo Theme Redefine, Redefine Your Hexo Journey.">
 <meta property="og:type" content="article">
-<meta property="og:title" content="tmux使用">
-<meta property="og:url" content="https://gitalice123.github.io/2024/12/15/tmux%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:title" content="NCCL代码阅读-05">
+<meta property="og:url" content="https://gitalice123.github.io/2024/12/19/NCCL%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-05/index.html">
 <meta property="og:site_name" content="Alice&#39;s Notebook">
 <meta property="og:description" content="Hexo Theme Redefine, Redefine Your Hexo Journey.">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://gitalice123.github.io/images/redefine-og.webp">
-<meta property="article:published_time" content="2024-12-15T12:32:07.000Z">
-<meta property="article:modified_time" content="2024-12-15T12:37:48.068Z">
+<meta property="article:published_time" content="2024-12-19T01:38:34.000Z">
+<meta property="article:modified_time" content="2024-12-20T14:11:40.167Z">
 <meta property="article:author" content="Alice Yu">
-<meta property="article:tag" content="tmux">
+<meta property="article:tag" content="NCCL">
+<meta property="article:tag" content="代码阅读">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://gitalice123.github.io/images/redefine-og.webp">
     
@@ -46,7 +47,7 @@
     
     <title>
         
-            tmux使用 | Alice&#39;s Notebook
+            NCCL代码阅读-05 | Alice&#39;s Notebook
         
     </title>
 
@@ -384,7 +385,7 @@
 		<div class="article-title relative w-full">
 			
 			<div class="w-full flex items-center pt-6 justify-start">
-				<h1 class="article-title-regular text-second-text-color tracking-tight text-4xl md:text-6xl font-semibold px-2 sm:px-6 md:px-8 py-3">tmux使用</h1>
+				<h1 class="article-title-regular text-second-text-color tracking-tight text-4xl md:text-6xl font-semibold px-2 sm:px-6 md:px-8 py-3">NCCL代码阅读-05</h1>
 			</div>
 			
 		</div>
@@ -405,15 +406,15 @@
 					<div class="article-meta-info">
     <span class="article-date article-meta-item">
         <i class="fa-regular fa-pen-fancy"></i>&nbsp;
-        <span class="desktop">2024-12-15 20:32:07</span>
-        <span class="mobile">2024-12-15 20:32:07</span>
+        <span class="desktop">2024-12-19 09:38:34</span>
+        <span class="mobile">2024-12-19 09:38:34</span>
         <span class="hover-info">创建</span>
     </span>
     
         <span class="article-date article-meta-item">
             <i class="fa-regular fa-wrench"></i>&nbsp;
-            <span class="desktop">2024-12-15 20:37:48</span>
-            <span class="mobile">2024-12-15 20:37:48</span>
+            <span class="desktop">2024-12-20 22:11:40</span>
+            <span class="mobile">2024-12-20 22:11:40</span>
             <span class="hover-info">更新</span>
         </span>
     
@@ -427,7 +428,7 @@
                     
                         
                         <li>
-                            <a href="/categories/%E5%AE%9E%E9%AA%8C%E5%AE%A4%E5%AE%9E%E8%B7%B5/">实验室实践</a>&nbsp;
+                            <a href="/categories/NCCL/">NCCL</a>&nbsp;
                         </li>
                     
                     
@@ -441,7 +442,11 @@
             <ul>
                 
                     <li>
-                        <a href="/tags/tmux/">tmux</a>&nbsp;
+                        <a href="/tags/NCCL/">NCCL</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB/">代码阅读</a>&nbsp;
                     </li>
                 
             </ul>
@@ -467,31 +472,21 @@
 
 
 		<div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
-			<h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><ul>
-<li>我想在服务器上运行一个程序，但是这个程序耗时很长，我想断掉我本地机器和服务器的连接然后关机睡觉，但是我希望服务器上继续在跑</li>
-<li>解决方案：<strong>tmux</strong></li>
+			<h2 id="AllReduce操作流程-从ncclLaunchKernel开始"><a href="#AllReduce操作流程-从ncclLaunchKernel开始" class="headerlink" title="AllReduce操作流程(从ncclLaunchKernel开始)"></a>AllReduce操作流程(从ncclLaunchKernel开始)</h2><ul>
+<li>因为我的项目基本上只用allreduce，所以我就重点关注了一下这个操作</li>
+<li>具体来说我用的是allreduce的u32的sum操作</li>
+<li>ncclLaunchKernel前面的内容和《NCCL代码阅读-01》里面记录的sendrecv操作差不多，就不过多解释了</li>
 </ul>
-<h2 id="tmux安装"><a href="#tmux安装" class="headerlink" title="tmux安装"></a>tmux安装</h2><ul>
-<li>因为我用的服务器是组里面的多人服务器，所以我不能用root权限直接安装，又懒得用源码，于是就用conda虚拟环境安装<div class="code-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">conda install -c conda-forge tmux</span><br><span class="line">tmux -V</span><br></pre></td></tr></table></figure></div></li>
-</ul>
-<h2 id="tmux使用"><a href="#tmux使用" class="headerlink" title="tmux使用"></a>tmux使用</h2><h3 id="创建一个新的tmux会话"><a href="#创建一个新的tmux会话" class="headerlink" title="创建一个新的tmux会话"></a>创建一个新的tmux会话</h3><div class="code-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tmux new-session -s mysession</span><br></pre></td></tr></table></figure></div>
+<hr>
+<h3 id="生成文件里的内容"><a href="#生成文件里的内容" class="headerlink" title="生成文件里的内容"></a>生成文件里的内容</h3><div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;common.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;all_reduce.h&quot;</span></span></span><br><span class="line">DEFINE_ncclDevKernel(AllReduce_Sum_u32_RING_LL, ncclFuncAllReduce, FuncSum, <span class="type">uint32_t</span>, NCCL_ALGO_RING, NCCL_PROTO_LL, <span class="number">230</span>)</span><br><span class="line">DEFINE_ncclDevKernel(AllReduce_Sum_u32_TREE_LL, ncclFuncAllReduce, FuncSum, <span class="type">uint32_t</span>, NCCL_ALGO_TREE, NCCL_PROTO_LL, <span class="number">233</span>)</span><br><span class="line">DEFINE_ncclDevFunc(AllReduce_Sum_u32_COLLNET_CHAIN_SIMPLE, ncclFuncAllReduce, FuncSum, <span class="type">uint32_t</span>, NCCL_ALGO_COLLNET_CHAIN, NCCL_PROTO_SIMPLE)</span><br><span class="line">DEFINE_ncclDevFunc(AllReduce_Sum_u32_COLLNET_DIRECT_SIMPLE, ncclFuncAllReduce, FuncSum, <span class="type">uint32_t</span>, NCCL_ALGO_COLLNET_DIRECT, NCCL_PROTO_SIMPLE)</span><br><span class="line"><span class="meta">#<span class="keyword">if</span> CUDART_VERSION &gt;= 12010 &amp;&amp; __CUDA_ARCH__ &gt;= 900</span></span><br><span class="line">DEFINE_ncclDevFunc(AllReduce_Sum_u32_NVLS_SIMPLE, ncclFuncAllReduce, FuncSum, <span class="type">uint32_t</span>, NCCL_ALGO_NVLS, NCCL_PROTO_SIMPLE)</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">if</span> CUDART_VERSION &gt;= 12010 &amp;&amp; __CUDA_ARCH__ &gt;= 900</span></span><br><span class="line">DEFINE_ncclDevFunc(AllReduce_Sum_u32_NVLS_TREE_SIMPLE, ncclFuncAllReduce, FuncSum, <span class="type">uint32_t</span>, NCCL_ALGO_NVLS_TREE, NCCL_PROTO_SIMPLE)</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">DEFINE_ncclDevFunc(AllReduce_Sum_u32_RING_LL, ncclFuncAllReduce, FuncSum, <span class="type">uint32_t</span>, NCCL_ALGO_RING, NCCL_PROTO_LL)</span><br><span class="line">DEFINE_ncclDevFunc(AllReduce_Sum_u32_RING_LL128, ncclFuncAllReduce, FuncSum, <span class="type">uint32_t</span>, NCCL_ALGO_RING, NCCL_PROTO_LL128)</span><br><span class="line">DEFINE_ncclDevFunc(AllReduce_Sum_u32_RING_SIMPLE, ncclFuncAllReduce, FuncSum, <span class="type">uint32_t</span>, NCCL_ALGO_RING, NCCL_PROTO_SIMPLE)</span><br><span class="line">DEFINE_ncclDevFunc(AllReduce_Sum_u32_TREE_LL, ncclFuncAllReduce, FuncSum, <span class="type">uint32_t</span>, NCCL_ALGO_TREE, NCCL_PROTO_LL)</span><br><span class="line">DEFINE_ncclDevFunc(AllReduce_Sum_u32_TREE_LL128, ncclFuncAllReduce, FuncSum, <span class="type">uint32_t</span>, NCCL_ALGO_TREE, NCCL_PROTO_LL128)</span><br><span class="line">DEFINE_ncclDevFunc(AllReduce_Sum_u32_TREE_SIMPLE, ncclFuncAllReduce, FuncSum, <span class="type">uint32_t</span>, NCCL_ALGO_TREE, NCCL_PROTO_SIMPLE)</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
 <ul>
-<li>mysession是给这个会话起的名字，可以随便取</li>
-<li>然后就进入了这个tmux会话，正常输入要跑的程序命令，就开始跑了</li>
+<li>按照《NCCL代码阅读-01》说的那样，接下来CUDA就开始查表，接着按照生成文件里的代码，进入了ncclKernelMain<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 下面是参数实例化之后的调用情况</span></span><br><span class="line">ncclKernelMain&lt;<span class="number">240</span>, RunWorkBatch&lt;ncclFuncAllReduce, <span class="type">uint64_t</span>, FuncSum&lt;<span class="type">uint64_t</span>&gt;, </span><br><span class="line">																NCCL_ALGO_RING, NCCL_PROTO_LL&gt;&gt;(&amp;args4K.args)</span><br></pre></td></tr></table></figure></div></li>
 </ul>
-<h3 id="断开tmux会话（保持程序在后台运行）"><a href="#断开tmux会话（保持程序在后台运行）" class="headerlink" title="断开tmux会话（保持程序在后台运行）"></a>断开tmux会话（保持程序在后台运行）</h3><ul>
-<li>快捷键：ctrl+B，然后松开，再按D</li>
-<li>然后就被带回到了原来的shell界面，但是tmux会话还在后台运行</li>
-<li>这个时候就可以断掉本地机器和服务器的连接了，关机美美睡觉</li>
+<h3 id="ncclKernelMain"><a href="#ncclKernelMain" class="headerlink" title="ncclKernelMain"></a>ncclKernelMain</h3><ul>
+<li>解释都写在注释里面了<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br></pre></td><td class="code"><pre><span class="line">template&lt;<span class="type">int</span> SpecializedFnId, typename SpecializedRunWorkBatch&gt;</span><br><span class="line">__device__ __forceinline__ <span class="type">void</span> <span class="title function_">ncclKernelMain</span><span class="params">(<span class="keyword">struct</span> ncclDevKernelArgs <span class="type">const</span>* args)</span> &#123;</span><br><span class="line">	<span class="comment">//////////////////////////////////////////////////////////////////</span></span><br><span class="line">	<span class="comment">// SpecializedFnId=240</span></span><br><span class="line">	<span class="comment">// SpecializedRunWorkBatch=RunWorkBatch&lt;ncclFuncAllReduce, uint64_t, FuncSum&lt;uint64_t&gt;, </span></span><br><span class="line">	<span class="comment">//                                      NCCL_ALGO_RING, NCCL_PROTO_LL&gt;&gt;(&amp;args4K.args)</span></span><br><span class="line">	<span class="comment">//////////////////////////////////////////////////////////////////</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// tid是该线程在线程块中的索引，关于CUDA的编程模型见《CUDA编程模型》章节</span></span><br><span class="line">	<span class="type">int</span> tid = threadIdx.x;</span><br><span class="line">    <span class="comment">// tn是该线程块一共有多少线程</span></span><br><span class="line">	<span class="type">int</span> tn = blockDim.x;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 把一些只读的kernel参数放到共享内存里，要是不显示放置的话，编译器会把这些参数放到线程自己的栈里面，很占地方</span></span><br><span class="line">	<span class="keyword">if</span> (tid &lt; <span class="keyword">sizeof</span>(ncclDevKernelArgs)/<span class="keyword">sizeof</span>(<span class="type">uint32_t</span>)) &#123;</span><br><span class="line">		((<span class="type">uint32_t</span>*)&amp;ncclShmem.args)[tid] = ((<span class="type">uint32_t</span>*)args)[tid];</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// args-&gt;channelMask是一个掩码，比如有64个通道，那就有64位掩码，第x位为1表示第x个通道启用了</span></span><br><span class="line">    <span class="comment">// (1ull&lt;&lt;tid)表示把1左移tid位，这里先把tid看成一个数字即可，所以(1ull&lt;&lt;tid)就是只有第tid位为1</span></span><br><span class="line">    <span class="comment">// 这个if条件表示，满足tid小于MAXCHANNELS（其实就是32）并且第tid位的通道是启用的，才进入if</span></span><br><span class="line">    <span class="comment">// ((1ull&lt;&lt;tid)-1)表示让小于tid位的位全部置1，其余位都是0</span></span><br><span class="line">    <span class="comment">// 比如原来(1ull&lt;&lt;tid)是0b0100，tid是2，那-1之后就是0b0011</span></span><br><span class="line">    <span class="comment">// args-&gt;channelMask &amp; ((1ull&lt;&lt;tid)-1)就是只保留小于tid的启用通道</span></span><br><span class="line">    <span class="comment">// __popcll(x)会统计x的二进制下有几个1</span></span><br><span class="line">    <span class="comment">// 所以__popcll(args-&gt;channelMask &amp; ((1ull&lt;&lt;tid)-1))统计了小于tid的通道号的通道有几个启用的</span></span><br><span class="line">    <span class="comment">// 最后如果n=线程块号，那就让这个线程块负责tid号channel</span></span><br><span class="line">    <span class="comment">// 其实这种分配方式就是为了做到动态分配线程块所负责的通道，同一个线程块只有一个线程的tid号会被选中作为该线程块的通道号，因为比如2号前面启用的个数一定和1号前面启用的个数不同（在1号启用的条件下），所以不可能同时让n=块号</span></span><br><span class="line">	<span class="keyword">if</span> (tid &lt; MAXCHANNELS &amp;&amp; (args-&gt;channelMask &amp; (<span class="number">1ull</span>&lt;&lt;tid))) &#123;</span><br><span class="line">		<span class="type">int</span> n = __popcll(args-&gt;channelMask &amp; ((<span class="number">1ull</span>&lt;&lt;tid)<span class="number">-1</span>));</span><br><span class="line">		<span class="keyword">if</span> (blockIdx.x == n) ncclShmem.channelId = tid;</span><br><span class="line">	&#125;</span><br><span class="line">	__syncthreads(); <span class="comment">// publish ncclShmem.&#123;args, channelId&#125;</span></span><br><span class="line">	<span class="comment">/* set abort flag to 0 */</span></span><br><span class="line">	<span class="keyword">if</span> (tid == <span class="number">0</span>) ncclShmem.aborted = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 用前两个warp来搬运comm和channel的控制信息，其余的warp用来搬运work batch</span></span><br><span class="line">	<span class="keyword">switch</span> (tid/WARP_SIZE) &#123;</span><br><span class="line">	<span class="keyword">case</span> <span class="number">0</span>:</span><br><span class="line">		&#123; <span class="type">void</span>* dst = &amp;ncclShmem.comm;</span><br><span class="line">			<span class="type">void</span>* src = ncclShmem.args.comm;</span><br><span class="line">			<span class="type">int</span> bytes = <span class="keyword">sizeof</span>(ncclDevComm);</span><br><span class="line">			<span class="keyword">static_assert</span>(<span class="keyword">sizeof</span>(ncclDevComm) &lt;= <span class="number">16</span>*WARP_SIZE, <span class="string">&quot;ncclDevComm cannot be loaded by a single warp in one insn.&quot;</span>);</span><br><span class="line">			copyToShmem16(tid, dst, src, bytes);</span><br><span class="line">		&#125; <span class="keyword">break</span>;</span><br><span class="line">	<span class="keyword">case</span> <span class="number">1</span>:</span><br><span class="line">		&#123; <span class="comment">// Get address of channel without incurring indirect load from ncclDevComm::channels</span></span><br><span class="line">			<span class="type">void</span>* dst = &amp;ncclShmem.channel;</span><br><span class="line">			<span class="type">void</span>* src = &amp;((ncclDevCommAndChannels*)ncclShmem.args.comm)-&gt;channels[ncclShmem.channelId];</span><br><span class="line">			<span class="type">int</span> bytes = <span class="keyword">sizeof</span>(ncclDevChannel);</span><br><span class="line">			<span class="keyword">static_assert</span>(<span class="keyword">sizeof</span>(ncclDevChannel) &lt;= <span class="number">16</span>*WARP_SIZE, <span class="string">&quot;ncclDevChannel cannot be loaded by a single warp in one insn.&quot;</span>);</span><br><span class="line">			copyToShmem16(tid-WARP_SIZE, dst, src, bytes);</span><br><span class="line">		&#125; <span class="keyword">break</span>;</span><br><span class="line">	<span class="keyword">default</span>:</span><br><span class="line">		&#123; <span class="type">int</span> subtid = tid - <span class="number">2</span>*WARP_SIZE;</span><br><span class="line">			<span class="type">int</span> subtn = tn - <span class="number">2</span>*WARP_SIZE;</span><br><span class="line">			<span class="comment">// Coverity reports a possible thread divergence due to not all threads participating in the collective.</span></span><br><span class="line">			<span class="comment">// However, the code ensures that the participation is on a per-warp basis.</span></span><br><span class="line">			<span class="comment">// coverity[device_thread_diverged:FALSE]</span></span><br><span class="line">			loadWorkBatchToShmem(subtid, subtn, args, <span class="comment">/*batchIx=*/</span>blockIdx.x);</span><br><span class="line">		&#125; <span class="keyword">break</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	__syncthreads(); <span class="comment">// publish ncclShmem</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (tid == <span class="number">0</span> &amp;&amp; ncclShmem.args.workStorageType == ncclDevWorkStorageTypeFifo) &#123;</span><br><span class="line">		<span class="comment">// ncclShmem.workConsumed written by loadWorkBatchToShmem before __syncthreads()</span></span><br><span class="line">		ncclShmem.comm.workConsumed[ncclShmem.channelId] = ncclShmem.workConsumed;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">		<span class="keyword">if</span> (<span class="number">0</span> &lt;= SpecializedFnId &amp;&amp; ncclShmem.funcId == (<span class="type">unsigned</span>)SpecializedFnId) &#123;</span><br><span class="line">            <span class="comment">// 实际执行，RunWorkBatch&lt;ncclFuncAllReduce, uint64_t, FuncSum&lt;uint64_t&gt;, NCCL_ALGO_RING, NCCL_PROTO_LL&gt;&gt;(&amp;args4K.args).run()</span></span><br><span class="line">			SpecializedRunWorkBatch().run();</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			ncclDevFuncTable[ncclShmem.funcId]();</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> (ncclShmem.nextBatchIx == <span class="number">-1</span>) <span class="keyword">break</span>;</span><br><span class="line">		<span class="type">int</span> batchIx = ncclShmem.nextBatchIx;</span><br><span class="line">		__syncthreads();</span><br><span class="line">		loadWorkBatchToShmem(tid, tn, args, batchIx);</span><br><span class="line"></span><br><span class="line">		<span class="comment">// Check whether the last operation was aborted and make sure all threads exit</span></span><br><span class="line">		<span class="type">bool</span> aborted = <span class="literal">false</span>;</span><br><span class="line">		<span class="keyword">if</span> (tid == <span class="number">0</span>) aborted = *ncclShmem.comm.abortFlag;</span><br><span class="line">		aborted = barrier_red_or_aligned(aborted, <span class="number">0</span>); <span class="comment">// publish ncclShmem.work</span></span><br><span class="line">		<span class="keyword">if</span> (tid == <span class="number">0</span> &amp;&amp; ncclShmem.args.workStorageType == ncclDevWorkStorageTypeFifo) &#123;</span><br><span class="line">			<span class="comment">// ncclShmem.workConsumed written by loadWorkBatchToShmem before barrier_red_or()</span></span><br><span class="line">			ncclShmem.comm.workConsumed[ncclShmem.channelId] = ncclShmem.workConsumed;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> (aborted) <span class="keyword">break</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></div></li>
+<li>可以看到，核心执行函数就是SpecializedRunWorkBatch().run()（上下两个一个意思，去01里提到的表里找一下即可）</li>
 </ul>
-<h3 id="重新连接tmux会话"><a href="#重新连接tmux会话" class="headerlink" title="重新连接tmux会话"></a>重新连接tmux会话</h3><div class="code-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tmux attach-session -t mysession</span><br></pre></td></tr></table></figure></div>
-<ul>
-<li>如果忘记了会话名字，可以用<code>tmux ls</code>查看所有会话</li>
-</ul>
-<h3 id="退出tmux会话"><a href="#退出tmux会话" class="headerlink" title="退出tmux会话"></a>退出tmux会话</h3><ul>
-<li>在tmux会话中输入<code>exit</code>，或者直接关闭终端窗口</li>
-</ul>
-
+<h3 id="RunWorkBatch"><a href="#RunWorkBatch" class="headerlink" title="RunWorkBatch"></a>RunWorkBatch</h3><div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">template&lt;ncclFunc_t Fn, typename T, typename RedOp, <span class="type">int</span> Algo, <span class="type">int</span> Proto&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">RunWorkBatch</span> &#123;</span></span><br><span class="line"><span class="comment">/////////////////////////////////////////////////////////////////////////////////////////</span></span><br><span class="line"><span class="comment">// Fn = ncclFuncAllReduce</span></span><br><span class="line"><span class="comment">// T = uint64_t</span></span><br><span class="line"><span class="comment">// RedOp = FuncSum&lt;uint64_t&gt;</span></span><br><span class="line"><span class="comment">// Algo = NCCL_ALGO_RING</span></span><br><span class="line"><span class="comment">// Proto = NCCL_PROTO_LL</span></span><br><span class="line"><span class="comment">/////////////////////////////////////////////////////////////////////////////////////////</span></span><br><span class="line">	__device__ __forceinline__ <span class="type">void</span> <span class="title function_">run</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="comment">// 线程号</span></span><br><span class="line">		<span class="type">int</span> tid = threadIdx.x;</span><br><span class="line">        <span class="comment">// block中线程总数</span></span><br><span class="line">		<span class="type">int</span> tn = blockDim.x;</span><br><span class="line">		<span class="keyword">if</span> (RedOpArg&lt;RedOp&gt;::ArgUsed) &#123;</span><br><span class="line">			<span class="type">int</span> nWorks = ncclShmem.nWorks;</span><br><span class="line">			<span class="keyword">for</span> (<span class="type">int</span> w=tid; w &lt; nWorks; w += tn) &#123;</span><br><span class="line">				<span class="class"><span class="keyword">struct</span> <span class="title">ncclDevWorkColl</span>* <span class="title">work</span> =</span> (ncclDevWorkColl*)(ncclShmem.workStorage + w*ncclShmem.workSize);</span><br><span class="line">				<span class="keyword">if</span> (work-&gt;redOpArgIsPtr) &#123;</span><br><span class="line">					work-&gt;redOpArg = RedOpArg&lt;RedOp&gt;::loadArg(reinterpret_cast&lt;<span class="type">void</span>*&gt;(work-&gt;redOpArg));</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">			__syncthreads();</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="meta">#<span class="keyword">pragma</span> unroll 1</span></span><br><span class="line">		<span class="keyword">for</span> (<span class="type">int</span> w=<span class="number">0</span>; w &lt; ncclShmem.nWorks; w++) &#123;</span><br><span class="line">			<span class="class"><span class="keyword">struct</span> <span class="title">ncclDevWorkColl</span>* <span class="title">work</span> =</span> (<span class="keyword">struct</span> ncclDevWorkColl*)(ncclShmem.workStorage + w*ncclShmem.workSize);</span><br><span class="line">			<span class="keyword">if</span> (w != <span class="number">0</span>) &#123;</span><br><span class="line">				<span class="class"><span class="keyword">struct</span> <span class="title">ncclDevWorkColl</span>* <span class="title">workPrev</span> =</span> (<span class="keyword">struct</span> ncclDevWorkColl*)(ncclShmem.workStorage + (w<span class="number">-1</span>)*ncclShmem.workSize);</span><br><span class="line">				<span class="keyword">if</span> (work-&gt;nWarps != workPrev-&gt;nWarps) __syncthreads();</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="type">int</span> subtn = work-&gt;nWarps*WARP_SIZE;</span><br><span class="line">			<span class="comment">// Coverity reports a possible thread divergence due to not all threads participating in the collective.</span></span><br><span class="line">			<span class="comment">// However, the code ensures that the participation is on a per-warp basis.</span></span><br><span class="line">			<span class="comment">// coverity[device_thread_diverged:FALSE]</span></span><br><span class="line">			<span class="keyword">if</span> (tid &lt; subtn) RunWorkColl&lt;Fn, T, RedOp, Algo, Proto&gt;().run(tid, subtn, work);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></div>
 		</div>
 
 		
@@ -500,7 +495,11 @@
 		<ul class="post-tags-box text-lg mt-1.5 flex-wrap justify-center flex md:hidden">
 			
 			<li class="tag-item mx-0.5">
-				<a href="/tags/tmux/">#tmux</a>&nbsp;
+				<a href="/tags/NCCL/">#NCCL</a>&nbsp;
+			</li>
+			
+			<li class="tag-item mx-0.5">
+				<a href="/tags/%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB/">#代码阅读</a>&nbsp;
 			</li>
 			
 		</ul>
@@ -512,12 +511,12 @@
 		<div class="article-nav my-8 flex justify-between items-center px-2 sm:px-6 md:px-8">
 			
 			<div class="article-prev border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
-				<a class="prev" rel="prev" href="/2024/12/19/NCCL%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-05/">
+				<a class="prev" rel="prev" href="/2024/12/22/pragma-weak%E5%88%9D%E9%81%87/">
 					<span class="left arrow-icon flex justify-center items-center">
 						<i class="fa-solid fa-chevron-left"></i>
 					</span>
 					<span class="title flex justify-center items-center">
-						<span class="post-nav-title-item">NCCL代码阅读-05</span>
+						<span class="post-nav-title-item">pragma weak初遇</span>
 						<span class="post-nav-item">上一篇</span>
 					</span>
 				</a>
@@ -525,9 +524,9 @@
 			
 			
 			<div class="article-next border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
-				<a class="next" rel="next" href="/2024/12/15/NCCL%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-04/">
+				<a class="next" rel="next" href="/2024/12/15/tmux%E4%BD%BF%E7%94%A8/">
 					<span class="title flex justify-center items-center">
-						<span class="post-nav-title-item">NCCL代码阅读-04</span>
+						<span class="post-nav-title-item">tmux使用</span>
 						<span class="post-nav-item">下一篇</span>
 					</span>
 					<span class="right arrow-icon flex justify-center items-center">
@@ -548,8 +547,8 @@
 		<div class="post-toc-wrap">
 	<div class="post-toc">
 		<div class="toc-title">目录</div>
-		<div class="page-title">tmux使用</div>
-		<ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9C%80%E6%B1%82"><span class="nav-text">需求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#tmux%E5%AE%89%E8%A3%85"><span class="nav-text">tmux安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#tmux%E4%BD%BF%E7%94%A8"><span class="nav-text">tmux使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E6%96%B0%E7%9A%84tmux%E4%BC%9A%E8%AF%9D"><span class="nav-text">创建一个新的tmux会话</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%AD%E5%BC%80tmux%E4%BC%9A%E8%AF%9D%EF%BC%88%E4%BF%9D%E6%8C%81%E7%A8%8B%E5%BA%8F%E5%9C%A8%E5%90%8E%E5%8F%B0%E8%BF%90%E8%A1%8C%EF%BC%89"><span class="nav-text">断开tmux会话（保持程序在后台运行）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8D%E6%96%B0%E8%BF%9E%E6%8E%A5tmux%E4%BC%9A%E8%AF%9D"><span class="nav-text">重新连接tmux会话</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%80%E5%87%BAtmux%E4%BC%9A%E8%AF%9D"><span class="nav-text">退出tmux会话</span></a></li></ol></li></ol>
+		<div class="page-title">NCCL代码阅读-05</div>
+		<ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#AllReduce%E6%93%8D%E4%BD%9C%E6%B5%81%E7%A8%8B-%E4%BB%8EncclLaunchKernel%E5%BC%80%E5%A7%8B"><span class="nav-text">AllReduce操作流程(从ncclLaunchKernel开始)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E6%96%87%E4%BB%B6%E9%87%8C%E7%9A%84%E5%86%85%E5%AE%B9"><span class="nav-text">生成文件里的内容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ncclKernelMain"><span class="nav-text">ncclKernelMain</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RunWorkBatch"><span class="nav-text">RunWorkBatch</span></a></li></ol></li></ol>
 
 	</div>
 </div>
