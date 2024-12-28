@@ -415,7 +415,7 @@
         <div class="label text-third-text-color text-sm">分类</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">12</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">13</div>
         <div class="label text-third-text-color text-sm">文章</div>
     </a>
 </div>
@@ -492,7 +492,7 @@
         <div class="label text-third-text-color text-sm">分类</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">12</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">13</div>
         <div class="label text-third-text-color text-sm">文章</div>
     </a>
 </div>
@@ -507,6 +507,82 @@
 			<div class="main-content">
 				<div class="home-content-container">
     <ul class="home-article-list">
+        
+            <li class="home-article-item">
+
+                
+
+                
+
+                
+                <div class="flex flex-col gap-5 px-7 pb-7 pt-7">
+                    <h3 class="home-article-title">
+                        <a href="/2024/12/28/NCCL%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-nccltest%E7%AF%87/">
+                            NCCL代码阅读-nccltest篇
+                        </a>
+                    </h3>
+
+                    <div class="home-article-content markdown-body">
+                        
+                            
+                            本篇内容简介
+我们以AllReduce操作为例，来说明整个nccl-test的调用栈
+我们的场景是单机，两卡，两个进程（一个进程管一个卡）
+我们输入的shell命令主要如下：12mpirun --allow-run-as-root -n 2 ./build/all_reduce_perf -f 2 -b 1m -e 1m -C 1mpirun --allow-run-as-root -n 2...
+                        
+                    </div>
+
+                    <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fa-solid fa-calendars"></i>&nbsp;
+            <span class="home-article-date" data-date="Sat Dec 28 2024 14:56:55 GMT+0800">
+                
+                    2024-12-28
+                
+            </span>
+        </span>
+        
+            <span class="home-article-category">
+                <i class="fa-solid fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/NCCL/">NCCL</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+        
+        
+            <span class="home-article-tag">
+                <i class="fa-solid fa-tags"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/tags/NCCL/">NCCL</a>&nbsp;
+                        </li>
+                    
+                        <li>
+                            | 
+                            <a href="/tags/%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB/">代码阅读</a>&nbsp;
+                        </li>
+                    
+                </ul>
+            </span>
+        
+    </div>
+
+    <a href="/2024/12/28/NCCL%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-nccltest%E7%AF%87/">阅读全文<span class="seo-reader-text">NCCL代码阅读-nccltest篇</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
+</div>
+
+                </div>
+            </li>
         
             <li class="home-article-item">
 
@@ -605,7 +681,8 @@
 ncclLaunchKernel前面的内容和《NCCL代码阅读-01》里面记录的sendrecv操作差不多，就不过多解释了
 
 
-生成文件里的内容1234567891011121314151617...
+准备工作：launchKernel的前夜
+这部分本来应该在01里面...
                         
                     </div>
 
@@ -1187,85 +1264,6 @@ tmux使用创建一个新的...
                 </div>
             </li>
         
-            <li class="home-article-item">
-
-                
-
-                
-
-                
-                <div class="flex flex-col gap-5 px-7 pb-7 pt-7">
-                    <h3 class="home-article-title">
-                        <a href="/2024/12/04/%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8nccl%E9%83%A8%E7%BD%B2%E5%91%BD%E4%BB%A4/">
-                            实验室服务器nccl部署命令
-                        </a>
-                    </h3>
-
-                    <div class="home-article-content markdown-body">
-                        
-                            
-                            nccl编译1make src.build CUDA_HOME=/usr/lib/nvidia-cuda-toolkit/ NVCC_GENCODE=&quot;-gencode=arch=compute_80,code=sm_80&quot;
-
-查看各种库的安装路径
-由于管理员最初好像是用apt安装的，所以可以这样查找
-以查找mpi为例1dpkg -S mpicc
-
-nccl-test编译...
-                        
-                    </div>
-
-                    <div class="home-article-meta-info-container">
-    <div class="home-article-meta-info">
-        <span><i class="fa-solid fa-calendars"></i>&nbsp;
-            <span class="home-article-date" data-date="Wed Dec 04 2024 16:53:34 GMT+0800">
-                
-                    2024-12-04
-                
-            </span>
-        </span>
-        
-            <span class="home-article-category">
-                <i class="fa-solid fa-folders"></i>&nbsp;
-            <ul>
-                
-                
-                    
-                        
-                        <li>
-                            <a href="/categories/%E5%AE%9E%E9%AA%8C%E5%AE%A4%E5%AE%9E%E8%B7%B5/">实验室实践</a>&nbsp;
-                        </li>
-                    
-                    
-                
-            </ul>
-        </span>
-        
-        
-            <span class="home-article-tag">
-                <i class="fa-solid fa-tags"></i>&nbsp;
-                <ul>
-                    
-                        <li>
-                            
-                            <a href="/tags/nccl/">nccl</a>&nbsp;
-                        </li>
-                    
-                        <li>
-                            | 
-                            <a href="/tags/%E5%AE%9E%E9%AA%8C%E5%AE%A4/">实验室</a>&nbsp;
-                        </li>
-                    
-                </ul>
-            </span>
-        
-    </div>
-
-    <a href="/2024/12/04/%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8nccl%E9%83%A8%E7%BD%B2%E5%91%BD%E4%BB%A4/">阅读全文<span class="seo-reader-text">实验室服务器nccl部署命令</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
-</div>
-
-                </div>
-            </li>
-        
     </ul>
 
     <div class="home-paginator px-7 py-5">
@@ -1296,7 +1294,7 @@ nccl-test编译...
                 
                 <p class="post-count space-x-0.5">
                     <span>
-                        共撰写了 12 篇文章
+                        共撰写了 13 篇文章
                     </span>
                     
                 </p>
