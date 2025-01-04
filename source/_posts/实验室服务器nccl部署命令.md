@@ -30,3 +30,14 @@ make MPI=1 MPI_HOME=/usr/mpi/gcc/openmpi-4.1.7a1 CUDA_HOME=/usr/lib/nvidia-cuda-
 export LD_LIBRARY_PATH=/home/cyu/tccl-2024/nccl/build/lib:$LD_LIBRARY_PATH
 ./build/all_reduce_perf -b 8 -e 128M -f 2 -g 2
 ```
+
+# 如果mpi的库修改了版本
+```shell
+vim ~/.bashrc
+```
+* 在文件末尾添加：
+```txt
+export PATH=/usr/mpi/gcc/openmpi-4.1.7rc1/bin:$PATH
+export LD_LIBRARY_PATH=/usr/mpi/gcc/openmpi-4.1.7rc1/lib:$LD_LIBRARY_PATH
+```
+* 保存退出，然后source ~/.bashrc生效
