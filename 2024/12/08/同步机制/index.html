@@ -30,7 +30,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://gitalice123.github.io/images/redefine-og.webp">
 <meta property="article:published_time" content="2024-12-08T02:24:23.000Z">
-<meta property="article:modified_time" content="2024-12-08T02:25:20.868Z">
+<meta property="article:modified_time" content="2025-01-09T14:36:06.536Z">
 <meta property="article:author" content="Alice Yu">
 <meta property="article:tag" content="系统">
 <meta name="twitter:card" content="summary">
@@ -353,7 +353,7 @@
 
         <div class="statistics flex justify-around my-2.5">
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">11</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">14</div>
         <div class="label text-third-text-color text-sm">标签</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
@@ -361,7 +361,7 @@
         <div class="label text-third-text-color text-sm">分类</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">13</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">17</div>
         <div class="label text-third-text-color text-sm">文章</div>
     </a>
 </div>
@@ -398,7 +398,7 @@
 				<div class="author flex items-center">
 					<span class="name text-default-text-color text-lg font-semibold">Alice Yu</span>
 					
-					<span class="author-label ml-1.5 text-xs px-2 py-0.5 rounded-small text-third-text-color border border-shadow-color-1">Lv2</span>
+					<span class="author-label ml-1.5 text-xs px-2 py-0.5 rounded-small text-third-text-color border border-shadow-color-1">Lv3</span>
 					
 				</div>
 				<div class="meta-info">
@@ -412,8 +412,8 @@
     
         <span class="article-date article-meta-item">
             <i class="fa-regular fa-wrench"></i>&nbsp;
-            <span class="desktop">2024-12-08 10:25:20</span>
-            <span class="mobile">2024-12-08 10:25:20</span>
+            <span class="desktop">2025-01-09 22:36:06</span>
+            <span class="mobile">2025-01-09 22:36:06</span>
             <span class="hover-info">更新</span>
         </span>
     
@@ -522,6 +522,70 @@
 </li>
 </ol>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>Barrier 是一种用来同步线程或进程的机制，常用于并行和分布式计算中，确保所有参与者都完成某一阶段任务后再进入下一阶段。这在高性能计算中是一个非常重要的概念。</p>
+<p><code>spin_lock</code>（自旋锁）是一种在多线程环境中用于同步访问共享资源的原语。自旋锁的基本工作原理是，当一个线程试图获取锁时，如果该锁已经被其他线程持有，它将不会立即进入阻塞状态，而是会<strong>不断循环检查锁的状态</strong>（即“自旋”），直到锁被释放。因为这种锁机制不会导致线程上下文切换，它通常用于锁持有时间较短的场景。</p>
+<h2 id="自旋锁"><a href="#自旋锁" class="headerlink" title="自旋锁"></a>自旋锁</h2><h3 id="自旋锁的基本概念"><a href="#自旋锁的基本概念" class="headerlink" title="自旋锁的基本概念"></a>自旋锁的基本概念</h3><p>自旋锁是一个 <strong>忙等待</strong> 的同步机制。它的作用是保证在多线程或多核处理器环境下，多个线程对共享资源的访问是互斥的，但又尽量避免不必要的线程调度开销。具体来说：</p>
+<ul>
+<li><strong>线程请求锁</strong>：当一个线程想要访问临界区（即共享资源）时，它会尝试获取一个自旋锁。</li>
+<li><strong>锁已经被其他线程持有</strong>：如果锁已经被其他线程持有，当前线程不会被挂起，而是进入一个不断检查锁状态的“自旋”状态，直到锁变为可用。</li>
+<li><strong>锁被释放</strong>：一旦持有锁的线程释放了锁，等待的线程就能获得锁并继续执行。</li>
+</ul>
+<h3 id="适用场景"><a href="#适用场景" class="headerlink" title="适用场景"></a>适用场景</h3><p>自旋锁适用于锁持有时间非常短的场景。因为：</p>
+<ol>
+<li><strong>忙等待</strong>：自旋锁的特点是忙等待，这意味着它会不断占用CPU资源。若锁被持有的时间较长，其他线程在等待过程中会浪费大量CPU时间。</li>
+<li><strong>短时间持锁</strong>：如果锁的持有时间非常短，自旋锁避免了线程上下文切换的开销。线程可以在自旋状态下迅速获取锁，而不必进入阻塞状态，导致性能更高。</li>
+</ol>
+<h3 id="自旋锁的优缺点"><a href="#自旋锁的优缺点" class="headerlink" title="自旋锁的优缺点"></a>自旋锁的优缺点</h3><h4 id="优点："><a href="#优点：" class="headerlink" title="优点："></a>优点：</h4><ol>
+<li><strong>低开销</strong>：自旋锁避免了线程阻塞和唤醒的开销（不需要上下文切换）。在锁持有时间较短时，性能较好。</li>
+<li><strong>适用于短时间锁</strong>：如果锁持有的时间非常短，自旋锁的效率比传统的互斥锁（如 <code>pthread_mutex</code>）高。</li>
+</ol>
+<h4 id="缺点："><a href="#缺点：" class="headerlink" title="缺点："></a>缺点：</h4><ol>
+<li><strong>忙等待消耗CPU</strong>：如果锁持有时间较长，其他线程在等待锁时会浪费大量的CPU资源。自旋可能会导致CPU周期的浪费，影响整体系统性能。</li>
+<li><strong>死锁风险</strong>：如果没有合理的锁获取顺序，可能会导致死锁，尤其是多个自旋锁的嵌套使用。</li>
+<li><strong>无法进行任务调度</strong>：由于自旋锁会不断自旋检查状态，所以线程在等待锁的过程中并不会被操作系统调度，这使得线程无法进行其他工作（例如执行其他任务）。</li>
+</ol>
+<h3 id="自旋锁的实现"><a href="#自旋锁的实现" class="headerlink" title="自旋锁的实现"></a>自旋锁的实现</h3><p>在许多操作系统和库中，自旋锁是以原子操作来实现的。原子操作保证了锁的修改是不可分割的，即不会被其他线程打断。</p>
+<h4 id="自旋锁的一个简单示例："><a href="#自旋锁的一个简单示例：" class="headerlink" title="自旋锁的一个简单示例："></a>自旋锁的一个简单示例：</h4><div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;pthread.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">pthread_spinlock_t</span> lock;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span>* <span class="title function_">thread_func</span><span class="params">(<span class="type">void</span>* arg)</span> &#123;</span><br><span class="line">    pthread_spin_lock(&amp;lock);  <span class="comment">// 获取自旋锁</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Thread %ld is inside critical section\n&quot;</span>, (<span class="type">long</span>)arg);</span><br><span class="line">    <span class="comment">// 模拟执行一些工作</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">volatile</span> <span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">1000000</span>; i++);</span><br><span class="line">    pthread_spin_unlock(&amp;lock);  <span class="comment">// 释放自旋锁</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">pthread_t</span> threads[<span class="number">3</span>];</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 初始化自旋锁</span></span><br><span class="line">    pthread_spin_init(&amp;lock, PTHREAD_PROCESS_PRIVATE);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 创建多个线程</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">long</span> i = <span class="number">0</span>; i &lt; <span class="number">3</span>; i++) &#123;</span><br><span class="line">        pthread_create(&amp;threads[i], <span class="literal">NULL</span>, thread_func, (<span class="type">void</span>*)i);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 等待线程结束</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">3</span>; i++) &#123;</span><br><span class="line">        pthread_join(threads[i], <span class="literal">NULL</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 销毁自旋锁</span></span><br><span class="line">    pthread_spin_destroy(&amp;lock);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>在这个示例中，我们用 <code>pthread_spin_lock()</code> 和 <code>pthread_spin_unlock()</code> 来实现自旋锁：</p>
+<ul>
+<li><code>pthread_spin_lock(&amp;lock)</code>：当自旋锁被其他线程持有时，当前线程会自旋，直到锁可用。</li>
+<li><code>pthread_spin_unlock(&amp;lock)</code>：释放自旋锁，允许其他线程获取锁。</li>
+</ul>
+<h3 id="内核中的自旋锁"><a href="#内核中的自旋锁" class="headerlink" title="内核中的自旋锁"></a>内核中的自旋锁</h3><p>在 Linux 内核中，自旋锁的实现通常通过原子操作来完成。Linux 内核使用 <code>spin_lock()</code> 和 <code>spin_unlock()</code> 来实现自旋锁，并且内核为自旋锁提供了多种保护机制，比如：</p>
+<ul>
+<li><strong>自旋锁嵌套</strong>：内核中的自旋锁支持递归锁定，即同一线程可以多次获取同一个自旋锁。</li>
+<li><strong>自旋锁保护</strong>：内核提供了对自旋锁的内存屏障保护（如 <code>smp_mb()</code>），以确保在不同 CPU 上的内存操作顺序正确。</li>
+</ul>
+<h3 id="自旋锁与互斥锁的对比"><a href="#自旋锁与互斥锁的对比" class="headerlink" title="自旋锁与互斥锁的对比"></a>自旋锁与互斥锁的对比</h3><table>
+<thead>
+<tr>
+<th>特性</th>
+<th>自旋锁（Spinlock）</th>
+<th>互斥锁（Mutex）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>锁持有时间</td>
+<td>适用于锁持有时间短的情况</td>
+<td>适用于锁持有时间较长的情况</td>
+</tr>
+<tr>
+<td>阻塞行为</td>
+<td>不会阻塞线程，使用忙等待（自旋）</td>
+<td>当锁不可用时，线程会被挂起，等待锁被释放</td>
+</tr>
+<tr>
+<td>性能开销</td>
+<td>锁持有时间短时性能较好，长时间持有时浪费CPU资源</td>
+<td>当锁被持有较长时间时，性能较好</td>
+</tr>
+<tr>
+<td>使用场景</td>
+<td>高效地保护短期临界区，避免频繁的线程调度开销</td>
+<td>适用于锁持有时间较长的资源保护，避免CPU资源浪费</td>
+</tr>
+</tbody></table>
+<h3 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h3><p><code>spin_lock</code>（自旋锁）是一种通过忙等待（即循环检查锁的状态）来实现同步的原语。它通常适用于锁持有时间较短的场景，避免了线程上下文切换的开销。然而，在锁持有时间较长时，自旋锁会导致CPU资源浪费，因此在这种情况下，应该使用更适合的同步原语（如互斥锁）。</p>
 
 		</div>
 
@@ -580,7 +644,7 @@
 	<div class="post-toc">
 		<div class="toc-title">目录</div>
 		<div class="page-title">同步机制</div>
-		<ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#barrier"><span class="nav-text">barrier</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%A6%E7%BB%86%E8%A7%A3%E9%87%8A"><span class="nav-text">详细解释</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F"><span class="nav-text">实现方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-text">注意事项</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol></li></ol>
+		<ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#barrier"><span class="nav-text">barrier</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%A6%E7%BB%86%E8%A7%A3%E9%87%8A"><span class="nav-text">详细解释</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F"><span class="nav-text">实现方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-text">注意事项</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E6%97%8B%E9%94%81"><span class="nav-text">自旋锁</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E6%97%8B%E9%94%81%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-text">自旋锁的基本概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%82%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-text">适用场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E6%97%8B%E9%94%81%E7%9A%84%E4%BC%98%E7%BC%BA%E7%82%B9"><span class="nav-text">自旋锁的优缺点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E6%97%8B%E9%94%81%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="nav-text">自旋锁的实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E6%A0%B8%E4%B8%AD%E7%9A%84%E8%87%AA%E6%97%8B%E9%94%81"><span class="nav-text">内核中的自旋锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E6%97%8B%E9%94%81%E4%B8%8E%E4%BA%92%E6%96%A5%E9%94%81%E7%9A%84%E5%AF%B9%E6%AF%94"><span class="nav-text">自旋锁与互斥锁的对比</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93-1"><span class="nav-text">总结</span></a></li></ol></li></ol>
 
 	</div>
 </div>
@@ -607,7 +671,7 @@
                 
                 <p class="post-count space-x-0.5">
                     <span>
-                        共撰写了 13 篇文章
+                        共撰写了 17 篇文章
                     </span>
                     
                 </p>

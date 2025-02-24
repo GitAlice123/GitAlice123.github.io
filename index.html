@@ -407,7 +407,7 @@
 
         <div class="statistics flex justify-around my-2.5">
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">11</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">14</div>
         <div class="label text-third-text-color text-sm">标签</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
@@ -415,7 +415,7 @@
         <div class="label text-third-text-color text-sm">分类</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">13</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">17</div>
         <div class="label text-third-text-color text-sm">文章</div>
     </a>
 </div>
@@ -479,12 +479,12 @@
                 <div class="author flex flex-col justify-center my-2.5 mx-0">
     <div class="name">Alice Yu</div>
     
-        <div class="label">Lv2</div>
+        <div class="label">Lv3</div>
     
 </div>
                 <div class="statistics flex justify-around my-2.5">
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">11</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">14</div>
         <div class="label text-third-text-color text-sm">标签</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
@@ -492,7 +492,7 @@
         <div class="label text-third-text-color text-sm">分类</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">13</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">17</div>
         <div class="label text-third-text-color text-sm">文章</div>
     </a>
 </div>
@@ -507,6 +507,299 @@
 			<div class="main-content">
 				<div class="home-content-container">
     <ul class="home-article-list">
+        
+            <li class="home-article-item">
+
+                
+
+                
+
+                
+                <div class="flex flex-col gap-5 px-7 pb-7 pt-7">
+                    <h3 class="home-article-title">
+                        <a href="/2025/02/21/NVSHMEM%E9%85%8D%E7%BD%AE/">
+                            NVSHMEM配置
+                        </a>
+                    </h3>
+
+                    <div class="home-article-content markdown-body">
+                        
+                            
+                            环境说明
+Debian
+单机两卡两个NUMA节点
+我大部分使用的是源码编译，一开始没有给我分配sudo权限，后来必须要安装一个驱动，因此后面具有了sudo权限
+
+依赖项：GDRCopy
+从源码安装12345`sudo apt install nvidia-dkms-&lt;your-nvidia-driver-version&gt;`make prefix=&lt;install-to-th...
+                        
+                    </div>
+
+                    <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fa-solid fa-calendars"></i>&nbsp;
+            <span class="home-article-date" data-date="Fri Feb 21 2025 09:59:58 GMT+0800">
+                
+                    2025-02-21
+                
+            </span>
+        </span>
+        
+            <span class="home-article-category">
+                <i class="fa-solid fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/%E5%AE%9E%E9%AA%8C%E5%AE%A4%E5%AE%9E%E8%B7%B5/">实验室实践</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+        
+        
+            <span class="home-article-tag">
+                <i class="fa-solid fa-tags"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/tags/NVSHMEM/">NVSHMEM</a>&nbsp;
+                        </li>
+                    
+                        <li>
+                            | 
+                            <a href="/tags/GDRCopy/">GDRCopy</a>&nbsp;
+                        </li>
+                    
+                </ul>
+            </span>
+        
+    </div>
+
+    <a href="/2025/02/21/NVSHMEM%E9%85%8D%E7%BD%AE/">阅读全文<span class="seo-reader-text">NVSHMEM配置</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
+</div>
+
+                </div>
+            </li>
+        
+            <li class="home-article-item">
+
+                
+
+                
+
+                
+                <div class="flex flex-col gap-5 px-7 pb-7 pt-7">
+                    <h3 class="home-article-title">
+                        <a href="/2025/02/16/%E7%BB%93%E6%9E%84%E4%BD%93%E7%BB%A7%E6%89%BF%E5%B0%8F%E7%9F%A5%E8%AF%86%E7%82%B9/">
+                            结构体继承小知识点
+                        </a>
+                    </h3>
+
+                    <div class="home-article-content markdown-body">
+                        
+                            
+                            C中结构体的继承
+起因是一段代码，我没看懂，简化一下是这样：1234567891011121314151617181920212223242526272829303132#include &lt;stdio.h&gt;struct Base &#123;  int x;  int y;&#125;;struct Derived &#123;  struct Base base;  int z...
+                        
+                    </div>
+
+                    <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fa-solid fa-calendars"></i>&nbsp;
+            <span class="home-article-date" data-date="Sun Feb 16 2025 13:18:23 GMT+0800">
+                
+                    2025-02-16
+                
+            </span>
+        </span>
+        
+            <span class="home-article-category">
+                <i class="fa-solid fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/%E8%AF%AD%E8%A8%80/">语言</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+        
+        
+            <span class="home-article-tag">
+                <i class="fa-solid fa-tags"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/tags/%E7%BB%93%E6%9E%84%E4%BD%93/">结构体</a>&nbsp;
+                        </li>
+                    
+                </ul>
+            </span>
+        
+    </div>
+
+    <a href="/2025/02/16/%E7%BB%93%E6%9E%84%E4%BD%93%E7%BB%A7%E6%89%BF%E5%B0%8F%E7%9F%A5%E8%AF%86%E7%82%B9/">阅读全文<span class="seo-reader-text">结构体继承小知识点</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
+</div>
+
+                </div>
+            </li>
+        
+            <li class="home-article-item">
+
+                
+
+                
+
+                
+                <div class="flex flex-col gap-5 px-7 pb-7 pt-7">
+                    <h3 class="home-article-title">
+                        <a href="/2025/01/09/%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C/">
+                            内存屏障
+                        </a>
+                    </h3>
+
+                    <div class="home-article-content markdown-body">
+                        
+                            
+                            内存屏障（Memory Barrier，或称作 Memory Fence）是用于控制处理器在多线程（或多核）环境中对内存访问的顺序的机制。它是一种同步原语，用于确保特定的内存操作（例如，读取和写入）按照预期的顺序执行。内存屏障在并发编程中非常重要，尤其是在多核处理器上，因为不同处理器的缓存可能导致数据的“乱序”执行和“不可见”问题。
+为什么需要内存屏障？在现代计算机系统中，处理器和内存之间通...
+                        
+                    </div>
+
+                    <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fa-solid fa-calendars"></i>&nbsp;
+            <span class="home-article-date" data-date="Thu Jan 09 2025 22:28:23 GMT+0800">
+                
+                    2025-01-09
+                
+            </span>
+        </span>
+        
+            <span class="home-article-category">
+                <i class="fa-solid fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9F%A5%E8%AF%86/">操作系统知识</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+        
+        
+            <span class="home-article-tag">
+                <i class="fa-solid fa-tags"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/tags/%E7%B3%BB%E7%BB%9F/">系统</a>&nbsp;
+                        </li>
+                    
+                </ul>
+            </span>
+        
+    </div>
+
+    <a href="/2025/01/09/%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C/">阅读全文<span class="seo-reader-text">内存屏障</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
+</div>
+
+                </div>
+            </li>
+        
+            <li class="home-article-item">
+
+                
+
+                
+
+                
+                <div class="flex flex-col gap-5 px-7 pb-7 pt-7">
+                    <h3 class="home-article-title">
+                        <a href="/2025/01/03/NCCL%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-06/">
+                            NCCL代码阅读-06
+                        </a>
+                    </h3>
+
+                    <div class="home-article-content markdown-body">
+                        
+                            
+                            RunWorkColl
+书接上文。RunWorkBatch走到了这里：1RunWorkColl&lt;Fn, T, RedOp, Algo, Proto&gt;().run(tid, subtn, work)
+其中work是一个ncclDevWorkColl
+然后按照模版实例化的参数（这边以LL128为例），进入了这个函数：123456template&lt;typename T, type...
+                        
+                    </div>
+
+                    <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fa-solid fa-calendars"></i>&nbsp;
+            <span class="home-article-date" data-date="Fri Jan 03 2025 11:23:23 GMT+0800">
+                
+                    2025-01-03
+                
+            </span>
+        </span>
+        
+            <span class="home-article-category">
+                <i class="fa-solid fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/NCCL/">NCCL</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+        
+        
+            <span class="home-article-tag">
+                <i class="fa-solid fa-tags"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/tags/NCCL/">NCCL</a>&nbsp;
+                        </li>
+                    
+                        <li>
+                            | 
+                            <a href="/tags/%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB/">代码阅读</a>&nbsp;
+                        </li>
+                    
+                </ul>
+            </span>
+        
+    </div>
+
+    <a href="/2025/01/03/NCCL%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-06/">阅读全文<span class="seo-reader-text">NCCL代码阅读-06</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
+</div>
+
+                </div>
+            </li>
         
             <li class="home-article-item">
 
@@ -962,308 +1255,6 @@ tmux使用创建一个新的...
                 </div>
             </li>
         
-            <li class="home-article-item">
-
-                
-
-                
-
-                
-                <div class="flex flex-col gap-5 px-7 pb-7 pt-7">
-                    <h3 class="home-article-title">
-                        <a href="/2024/12/09/NCCL%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-03/">
-                            NCCL代码阅读-03
-                        </a>
-                    </h3>
-
-                    <div class="home-article-content markdown-body">
-                        
-                            
-                            通信组创建和销毁(官网给的例子，解释看注释)一个进程，一个线程，多个设备
-在这种单进程的场景下，可以使用ncclCommInitAll()1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859int main(int argc, ...
-                        
-                    </div>
-
-                    <div class="home-article-meta-info-container">
-    <div class="home-article-meta-info">
-        <span><i class="fa-solid fa-calendars"></i>&nbsp;
-            <span class="home-article-date" data-date="Mon Dec 09 2024 17:57:36 GMT+0800">
-                
-                    2024-12-09
-                
-            </span>
-        </span>
-        
-            <span class="home-article-category">
-                <i class="fa-solid fa-folders"></i>&nbsp;
-            <ul>
-                
-                
-                    
-                        
-                        <li>
-                            <a href="/categories/NCCL/">NCCL</a>&nbsp;
-                        </li>
-                    
-                    
-                
-            </ul>
-        </span>
-        
-        
-            <span class="home-article-tag">
-                <i class="fa-solid fa-tags"></i>&nbsp;
-                <ul>
-                    
-                        <li>
-                            
-                            <a href="/tags/NCCL/">NCCL</a>&nbsp;
-                        </li>
-                    
-                        <li>
-                            | 
-                            <a href="/tags/%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB/">代码阅读</a>&nbsp;
-                        </li>
-                    
-                </ul>
-            </span>
-        
-    </div>
-
-    <a href="/2024/12/09/NCCL%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-03/">阅读全文<span class="seo-reader-text">NCCL代码阅读-03</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
-</div>
-
-                </div>
-            </li>
-        
-            <li class="home-article-item">
-
-                
-
-                
-
-                
-                <div class="flex flex-col gap-5 px-7 pb-7 pt-7">
-                    <h3 class="home-article-title">
-                        <a href="/2024/12/09/NCCL%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-02/">
-                            NCCL代码阅读-02
-                        </a>
-                    </h3>
-
-                    <div class="home-article-content markdown-body">
-                        
-                            
-                            NCCL中重要的数据结构（持续更新）struct ncclComm实际使用的时候是
-1typedef struct ncclComm* ncclComm_t;
-
-在src\nccl.h.in
-通信上下文
-比如两张GPU通信，每个GPU上都有一个comm，每个GPU都有一个rank，他们俩共享一个uniqueId，这个uniqueId是由root GPU生成的，然后广播给其他GPU，这样其他G...
-                        
-                    </div>
-
-                    <div class="home-article-meta-info-container">
-    <div class="home-article-meta-info">
-        <span><i class="fa-solid fa-calendars"></i>&nbsp;
-            <span class="home-article-date" data-date="Mon Dec 09 2024 17:43:36 GMT+0800">
-                
-                    2024-12-09
-                
-            </span>
-        </span>
-        
-            <span class="home-article-category">
-                <i class="fa-solid fa-folders"></i>&nbsp;
-            <ul>
-                
-                
-                    
-                        
-                        <li>
-                            <a href="/categories/NCCL/">NCCL</a>&nbsp;
-                        </li>
-                    
-                    
-                
-            </ul>
-        </span>
-        
-        
-            <span class="home-article-tag">
-                <i class="fa-solid fa-tags"></i>&nbsp;
-                <ul>
-                    
-                        <li>
-                            
-                            <a href="/tags/NCCL/">NCCL</a>&nbsp;
-                        </li>
-                    
-                        <li>
-                            | 
-                            <a href="/tags/%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB/">代码阅读</a>&nbsp;
-                        </li>
-                    
-                </ul>
-            </span>
-        
-    </div>
-
-    <a href="/2024/12/09/NCCL%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-02/">阅读全文<span class="seo-reader-text">NCCL代码阅读-02</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
-</div>
-
-                </div>
-            </li>
-        
-            <li class="home-article-item">
-
-                
-
-                
-
-                
-                <div class="flex flex-col gap-5 px-7 pb-7 pt-7">
-                    <h3 class="home-article-title">
-                        <a href="/2024/12/08/CUDA%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%9E%8B/">
-                            CUDA编程模型
-                        </a>
-                    </h3>
-
-                    <div class="home-article-content markdown-body">
-                        
-                            
-                            https://developer.nvidia.com/blog/cuda-refresher-cuda-programming-model/
-
-一组线程组成一个CUDA block
-一组CUDA block组成一个CUDA grid
-
-
-
-
-每个CUDA block只能在一个CUDA SM上执行，不可以跨SM
-每个SM可以跑多个并发的CUDA block
-每个线程可以用一个三维的索引来标...
-                        
-                    </div>
-
-                    <div class="home-article-meta-info-container">
-    <div class="home-article-meta-info">
-        <span><i class="fa-solid fa-calendars"></i>&nbsp;
-            <span class="home-article-date" data-date="Sun Dec 08 2024 14:48:55 GMT+0800">
-                
-                    2024-12-08
-                
-            </span>
-        </span>
-        
-            <span class="home-article-category">
-                <i class="fa-solid fa-folders"></i>&nbsp;
-            <ul>
-                
-                
-                    
-                        
-                        <li>
-                            <a href="/categories/CUDA/">CUDA</a>&nbsp;
-                        </li>
-                    
-                    
-                
-            </ul>
-        </span>
-        
-        
-            <span class="home-article-tag">
-                <i class="fa-solid fa-tags"></i>&nbsp;
-                <ul>
-                    
-                        <li>
-                            
-                            <a href="/tags/CUDA/">CUDA</a>&nbsp;
-                        </li>
-                    
-                </ul>
-            </span>
-        
-    </div>
-
-    <a href="/2024/12/08/CUDA%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%9E%8B/">阅读全文<span class="seo-reader-text">CUDA编程模型</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
-</div>
-
-                </div>
-            </li>
-        
-            <li class="home-article-item">
-
-                
-
-                
-
-                
-                <div class="flex flex-col gap-5 px-7 pb-7 pt-7">
-                    <h3 class="home-article-title">
-                        <a href="/2024/12/08/%E5%90%8C%E6%AD%A5%E6%9C%BA%E5%88%B6/">
-                            同步机制
-                        </a>
-                    </h3>
-
-                    <div class="home-article-content markdown-body">
-                        
-                            
-                            barrier在计算机科学和并行计算中，barrier（屏障）是一种同步机制，用于确保一组线程或进程在某个特定点之前都完成其任务，然后才能继续执行后续操作。它的核心功能是强制所有线程或进程“汇合”到某个同步点，并等待所有参与者都到达该点后，才能继续执行。
-详细解释工作原理
-屏障点:
-程序中设置一个“屏障点”，所有线程或进程在到达这个点后都会停下来。
-只有当所有线程或进程都到达这个屏障点后，它...
-                        
-                    </div>
-
-                    <div class="home-article-meta-info-container">
-    <div class="home-article-meta-info">
-        <span><i class="fa-solid fa-calendars"></i>&nbsp;
-            <span class="home-article-date" data-date="Sun Dec 08 2024 10:24:23 GMT+0800">
-                
-                    2024-12-08
-                
-            </span>
-        </span>
-        
-            <span class="home-article-category">
-                <i class="fa-solid fa-folders"></i>&nbsp;
-            <ul>
-                
-                
-                    
-                        
-                        <li>
-                            <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9F%A5%E8%AF%86/">操作系统知识</a>&nbsp;
-                        </li>
-                    
-                    
-                
-            </ul>
-        </span>
-        
-        
-            <span class="home-article-tag">
-                <i class="fa-solid fa-tags"></i>&nbsp;
-                <ul>
-                    
-                        <li>
-                            
-                            <a href="/tags/%E7%B3%BB%E7%BB%9F/">系统</a>&nbsp;
-                        </li>
-                    
-                </ul>
-            </span>
-        
-    </div>
-
-    <a href="/2024/12/08/%E5%90%8C%E6%AD%A5%E6%9C%BA%E5%88%B6/">阅读全文<span class="seo-reader-text">同步机制</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
-</div>
-
-                </div>
-            </li>
-        
     </ul>
 
     <div class="home-paginator px-7 py-5">
@@ -1294,7 +1285,7 @@ tmux使用创建一个新的...
                 
                 <p class="post-count space-x-0.5">
                     <span>
-                        共撰写了 13 篇文章
+                        共撰写了 17 篇文章
                     </span>
                     
                 </p>

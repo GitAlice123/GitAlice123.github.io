@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="Hexo Theme Redefine">
+    
+    <meta name="author" content="Alice Yu">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="https://GitAlice123.github.io/2025/01/03/nccl代码阅读-06/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+    
+    
+        
+        <meta name="description" content="Hexo Theme Redefine, Redefine Your Hexo Journey.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NCCL代码阅读-06">
+<meta property="og:url" content="https://gitalice123.github.io/2025/01/03/NCCL%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-06/index.html">
+<meta property="og:site_name" content="Alice&#39;s Notebook">
+<meta property="og:description" content="Hexo Theme Redefine, Redefine Your Hexo Journey.">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitalice123.github.io/images/redefine-og.webp">
+<meta property="article:published_time" content="2025-01-03T03:23:23.000Z">
+<meta property="article:modified_time" content="2025-01-05T12:53:35.430Z">
+<meta property="article:author" content="Alice Yu">
+<meta property="article:tag" content="NCCL">
+<meta property="article:tag" content="代码阅读">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitalice123.github.io/images/redefine-og.webp">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/images/myicon.jpg" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/myicon.jpg">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/images/myicon.jpg">
+    <!--- Page Info-->
+    
+    <title>
+        
+            NCCL代码阅读-06 | Alice&#39;s Notebook
+        
+    </title>
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/css/build/tailwind.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/GeistMono/geist-mono.css">
+
+    
+<link rel="stylesheet" href="/fonts/Geist/geist.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+    
+    
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"gitalice123.github.io","root":"/","language":"zh-CN","path":"search.xml"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"delete_mask":false,"title_alignment":"left","headings_top_spacing":{"h1":"3.2rem","h2":"2.4rem","h3":"1.9rem","h4":"1.6rem","h5":"1.4rem","h6":"1.3rem"}},"word_count":{"enable":true,"count":true,"min2read":true},"author_label":{"enable":true,"auto":false,"list":[]},"code_block":{"copy":true,"style":"mac","highlight_theme":{"light":"github","dark":"vs2015"},"font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":false,"default":"cc_by_nc_sa"},"lazyload":true,"pangu_js":false,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null},"title":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":true,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":{"enable":false,"custom_message":null},"open_graph":{"enable":true,"image":"/images/redefine-og.webp","description":"Hexo Theme Redefine, Redefine Your Hexo Journey."},"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/images/wallhaven-wqery6-light.webp","dark":"/images/wallhaven-wqery6-dark.webp"},"title":"Alice's Notebook","subtitle":{"text":["你当像鸟，飞往你的山"],"hitokoto":{"enable":false,"show_author":true,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":true,"smart_backspace":true},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":false,"style":"default","links":{"github":"https://github.com/GitAlice123","instagram":null,"zhihu":null,"twitter":null,"email":"2822983966@qq.com"},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"11.4.1"}},"version":"2.8.2","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"About":{"icon":"fa-regular fa-user","submenus":{"Me":"/about","Github":"https://github.com/GitAlice123","Blog":"https://www.alicesnotebook.cn/"}}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":{"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"Tags":{"path":"/tags","icon":"fa-regular fa-tags"},"Categories":{"path":"/categories","icon":"fa-regular fa-folder"}}},"article_date_format":"auto","excerpt_length":200,"categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2024/12/7 11:45:14"};
+    window.lang_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+
+<body>
+	<div class="progress-bar-container">
+	
+
+	
+	<span class="pjax-progress-bar"></span>
+	<!--        <span class="swup-progress-icon">-->
+	<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+	<!--        </span>-->
+	
+</div>
+
+<main class="page-container" id="swup">
+
+	
+
+	<div class="main-content-container flex flex-col justify-between min-h-dvh">
+		<div class="main-content-header">
+			<header class="navbar-container px-6 md:px-12">
+    <div class="navbar-content transition-navbar ">
+        <div class="left">
+            
+                <a class="logo-image h-8 w-8 sm:w-10 sm:h-10 mr-3" href="/">
+                    <img src="/images/myicon.jpg" class="w-full h-full rounded-sm">
+                </a>
+            
+            <a class="logo-title" href="/">
+                
+                Alice&#39;s Notebook
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    首页
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archives"
+                                        >
+                                    <i class="fa-regular fa-archive fa-fw"></i>
+                                    归档
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class="has-dropdown"
+                                   href="#"
+                                        onClick=&#34;return false;&#34;>
+                                    <i class="fa-regular fa-user fa-fw"></i>
+                                    关于
+                                    <i class="fa-solid fa-chevron-down fa-fw"></i>
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                                    <ul class="sub-menu">
+                                        
+                                            <li>
+                                                <a href="/about">
+                                                    ME
+                                                </a>
+                                            </li>
+                                        
+                                            <li>
+                                                <a target="_blank" rel="noopener" href="https://github.com/GitAlice123">
+                                                    GITHUB
+                                                </a>
+                                            </li>
+                                        
+                                            <li>
+                                                <a target="_blank" rel="noopener" href="https://www.alicesnotebook.cn/">
+                                                    BLOG
+                                                </a>
+                                            </li>
+                                        
+                                    </ul>
+                                
+                            </li>
+                    
+                    
+                        <li class="navbar-item search search-popup-trigger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-dvh w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                首页
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archives"
+                        >
+                            <span>
+                                归档
+                            </span>
+                            
+                                <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item-sub text-base my-1.5 flex flex-col w-full">
+                        
+                        <div class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary cursor-pointer text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                             navbar-data-toggle="submenu-About"
+                        >
+                            <span>
+                                关于
+                            </span>
+                            
+                                <i class="fa-solid fa-chevron-right fa-sm fa-fw transition-all"></i>
+                            
+                        </div>
+                        
+
+                        
+                            <div class="flex-col items-start px-2 py-2 hidden" data-target="submenu-About">
+                                
+                                    <div class="drawer-navbar-item text-base flex flex-col justify-center items-start hover:underline active:underline hover:underline-offset-1 rounded-3xl">
+                                        <a class=" text-third-text-color text-xl"
+                                           href="/about">ME</a>
+                                    </div>
+                                
+                                    <div class="drawer-navbar-item text-base flex flex-col justify-center items-start hover:underline active:underline hover:underline-offset-1 rounded-3xl">
+                                        <a class=" text-third-text-color text-xl"
+                                           target="_blank" rel="noopener" href="https://github.com/GitAlice123">GITHUB</a>
+                                    </div>
+                                
+                                    <div class="drawer-navbar-item text-base flex flex-col justify-center items-start hover:underline active:underline hover:underline-offset-1 rounded-3xl">
+                                        <a class=" text-third-text-color text-xl"
+                                           target="_blank" rel="noopener" href="https://www.alicesnotebook.cn/">BLOG</a>
+                                    </div>
+                                
+                            </div>
+                        
+                    </li>
+            
+
+            
+            
+                
+                    
+                    
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full active"
+                           href="/tags"
+                        >
+                            <span>Tags</span>
+                            <i class="fa-regular fa-tags fa-sm fa-fw"></i>
+                        </a>
+                    </li>
+                
+                    
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full active"
+                           href="/categories"
+                        >
+                            <span>Categories</span>
+                            <i class="fa-regular fa-folder fa-sm fa-fw"></i>
+                        </a>
+                    </li>
+                
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">14</div>
+        <div class="label text-third-text-color text-sm">标签</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">6</div>
+        <div class="label text-third-text-color text-sm">分类</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">17</div>
+        <div class="label text-third-text-color text-sm">文章</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+		</div>
+
+		<div class="main-content-body transition-fade-up">
+			
+
+			<div class="main-content">
+				<div class="post-page-container flex relative justify-between box-border w-full h-full">
+	<div class="article-content-container">
+
+		<div class="article-title relative w-full">
+			
+			<div class="w-full flex items-center pt-6 justify-start">
+				<h1 class="article-title-regular text-second-text-color tracking-tight text-4xl md:text-6xl font-semibold px-2 sm:px-6 md:px-8 py-3">NCCL代码阅读-06</h1>
+			</div>
+			
+		</div>
+
+		
+		<div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+			<div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+				<img src="/images/myicon.jpg">
+			</div>
+			<div class="info flex flex-col justify-between">
+				<div class="author flex items-center">
+					<span class="name text-default-text-color text-lg font-semibold">Alice Yu</span>
+					
+					<span class="author-label ml-1.5 text-xs px-2 py-0.5 rounded-small text-third-text-color border border-shadow-color-1">Lv3</span>
+					
+				</div>
+				<div class="meta-info">
+					<div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2025-01-03 11:23:23</span>
+        <span class="mobile">2025-01-03 11:23:23</span>
+        <span class="hover-info">创建</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2025-01-05 20:53:35</span>
+            <span class="mobile">2025-01-05 20:53:35</span>
+            <span class="hover-info">更新</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/NCCL/">NCCL</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fa-regular fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/NCCL/">NCCL</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB/">代码阅读</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fa-regular fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+				</div>
+			</div>
+		</div>
+		
+
+		
+
+
+		<div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+			<h2 id="RunWorkColl"><a href="#RunWorkColl" class="headerlink" title="RunWorkColl"></a>RunWorkColl</h2><ul>
+<li>书接上文。RunWorkBatch走到了这里：<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">RunWorkColl&lt;Fn, T, RedOp, Algo, Proto&gt;().run(tid, subtn, work)</span><br></pre></td></tr></table></figure></div></li>
+<li>其中work是一个ncclDevWorkColl</li>
+<li>然后按照模版实例化的参数（这边以LL128为例），进入了这个函数：<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">template&lt;typename T, typename RedOp&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">RunWorkColl</span>&lt;</span>ncclFuncAllReduce, T, RedOp, NCCL_ALGO_RING, NCCL_PROTO_LL128&gt; &#123;</span><br><span class="line">  __device__ __forceinline__ <span class="type">void</span> <span class="title function_">run</span><span class="params">(<span class="type">int</span> tid, <span class="type">int</span> nthreads, <span class="keyword">struct</span> ncclDevWorkColl* work)</span> &#123;</span><br><span class="line">    runRing&lt;T, RedOp, ProtoLL128&gt;(tid, nthreads, work);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></div></li>
+</ul>
+<h2 id="runRing"><a href="#runRing" class="headerlink" title="runRing"></a>runRing</h2><div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line">template&lt;typename T, typename RedOp, typename Proto&gt;</span><br><span class="line">__device__ __forceinline__ <span class="type">void</span> <span class="title function_">runRing</span><span class="params">(<span class="type">int</span> tid, <span class="type">int</span> nthreads, <span class="keyword">struct</span> ncclDevWorkColl* work)</span> &#123;</span><br><span class="line">  ncclRing *ring = &amp;ncclShmem.channel.ring;</span><br><span class="line">  <span class="type">int</span> ringIx = ring-&gt;index;</span><br><span class="line">  <span class="type">const</span> <span class="type">int</span> nranks = ncclShmem.comm.nRanks;</span><br><span class="line">  <span class="type">ssize_t</span> gridOffset;</span><br><span class="line">  <span class="type">ssize_t</span> channelCount;</span><br><span class="line">  <span class="type">ssize_t</span> chunkCount;</span><br><span class="line">  <span class="comment">// gridOffset:</span></span><br><span class="line">  <span class="comment">// channelCount:当前通道要负责的总的元素数量</span></span><br><span class="line">  <span class="comment">// chunkCount: 当前通道中一个chunk容纳的元素数量</span></span><br><span class="line">  ncclCollCbdPart(work, ncclShmem.channelId, Proto::Id, <span class="keyword">sizeof</span>(T), (<span class="type">ssize_t</span>*)nullptr, &amp;gridOffset, &amp;channelCount, &amp;chunkCount);</span><br><span class="line">  <span class="type">const</span> <span class="type">ssize_t</span> loopCount = nranks * chunkCount;</span><br><span class="line">  <span class="type">ssize_t</span> offset;</span><br><span class="line">  <span class="type">int</span> nelem;</span><br><span class="line">  <span class="type">int</span> chunk;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Coverity reports that the callee treats &amp;ring-&gt;next as an array.  However, due to the use of</span></span><br><span class="line">  <span class="comment">// FanSymmetric&lt;1&gt;, only the first element is ever accessed, so it&#x27;s fine.</span></span><br><span class="line">  <span class="comment">// coverity[callee_ptr_arith:FALSE]</span></span><br><span class="line">  Primitives&lt;T, RedOp, FanSymmetric&lt;<span class="number">1</span>&gt;, <span class="number">1</span>, Proto, <span class="number">0</span>&gt; prims</span><br><span class="line">    (tid, nthreads, &amp;ring-&gt;prev, &amp;ring-&gt;next, work-&gt;sendbuff, work-&gt;recvbuff, work-&gt;redOpArg, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, work);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> (<span class="type">ssize_t</span> elemOffset = <span class="number">0</span>; elemOffset &lt; channelCount; elemOffset += loopCount) &#123;</span><br><span class="line">    <span class="type">ssize_t</span> remCount = channelCount - elemOffset;</span><br><span class="line">    <span class="type">ssize_t</span> chunkOffset;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (remCount &lt; loopCount) chunkCount = alignUp(divUp(remCount, nranks), <span class="number">16</span>/<span class="keyword">sizeof</span>(T));</span><br><span class="line"></span><br><span class="line">    <span class="keyword">auto</span> modRanks = [&amp;]__device__(<span class="type">int</span> r)-&gt;<span class="type">int</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> r - (r &gt;= nranks ? nranks : <span class="number">0</span>);</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// step 0: push data to next GPU</span></span><br><span class="line">    chunk = modRanks(ringIx + nranks - <span class="number">1</span>);</span><br><span class="line">    chunkOffset = chunk * chunkCount;</span><br><span class="line">    offset = gridOffset + elemOffset + chunkOffset;</span><br><span class="line">    nelem = (<span class="type">int</span>)min(chunkCount, remCount - chunkOffset);</span><br><span class="line">    prims.directSend(offset, offset, nelem);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// k-2 steps: reduce and copy to next GPU</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">2</span>; j &lt; nranks; ++j) &#123;</span><br><span class="line">      chunk = modRanks(ringIx + nranks - j);</span><br><span class="line">      chunkOffset = chunk * chunkCount;</span><br><span class="line">      offset = gridOffset + elemOffset + chunkOffset;</span><br><span class="line">      nelem = (<span class="type">int</span>)min(chunkCount, remCount - chunkOffset);</span><br><span class="line">      prims.directRecvReduceDirectSend(offset, offset, nelem);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// step k-1: reduce this buffer and data, which will produce the final</span></span><br><span class="line">    <span class="comment">// result that we store in this data and push to the next GPU</span></span><br><span class="line">    chunk = ringIx + <span class="number">0</span>;</span><br><span class="line">    chunkOffset = chunk * chunkCount;</span><br><span class="line">    offset = gridOffset + elemOffset + chunkOffset;</span><br><span class="line">    nelem = (<span class="type">int</span>)min(chunkCount, remCount - chunkOffset);</span><br><span class="line">    prims.directRecvReduceCopyDirectSend(offset, offset, nelem, <span class="comment">/*postOp=*/</span><span class="literal">true</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// k-2 steps: copy to next GPU</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">1</span>; j &lt; nranks - <span class="number">1</span>; ++j) &#123;</span><br><span class="line">      chunk = modRanks(ringIx + nranks - j);</span><br><span class="line">      chunkOffset = chunk * chunkCount;</span><br><span class="line">      offset = gridOffset + elemOffset + chunkOffset;</span><br><span class="line">      nelem = (<span class="type">int</span>)min(chunkCount, remCount - chunkOffset);</span><br><span class="line">      prims.directRecvCopyDirectSend(offset, nelem);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Make final copy from buffer to dest.</span></span><br><span class="line">    chunk = modRanks(ringIx + <span class="number">1</span>);</span><br><span class="line">    chunkOffset = chunk * chunkCount;</span><br><span class="line">    offset = gridOffset + elemOffset + chunkOffset;</span><br><span class="line">    nelem = (<span class="type">int</span>)min(chunkCount, remCount - chunkOffset);</span><br><span class="line"></span><br><span class="line">    prims.directRecv(offset, offset, nelem);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+<ul>
+<li>这个函数里面东西比较多，我们一点点拿出来看</li>
+<li>下面解释ncclCollCdbPart，prims的初始化，directSend</li>
+</ul>
+<h3 id="ncclCollCbdPart"><a href="#ncclCollCbdPart" class="headerlink" title="ncclCollCbdPart"></a>ncclCollCbdPart</h3><div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">template&lt;typename Int&gt;</span><br><span class="line">__host__ __device__ <span class="keyword">inline</span> <span class="type">void</span> <span class="title function_">ncclCollCbdPart</span><span class="params">(</span></span><br><span class="line"><span class="params">    <span class="keyword">struct</span> ncclDevWorkColl* work, <span class="type">uint32_t</span> channelId, <span class="type">int</span> proto, <span class="type">int</span> eltSize,</span></span><br><span class="line"><span class="params">    Int* count, Int* partOffset, Int* partCount, Int* chunkCount</span></span><br><span class="line"><span class="params">  )</span> &#123;</span><br><span class="line">    <span class="comment">/////////////////////////////////////////////</span></span><br><span class="line">    <span class="comment">// proto: LL128</span></span><br><span class="line">    <span class="comment">// eltSize: sizeof(uint64_t)</span></span><br><span class="line">    <span class="comment">// count: 我们的例子是nullptr</span></span><br><span class="line">    <span class="comment">/////////////////////////////////////////////</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 一个grain有几个数据元素</span></span><br><span class="line">  <span class="type">int</span> eltPerGrain = ncclProtoGrainSize(proto)/eltSize;</span><br><span class="line">  <span class="type">int</span> nMidChannels = work-&gt;channelHi - work-&gt;channelLo - <span class="number">1</span>;</span><br><span class="line">  <span class="comment">// We can assum that nMidChannels&lt;0 implies countMid==0, which let&#x27;s us assume</span></span><br><span class="line">  <span class="comment">// that countMid*nMidChannels == 0.</span></span><br><span class="line">  <span class="keyword">if</span> (count != nullptr) &#123;</span><br><span class="line">    *count = work-&gt;cbd.countLo + work-&gt;cbd.countMid*nMidChannels + work-&gt;cbd.countHi;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (channelId == work-&gt;channelLo) &#123;</span><br><span class="line">    *partOffset = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">// countLo是当前通道要负责的总的元素数量</span></span><br><span class="line">    *partCount = work-&gt;cbd.countLo;</span><br><span class="line">    <span class="comment">// chunkGrainsLo: 低通道上的一个chunk可以容纳几个grain</span></span><br><span class="line">    <span class="comment">// chunkCount: 当前通道上一个chunk里面的元素数量</span></span><br><span class="line">    *chunkCount = work-&gt;cbd.chunkGrainsLo*eltPerGrain;</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (channelId == work-&gt;channelHi) &#123;</span><br><span class="line">    *partOffset = work-&gt;cbd.countLo + nMidChannels*work-&gt;cbd.countMid;</span><br><span class="line">    *partCount = work-&gt;cbd.countHi;</span><br><span class="line">    *chunkCount = work-&gt;cbd.chunkGrainsHi*eltPerGrain;</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="type">int</span> mid = channelId - work-&gt;channelLo - <span class="number">1</span>;</span><br><span class="line">    *partOffset = work-&gt;cbd.countLo + mid*work-&gt;cbd.countMid;</span><br><span class="line">    *partCount = work-&gt;cbd.countMid;</span><br><span class="line">    *chunkCount = work-&gt;cbd.chunkGrainsMid*eltPerGrain;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+<h3 id="primitives里面有哪些东西"><a href="#primitives里面有哪些东西" class="headerlink" title="primitives里面有哪些东西"></a>primitives里面有哪些东西</h3><h4 id="类内变量"><a href="#类内变量" class="headerlink" title="类内变量"></a>类内变量</h4><div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">constexpr</span> <span class="type">int</span> MaxRecv = Fan::MaxRecv, MaxSend = Fan::MaxSend;<span class="comment">// 由传递过来的Fan决定</span></span><br><span class="line"><span class="type">static</span> <span class="type">constexpr</span> <span class="type">int</span> Input=<span class="number">0</span>, Output=<span class="number">1</span>;</span><br><span class="line">RedOp redOp;</span><br><span class="line"><span class="type">const</span> <span class="type">int</span> tid; <span class="comment">// thread index in primitives group</span></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> nthreads; <span class="comment">// 调用prims的函数里面可以看到，这是执行这个work需要的总线程数（work里面确定了）</span></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> wid; <span class="comment">// 在当前warp中线程的编号</span></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> stepSize;</span><br><span class="line"><span class="type">const</span> <span class="type">int</span> warp; <span class="comment">// 当前是第几个warp</span></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> warpInBlock; <span class="comment">// 在这个线程块里面，这是第几个warp</span></span><br><span class="line"><span class="type">const</span> <span class="type">bool</span> flagThread;</span><br><span class="line"><span class="type">const</span> <span class="type">int</span> group;</span><br><span class="line">Fan fan;</span><br><span class="line">T *userBufs[<span class="number">2</span>];<span class="comment">// 两个指针，指向的类型是T</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">ncclConnInfo</span>* <span class="title">recvConn</span> =</span> <span class="literal">NULL</span>;<span class="comment">//在构造函数里填充</span></span><br><span class="line"><span class="keyword">volatile</span> <span class="type">uint64_t</span>* recvConnHeadPtr = <span class="literal">NULL</span>;</span><br><span class="line"><span class="type">uint64_t</span> recvConnHead;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">ncclConnInfo</span>* <span class="title">sendConn</span> =</span> <span class="literal">NULL</span>;<span class="comment">//在构造函数里填充</span></span><br><span class="line"><span class="keyword">volatile</span> <span class="class"><span class="keyword">struct</span> <span class="title">ncclConnFifo</span>* <span class="title">sendConnFifo</span> =</span> <span class="literal">NULL</span>;</span><br><span class="line"><span class="keyword">volatile</span> <span class="type">uint64_t</span>* sendConnTailPtr = <span class="literal">NULL</span>;</span><br><span class="line"><span class="type">uint64_t</span> sendConnTail;</span><br><span class="line"><span class="keyword">volatile</span> <span class="type">uint64_t</span>* sendConnHeadPtr = <span class="literal">NULL</span>;</span><br><span class="line"><span class="type">uint64_t</span> sendConnHead;</span><br><span class="line"><span class="type">uint64_t</span> sendConnHeadCache; <span class="comment">// Cache last seen value</span></span><br><span class="line"></span><br><span class="line"><span class="type">uint64_t</span> recvStep[MaxRecv];<span class="comment">//在构造函数里填充</span></span><br><span class="line"><span class="type">uint64_t</span> sendStep[MaxSend];<span class="comment">//在构造函数里填充</span></span><br><span class="line"><span class="type">uint64_t</span>* recvBuff[MaxRecv];<span class="comment">// 存接收缓冲区地址的数组，在构造函数里填充</span></span><br><span class="line"><span class="type">uint64_t</span>* sendBuff[MaxSend];<span class="comment">// 存发送缓冲区地址的数组，在构造函数里填充</span></span><br></pre></td></tr></table></figure></div>
+
+<h3 id="prims的初始化"><a href="#prims的初始化" class="headerlink" title="prims的初始化"></a>prims的初始化</h3><ul>
+<li>在runRing里面，对prims进行了初始化：<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Primitives&lt;T, RedOp, FanSymmetric&lt;<span class="number">1</span>&gt;, <span class="number">1</span>, Proto, <span class="number">0</span>&gt; prims</span><br><span class="line">    (tid, nthreads, &amp;ring-&gt;prev, &amp;ring-&gt;next, work-&gt;sendbuff, work-&gt;recvbuff, work-&gt;redOpArg, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, work);</span><br></pre></td></tr></table></figure></div></li>
+<li>寻找到对应的构造函数，在prims_ll128里：<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">__device__ <span class="title function_">Primitives</span><span class="params">(</span></span><br><span class="line"><span class="params">    <span class="type">const</span> <span class="type">int</span> tid, <span class="type">const</span> <span class="type">int</span> nthreads, <span class="type">int</span> <span class="type">const</span> *recvPeers, <span class="type">int</span> <span class="type">const</span> *sendPeers,</span></span><br><span class="line"><span class="params">    <span class="type">void</span> <span class="type">const</span> *inputBuf, <span class="type">void</span> *outputBuf, <span class="type">uint64_t</span> redOpArg, <span class="type">uint8_t</span> group=<span class="number">0</span>,</span></span><br><span class="line"><span class="params">    <span class="type">uint8_t</span> connIndexRecv=<span class="number">0</span>, <span class="type">uint8_t</span> connIndexSend=<span class="number">0</span>, <span class="keyword">struct</span> ncclDevWorkColl* e = nullptr,</span></span><br><span class="line"><span class="params">    <span class="type">bool</span> ipcReg = <span class="literal">false</span>, <span class="type">bool</span> netReg = <span class="literal">false</span>, <span class="type">int</span> stepSize_ = <span class="number">0</span></span></span><br><span class="line"><span class="params">  )</span>:</span><br><span class="line">  <span class="title function_">redOp</span><span class="params">(redOpArg)</span>,</span><br><span class="line">  <span class="comment">// wid是在当前warp中线程的编号</span></span><br><span class="line">  <span class="comment">// warp是当前是第几个warp</span></span><br><span class="line">  <span class="title function_">tid</span><span class="params">(tid)</span>, <span class="title function_">nthreads</span><span class="params">(nthreads)</span>, <span class="title function_">wid</span><span class="params">(tid%WARP_SIZE)</span>, <span class="title function_">warp</span><span class="params">(tid/WARP_SIZE)</span>,</span><br><span class="line">  <span class="comment">// warpInBlock是当前线程在当前线程块内属于第几个Warp</span></span><br><span class="line">  <span class="title function_">warpInBlock</span><span class="params">(threadIdx.x/WARP_SIZE)</span>,</span><br><span class="line">  <span class="title function_">flagThread</span><span class="params">((tid%<span class="number">8</span>)==<span class="number">7</span>)</span>, <span class="title function_">group</span><span class="params">(group)</span>,</span><br><span class="line">  <span class="comment">// 步长是多少个元素</span></span><br><span class="line">  <span class="title function_">stepSize</span><span class="params">(ncclShmem.comm.buffSizes[NCCL_PROTO_LL128]/NCCL_STEPS/<span class="keyword">sizeof</span>(<span class="type">uint64_t</span>))</span> &#123;</span><br><span class="line">  <span class="keyword">auto</span> *channel = &amp;ncclShmem.channel;</span><br><span class="line">  <span class="comment">// 最初初始化时使用的是对称的通信模式(FanSymmetric)，即接收和发送的对端节点数量是相等的</span></span><br><span class="line">  <span class="comment">// nrecv和nsend就是实际接收和发送的对端节点数量，MaxRecv是在初始化的时候FanSymmetric&lt;1&gt;指定的</span></span><br><span class="line">  <span class="type">int</span> nrecv=<span class="number">0</span>, nsend=<span class="number">0</span>;</span><br><span class="line">  <span class="keyword">while</span> (nrecv &lt; MaxRecv &amp;&amp; recvPeers[nrecv] &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">    loadRecvConn(&amp;channel-&gt;peers[recvPeers[nrecv]]-&gt;recv[connIndexRecv], nrecv);</span><br><span class="line">    nrecv++;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">while</span> (nsend &lt; MaxSend &amp;&amp; sendPeers[nsend] &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">    loadSendConn(&amp;channel-&gt;peers[sendPeers[nsend]]-&gt;send[connIndexSend], nsend);</span><br><span class="line">    nsend++;</span><br><span class="line">  &#125;</span><br><span class="line">  this-&gt;fan = Fan(nrecv, nsend);</span><br><span class="line">  <span class="comment">// Coverity reports recvConn and sendConn being possibly NULL at this point but that won&#x27;t actually</span></span><br><span class="line">  <span class="comment">// happen given the two &quot;while&quot; loops just above.</span></span><br><span class="line">  <span class="comment">// coverity[var_deref_model:FALSE]</span></span><br><span class="line">  loadRecvSync();</span><br><span class="line">  <span class="comment">// coverity[var_deref_model:FALSE]</span></span><br><span class="line">  loadSendSync();</span><br><span class="line">  <span class="comment">// inputBuf 和 outputBuf 就是最初nccl-test里面传进来的sendbuff和recvbuff的地址</span></span><br><span class="line">  <span class="comment">// sendbuff是填充了要发送的数据，recvbuff应该全0，在AllReduceInitData里可以看到</span></span><br><span class="line">  <span class="comment">// 最后把地址填充到userBufs里面</span></span><br><span class="line">  setDataPtrs(inputBuf, outputBuf);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></div></li>
+<li>这里大概是一个怎样的结构呢？我梳理了一下：<ul>
+<li>我们假设有A,B,C三个节点</li>
+<li>A和B，A和C通信使用的是同一个channel，我这边觉得翻译成频段是更有助于理解的</li>
+<li>channel（实际类里面应该是ncclDevChannel）里面有一个ncclDevChannelPeer的指针数组peers，也就是说，channel.peers[0]是指向一个ncclDevChannelPeer（比如B节点）的指针，channel.peers[1]是指向另一个ncclDevChannelPeer（比如C节点）的指针</li>
+<li>recvPeers指示了peers的下标，如A的recvPeers为[0,1,-1]，0就是B节点，1就是C节点</li>
+<li>nrecv指当前节点当前channel的接收连接总数，loadRecvConn里面也把他作为接收连接的下标</li>
+</ul>
+</li>
+</ul>
+<h4 id="loadRecvConn"><a href="#loadRecvConn" class="headerlink" title="loadRecvConn"></a>loadRecvConn</h4><div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">__device__ __forceinline__ <span class="type">void</span> <span class="title function_">loadRecvConn</span><span class="params">(<span class="keyword">struct</span> ncclConnInfo* conn, <span class="type">int</span> i)</span> &#123;</span><br><span class="line">    <span class="comment">// 这里conn-&gt;buffs的值，即接收缓冲区（以及发送缓冲区）的地址，是在p2p.cc里面，初始化的时候就填写好的，接收缓冲区的地址是</span></span><br><span class="line">    recvBuff[i] = (<span class="keyword">union</span> ncclLLFifoLine*)conn-&gt;buffs[NCCL_PROTO_LL];</span><br><span class="line">    recvStep[i] = conn-&gt;step;</span><br><span class="line">    <span class="keyword">if</span> (wid == i) recvConn = conn;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+<ul>
+<li>ncclConnInfo里面，有一个buffs数组，里面存放着指向<strong>不同原语协议的buffer的</strong>指针</li>
+<li>recvBuff存放这个节点这个channel连接的所有接收连接的buff地址</li>
+<li>只在wid等于该接收连接下标的warp里执行</li>
+</ul>
+<h3 id="prims-directSend"><a href="#prims-directSend" class="headerlink" title="prims.directSend"></a>prims.directSend</h3><ul>
+<li>在中间的几个步骤里，执行了<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">prims.directSend(offset, offset, nelem);</span><br></pre></td></tr></table></figure></div></li>
+<li>一路往下找，在primitives里面：<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">template&lt;typename RealPrimitives&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">PrimitivesWithoutDirect</span> &#123;</span></span><br><span class="line">  __device__ <span class="type">void</span> <span class="title function_">directSend</span><span class="params">(<span class="type">intptr_t</span> inpIx, <span class="type">intptr_t</span> outIx, <span class="type">int</span> eltN)</span> &#123;</span><br><span class="line">    static_cast&lt;RealPrimitives*&gt;(this)-&gt;send(inpIx, eltN);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">//...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></li>
+<li>在prims_ll128里面：<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">__device__ <span class="type">void</span> <span class="title function_">send</span><span class="params">(<span class="type">intptr_t</span> inpIx, <span class="type">int</span> eltN)</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> GenericOp&lt;<span class="number">0</span>, <span class="number">1</span>, Input, <span class="number">-1</span>&gt;(inpIx, <span class="number">-1</span>, eltN, <span class="literal">false</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></li>
+</ul>
+<h3 id="GenericOp"><a href="#GenericOp" class="headerlink" title="GenericOp"></a>GenericOp</h3><div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">template &lt;<span class="type">int</span> RECV, <span class="type">int</span> SEND, <span class="type">int</span> SrcBuf, <span class="type">int</span> DstBuf&gt;</span><br><span class="line">__device__ __forceinline__ <span class="type">void</span> <span class="title function_">GenericOp</span><span class="params">(<span class="type">intptr_t</span> srcIx, <span class="type">intptr_t</span> dstIx, <span class="type">int</span> nelem, <span class="type">bool</span> postOp)</span> &#123;</span><br><span class="line">  <span class="comment">//////////////////////////////////////////</span></span><br><span class="line">  <span class="comment">// RECV=0, SEND=1, SrcBuf=Input=0, DstBuf=-1</span></span><br><span class="line">  <span class="comment">// srcIx=inpIx(offset), dstIx=-1, nelem=eltN（一个chunk的元素数）, postOp=false</span></span><br><span class="line">  <span class="comment">//////////////////////////////////////////</span></span><br><span class="line">  <span class="type">constexpr</span> <span class="type">int</span> SRC = SrcBuf != <span class="number">-1</span> ? <span class="number">1</span> : <span class="number">0</span>;<span class="comment">//1</span></span><br><span class="line">  <span class="type">constexpr</span> <span class="type">int</span> DST = DstBuf != <span class="number">-1</span> ? <span class="number">1</span> : <span class="number">0</span>;<span class="comment">//0</span></span><br><span class="line">  <span class="comment">// 指向nccl-test一开始就分配好的sendbuff</span></span><br><span class="line">  T <span class="type">const</span> *srcPtr = SrcBuf == <span class="number">-1</span> ? nullptr : userBufs[SrcBuf] + srcIx;</span><br><span class="line">  <span class="comment">// 指向nccl-test一开始就分配好的recvbuff</span></span><br><span class="line">  T       *dstPtr = DstBuf == <span class="number">-1</span> ? nullptr : userBufs[DstBuf] + dstIx;</span><br><span class="line">  <span class="comment">// wire可以理解成逻辑上的系统总线，slice是最后传输的单位</span></span><br><span class="line">  <span class="type">int</span> wireOffset = WireWordPerSlice*warp + <span class="number">2</span>*wid;</span><br><span class="line">  <span class="type">const</span> <span class="type">int</span> nwarps = nthreads/WARP_SIZE;</span><br><span class="line">  nelem = nelem &lt; <span class="number">0</span> ? <span class="number">0</span> : nelem;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 控制路径，是否时间很长?</span></span><br><span class="line">  <span class="keyword">if</span> (SEND) waitSend(divUp(nelem, DataEltPerSlice)*WireWordPerSlice*<span class="keyword">sizeof</span>(<span class="type">uint64_t</span>));</span><br><span class="line">  barrier();</span><br><span class="line">  nelem -= DataEltPerSlice*warp;</span><br><span class="line">  srcPtr += DataEltPerSlice*warp;</span><br><span class="line">  dstPtr += DataEltPerSlice*warp;</span><br><span class="line">  <span class="keyword">while</span> (nelem &gt; <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="type">const</span> <span class="type">int</span> eltInSlice = min(nelem, DataEltPerSlice);</span><br><span class="line">    <span class="type">uint64_t</span> regs[NCCL_LL128_SHMEM_ELEMS_PER_THREAD];</span><br><span class="line">    <span class="keyword">if</span> (SRC) loadRegsBegin(regs, srcPtr, eltInSlice);</span><br><span class="line">    recvReduceSendCopy&lt;NCCL_LL128_SHMEM_ELEMS_PER_THREAD, RECV, SEND, SrcBuf, DstBuf&gt;(regs, wireOffset, postOp);</span><br><span class="line">    <span class="keyword">if</span> (DST) storeRegs(dstPtr, regs, eltInSlice);</span><br><span class="line"></span><br><span class="line">    wireOffset += WireWordPerSlice*nwarps;</span><br><span class="line">    srcPtr += DataEltPerSlice*nwarps;</span><br><span class="line">    dstPtr += DataEltPerSlice*nwarps;</span><br><span class="line">    nelem -= DataEltPerSlice*nwarps;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  barrier();</span><br><span class="line">  <span class="keyword">if</span> (SEND) <span class="keyword">for</span> (<span class="type">int</span> i=<span class="number">0</span>; i &lt; MaxSend; i++) sendStep[i] += <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">if</span> (SEND) postSend();</span><br><span class="line">  <span class="keyword">if</span> (RECV) <span class="keyword">for</span> (<span class="type">int</span> i=<span class="number">0</span>; i &lt; MaxRecv; i++) recvStep[i] += <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">if</span> (RECV) postRecv();</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+
+
+
+
+
+
+
+
+<h3 id="生产者-消费者模型在-NCCL-的实现"><a href="#生产者-消费者模型在-NCCL-的实现" class="headerlink" title="生产者-消费者模型在 NCCL 的实现"></a><strong>生产者-消费者模型在 NCCL 的实现</strong></h3><p>在 NCCL（NVIDIA Collective Communication Library）中，生产者-消费者模型用于管理点对点（P2P）通信。生产者-消费者模型的基本思想是，<strong>生产者</strong>（发送方）将数据写入缓冲区，<strong>消费者</strong>（接收方）从缓冲区读取数据，并通过步长指针（<code>head</code> 和 <code>tail</code>）来协调通信双方的进度。</p>
+<p>在 NCCL 中，这种模型通过环形缓冲区（Ring Buffer）来实现，用于同步发送方和接收方之间的通信状态。</p>
+<hr>
+<h3 id="1-环形缓冲区的基本概念"><a href="#1-环形缓冲区的基本概念" class="headerlink" title="1. 环形缓冲区的基本概念"></a><strong>1. 环形缓冲区的基本概念</strong></h3><h4 id="缓冲区的组成"><a href="#缓冲区的组成" class="headerlink" title="缓冲区的组成"></a><strong>缓冲区的组成</strong></h4><ul>
+<li>NCCL 的环形缓冲区由共享内存或设备内存实现，逻辑上由 <code>NCCL_STEPS</code> 个步长块（step size blocks）组成。</li>
+<li>每个步长块的大小为 <code>stepSize</code>，计算公式：<div class="code-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">stepSize = comm-&gt;buffSizes[NCCL_PROTO_SIMPLE] / NCCL_STEPS;</span><br></pre></td></tr></table></figure></div></li>
+<li>缓冲区的总大小：<div class="code-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">总大小 = stepSize × NCCL_STEPS</span><br></pre></td></tr></table></figure></div></li>
+</ul>
+<h4 id="关键指针"><a href="#关键指针" class="headerlink" title="关键指针"></a><strong>关键指针</strong></h4><ol>
+<li><p>**<code>head</code>**：</p>
+<ul>
+<li>由 <strong>发送方</strong> 维护。</li>
+<li>表示当前发送方已经发送到的位置。</li>
+<li>发送方通过更新 <code>head</code> 通知接收方新数据已写入缓冲区。</li>
+</ul>
+</li>
+<li><p>**<code>tail</code>**：</p>
+<ul>
+<li>由 <strong>接收方</strong> 维护。</li>
+<li>表示当前接收方已经读取到的位置。</li>
+<li>接收方通过更新 <code>tail</code> 通知发送方哪些数据已经被处理，可以重新覆盖。</li>
+</ul>
+</li>
+</ol>
+<h4 id="流控机制"><a href="#流控机制" class="headerlink" title="流控机制"></a><strong>流控机制</strong></h4><ul>
+<li><strong>发送方约束</strong>：只有当 <code>(head - tail) &lt; 缓冲区大小</code> 时，发送方才可以继续写入数据。</li>
+<li><strong>接收方约束</strong>：只有当 <code>head &gt; tail</code> 时，接收方才可以读取数据。</li>
+</ul>
+<hr>
+<h3 id="2-生产者-消费者模型的实现细节"><a href="#2-生产者-消费者模型的实现细节" class="headerlink" title="2. 生产者-消费者模型的实现细节"></a><strong>2. 生产者-消费者模型的实现细节</strong></h3><h4 id="1-发送方（生产者）的行为"><a href="#1-发送方（生产者）的行为" class="headerlink" title="(1) 发送方（生产者）的行为"></a><strong>(1) 发送方（生产者）的行为</strong></h4><p>在发送方代码中，<code>p2pSendSetup</code> 和 <code>p2pSendConnect</code> 函数负责设置发送方的连接和缓冲区。以下是发送方的生产行为的具体实现：</p>
+<div class="code-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">send-&gt;conn.head = &amp;resources-&gt;sendDevMem-&gt;head; <span class="comment">// 发送方的头指针</span></span><br><span class="line">send-&gt;conn.tail = &amp;remDevMem-&gt;tail;           <span class="comment">// 接收方的尾指针</span></span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li><p>**发送方的 <code>head</code>**：</p>
+<ul>
+<li>发送方使用 <code>head</code> 来记录当前已经写入的数据步长。</li>
+<li>每次发送数据后，发送方更新 <code>head</code>，通知接收方新数据已经可用。</li>
+</ul>
+</li>
+<li><p>**接收方的 <code>tail</code>**：</p>
+<ul>
+<li>发送方通过读取 <code>tail</code> 知道接收方已经处理了哪些数据。</li>
+<li>如果 <code>(head - tail) &gt;= 缓冲区大小</code>，发送方需要等待，直到接收方更新 <code>tail</code>。</li>
+</ul>
+</li>
+</ul>
+<h4 id="2-接收方（消费者）的行为"><a href="#2-接收方（消费者）的行为" class="headerlink" title="(2) 接收方（消费者）的行为"></a><strong>(2) 接收方（消费者）的行为</strong></h4><p>在接收方代码中，<code>p2pRecvSetup</code> 和 <code>p2pRecvConnect</code> 函数负责设置接收方的连接和缓冲区。以下是接收方的消费行为的具体实现：</p>
+<div class="code-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">recv-&gt;conn.head = &amp;remDevMem-&gt;head;           <span class="comment">// 发送方的头指针</span></span><br><span class="line">recv-&gt;conn.tail = &amp;resources-&gt;recvDevMem-&gt;tail; <span class="comment">// 接收方的尾指针</span></span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li><p>**接收方的 <code>head</code>**：</p>
+<ul>
+<li>接收方通过读取发送方的 <code>head</code> 知道有哪些新数据已经写入缓冲区。</li>
+<li>只有当 <code>head &gt; tail</code> 时，接收方才可以读取数据。</li>
+</ul>
+</li>
+<li><p>**接收方的 <code>tail</code>**：</p>
+<ul>
+<li>接收方使用 <code>tail</code> 来记录自己已经读取并处理到的步长。</li>
+<li>每次处理完数据后，接收方更新 <code>tail</code>，通知发送方可以覆盖已处理的数据。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="3-流控实现"><a href="#3-流控实现" class="headerlink" title="3. 流控实现"></a><strong>3. 流控实现</strong></h3><h4 id="发送方流控"><a href="#发送方流控" class="headerlink" title="发送方流控"></a><strong>发送方流控</strong></h4><p>发送方在生产数据时，需要确保缓冲区有足够的可用空间。流控逻辑如下：</p>
+<ol>
+<li>通过 <code>send-&gt;conn.tail</code>（接收方的 <code>tail</code>）获取接收方的处理进度。</li>
+<li>确保 <code>(head - tail) &lt; 缓冲区大小</code>，否则需要等待接收方释放空间。</li>
+<li>写入数据后，更新 <code>send-&gt;conn.head</code>（发送方的 <code>head</code>）。</li>
+</ol>
+<h4 id="接收方流控"><a href="#接收方流控" class="headerlink" title="接收方流控"></a><strong>接收方流控</strong></h4><p>接收方在消费数据时，需要确保缓冲区中有未处理的数据。流控逻辑如下：</p>
+<ol>
+<li>通过 <code>recv-&gt;conn.head</code>（发送方的 <code>head</code>）获取发送方的写入进度。</li>
+<li>确保 <code>head &gt; tail</code>，否则需要等待发送方写入新数据。</li>
+<li>读取数据后，更新 <code>recv-&gt;conn.tail</code>（接收方的 <code>tail</code>）。</li>
+</ol>
+<hr>
+<h3 id="4-模式选择"><a href="#4-模式选择" class="headerlink" title="4. 模式选择"></a><strong>4. 模式选择</strong></h3><h4 id="直接通信模式"><a href="#直接通信模式" class="headerlink" title="直接通信模式"></a><strong>直接通信模式</strong></h4><div class="code-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="built_in">P2P_SAME_PID</span>(myInfo, peerInfo) &amp;&amp; <span class="built_in">ncclParamP2pDirectDisable</span>() == <span class="number">0</span> &amp;&amp; useMemcpy == <span class="number">0</span>) &#123;</span><br><span class="line">  resources-&gt;type = P2P_DIRECT;</span><br><span class="line">  send-&gt;conn.flags |= info-&gt;read ? NCCL_DIRECT_READ : NCCL_DIRECT_WRITE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li>如果发送方和接收方位于同一个进程，且支持直接指针访问，则使用直接通信模式（<code>P2P_DIRECT</code>）。</li>
+<li>直接模式下，缓冲区可以直接通过 GPU 的设备内存共享。</li>
+</ul>
+<h4 id="IPC（进程间通信）模式"><a href="#IPC（进程间通信）模式" class="headerlink" title="IPC（进程间通信）模式"></a><strong>IPC（进程间通信）模式</strong></h4><div class="code-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">resources-&gt;type = P2P_IPC;</span><br><span class="line">recv-&gt;conn.flags |= info-&gt;read ? NCCL_IPC_READ : NCCL_IPC_WRITE;</span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li>如果发送方和接收方位于不同进程，则使用 CUDA IPC 机制。</li>
+<li>IPC 模式通过共享缓冲区的 CUDA IPC 句柄实现进程间通信。</li>
+</ul>
+<h4 id="Memcpy-模式"><a href="#Memcpy-模式" class="headerlink" title="Memcpy 模式"></a><strong>Memcpy 模式</strong></h4><div class="code-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (useMemcpy) &#123;</span><br><span class="line">  send-&gt;conn.tail = &amp;resources-&gt;proxyInfo.ceRecvMem-&gt;tail;</span><br><span class="line">  send-&gt;conn.head = &amp;resources-&gt;proxyInfo.devShm-&gt;sendMem.head;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li>如果硬件或架构不支持直接指针访问，则使用 <code>memcpy</code> 模式。</li>
+<li>在此模式下，通信通过共享内存区域完成，代理线程负责复制数据。</li>
+</ul>
+<hr>
+<h3 id="5-代码中的步长管理"><a href="#5-代码中的步长管理" class="headerlink" title="5. 代码中的步长管理"></a><strong>5. 代码中的步长管理</strong></h3><h4 id="步长对齐"><a href="#步长对齐" class="headerlink" title="步长对齐"></a><strong>步长对齐</strong></h4><div class="code-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ALIGN_SIZE</span>(sendSize, CUDA_IPC_MIN);</span><br><span class="line"><span class="built_in">ALIGN_SIZE</span>(recvSize, CUDA_IPC_MIN);</span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li>发送和接收的缓冲区大小会被对齐到最小 IPC 内存块大小（<code>CUDA_IPC_MIN</code>）。</li>
+<li>这样可以确保缓冲区满足 CUDA IPC 和直接通信的硬件要求。</li>
+</ul>
+<h4 id="分步传输"><a href="#分步传输" class="headerlink" title="分步传输"></a><strong>分步传输</strong></h4><div class="code-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">send-&gt;conn.stepSize = comm-&gt;buffSizes[NCCL_PROTO_SIMPLE] / NCCL_STEPS;</span><br><span class="line">recv-&gt;conn.stepSize = comm-&gt;buffSizes[NCCL_PROTO_SIMPLE] / NCCL_STEPS;</span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li>每次传输的步长为 <code>stepSize</code>，是缓冲区大小的一个子块。</li>
+<li><code>stepSize</code> 确保数据可以分块传输，便于缓冲区的管理和流控。</li>
+</ul>
+<hr>
+<h3 id="6-总结"><a href="#6-总结" class="headerlink" title="6. 总结"></a><strong>6. 总结</strong></h3><ol>
+<li><p><strong>生产者（发送方）</strong>：</p>
+<ul>
+<li>使用 <code>head</code> 来记录写入进度。</li>
+<li>在写入数据之前检查 <code>tail</code>，确保缓冲区有足够的空间。</li>
+<li>写入数据后更新 <code>head</code>，通知接收方。</li>
+</ul>
+</li>
+<li><p><strong>消费者（接收方）</strong>：</p>
+<ul>
+<li>使用 <code>tail</code> 来记录读取进度。</li>
+<li>在读取数据之前检查 <code>head</code>，确保缓冲区中有数据可读。</li>
+<li>读取数据后更新 <code>tail</code>，通知发送方可以覆盖已读取的数据。</li>
+</ul>
+</li>
+<li><p><strong>模式选择</strong>：</p>
+<ul>
+<li>根据发送方和接收方的关系（同进程、跨进程）选择不同的通信模式：<ul>
+<li><strong>P2P_DIRECT</strong>：直接指针访问。</li>
+<li><strong>P2P_IPC</strong>：CUDA IPC。</li>
+<li><strong>Memcpy</strong>：通过共享内存和代理线程完成数据传输。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<p>通过这些机制，NCCL 实现了一个高效的生产者-消费者模型，用于管理点对点通信中的数据传输和同步。</p>
+<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">__device__ __forceinline__ <span class="type">void</span> <span class="title function_">directSend</span><span class="params">(<span class="type">intptr_t</span> inpIx, <span class="type">intptr_t</span> outIx, <span class="type">int</span> eltN)</span> &#123;</span><br><span class="line">  genericOp&lt;<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, Input, <span class="number">-1</span>&gt;(inpIx, outIx, eltN, <span class="literal">false</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+		</div>
+
+		
+
+		
+		<ul class="post-tags-box text-lg mt-1.5 flex-wrap justify-center flex md:hidden">
+			
+			<li class="tag-item mx-0.5">
+				<a href="/tags/NCCL/">#NCCL</a>&nbsp;
+			</li>
+			
+			<li class="tag-item mx-0.5">
+				<a href="/tags/%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB/">#代码阅读</a>&nbsp;
+			</li>
+			
+		</ul>
+		
+
+		
+
+		
+		<div class="article-nav my-8 flex justify-between items-center px-2 sm:px-6 md:px-8">
+			
+			<div class="article-prev border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+				<a class="prev" rel="prev" href="/2025/01/09/%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C/">
+					<span class="left arrow-icon flex justify-center items-center">
+						<i class="fa-solid fa-chevron-left"></i>
+					</span>
+					<span class="title flex justify-center items-center">
+						<span class="post-nav-title-item">内存屏障</span>
+						<span class="post-nav-item">上一篇</span>
+					</span>
+				</a>
+			</div>
+			
+			
+			<div class="article-next border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+				<a class="next" rel="next" href="/2024/12/28/NCCL%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-nccltest%E7%AF%87/">
+					<span class="title flex justify-center items-center">
+						<span class="post-nav-title-item">NCCL代码阅读-nccltest篇</span>
+						<span class="post-nav-item">下一篇</span>
+					</span>
+					<span class="right arrow-icon flex justify-center items-center">
+						<i class="fa-solid fa-chevron-right"></i>
+					</span>
+				</a>
+			</div>
+			
+		</div>
+		
+
+
+		
+	</div>
+
+	
+	<div class="toc-content-container">
+		<div class="post-toc-wrap">
+	<div class="post-toc">
+		<div class="toc-title">目录</div>
+		<div class="page-title">NCCL代码阅读-06</div>
+		<ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#RunWorkColl"><span class="nav-text">RunWorkColl</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#runRing"><span class="nav-text">runRing</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ncclCollCbdPart"><span class="nav-text">ncclCollCbdPart</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#primitives%E9%87%8C%E9%9D%A2%E6%9C%89%E5%93%AA%E4%BA%9B%E4%B8%9C%E8%A5%BF"><span class="nav-text">primitives里面有哪些东西</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#prims%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-text">prims的初始化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#prims-directSend"><span class="nav-text">prims.directSend</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GenericOp"><span class="nav-text">GenericOp</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E4%BA%A7%E8%80%85-%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%9E%8B%E5%9C%A8-NCCL-%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="nav-text">生产者-消费者模型在 NCCL 的实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-text">1. 环形缓冲区的基本概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%94%9F%E4%BA%A7%E8%80%85-%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82"><span class="nav-text">2. 生产者-消费者模型的实现细节</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%B5%81%E6%8E%A7%E5%AE%9E%E7%8E%B0"><span class="nav-text">3. 流控实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E6%A8%A1%E5%BC%8F%E9%80%89%E6%8B%A9"><span class="nav-text">4. 模式选择</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E4%BB%A3%E7%A0%81%E4%B8%AD%E7%9A%84%E6%AD%A5%E9%95%BF%E7%AE%A1%E7%90%86"><span class="nav-text">5. 代码中的步长管理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E6%80%BB%E7%BB%93"><span class="nav-text">6. 总结</span></a></li></ol></li></ol>
+
+	</div>
+</div>
+	</div>
+	
+</div>
+			</div>
+
+			
+		</div>
+
+		<div class="main-content-footer">
+			<footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2024</span>
+              -
+            
+            2025&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">Alice Yu</a>
+            
+                
+                <p class="post-count space-x-0.5">
+                    <span>
+                        共撰写了 17 篇文章
+                    </span>
+                    
+                </p>
+            
+        </div>
+        
+            <script data-swup-reload-script src="https://cn.vercount.one/js"></script>
+            <div class="relative text-center lg:absolute lg:right-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-right">
+                
+                    <span id="busuanzi_container_site_uv" class="lg:!block">
+                        <span class="text-sm">访问人数</span>
+                        <span id="busuanzi_value_site_uv"></span>
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv" class="lg:!block">
+                        <span class="text-sm">总访问量</span>
+                        <span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">由 <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a> 驱动</span>
+            <span class="text-sm lg:block">主题&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.8.2</a></span>
+        </div>
+        
+        
+            <div>
+                博客已运行 <span class="odometer" id="runtime_days" ></span> 天 <span class="odometer" id="runtime_hours"></span> 小时 <span class="odometer" id="runtime_minutes"></span> 分钟 <span class="odometer" id="runtime_seconds"></span> 秒
+            </div>
+        
+        
+            <script data-swup-reload-script>
+                try {
+                    function odometer_init() {
+                    const elements = document.querySelectorAll('.odometer');
+                    elements.forEach(el => {
+                        new Odometer({
+                            el,
+                            format: '( ddd).dd',
+                            duration: 200
+                        });
+                    });
+                    }
+                    odometer_init();
+                } catch (error) {}
+            </script>
+        
+        
+        
+    </div>  
+</footer>
+		</div>
+	</div>
+
+	
+	<div class="post-tools">
+		<div class="post-tools-container">
+	<ul class="article-tools-list">
+		<!-- TOC aside toggle -->
+		
+		<li class="right-bottom-tools page-aside-toggle">
+			<i class="fa-regular fa-outdent"></i>
+		</li>
+		
+
+		<!-- go comment -->
+		
+	</ul>
+</div>
+	</div>
+	
+
+	<div class="right-side-tools-container">
+		<div class="side-tools-container">
+	<ul class="hidden-tools-list">
+		<li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+			<i class="fa-regular fa-magnifying-glass-plus"></i>
+		</li>
+
+		<li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+			<i class="fa-regular fa-magnifying-glass-minus"></i>
+		</li>
+
+		<li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+			<i class="fa-regular fa-moon"></i>
+		</li>
+
+		<!-- rss -->
+		
+
+		
+
+		<li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+			<i class="fa-regular fa-arrow-down"></i>
+		</li>
+	</ul>
+
+	<ul class="visible-tools-list">
+		<li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+			<i class="fa-regular fa-cog fa-spin"></i>
+		</li>
+		
+		<li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+			<i class="arrow-up fas fa-arrow-up"></i>
+			<span class="percent"></span>
+		</li>
+		
+		
+	</ul>
+</div>
+	</div>
+
+	<div class="image-viewer-container">
+	<img src="">
+</div>
+
+	
+	<div class="search-pop-overlay">
+	<div class="popup search-popup">
+		<div class="search-header">
+			<span class="search-input-field-pre">
+				<i class="fa-solid fa-keyboard"></i>
+			</span>
+			<div class="search-input-container">
+				<input autocomplete="off" autocorrect="off" autocapitalize="off" placeholder="站内搜索您需要的内容..." spellcheck="false" type="search" class="search-input">
+			</div>
+			<span class="popup-btn-close">
+				<i class="fa-solid fa-times"></i>
+			</span>
+		</div>
+		<div id="search-result">
+			<div id="no-result">
+				<i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
+			</div>
+		</div>
+	</div>
+</div>
+	
+
+</main>
+
+
+
+<script src="/js/build/libs/Swup.min.js"></script>
+
+<script src="/js/build/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/build/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+	
+<script src="/js/build/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/build/utils.js" type="module"></script>
+
+<script src="/js/build/main.js" type="module"></script>
+
+<script src="/js/build/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/build/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/build/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/build/layouts/categoryList.js" type="module"></script>
+
+
+
+    
+<script src="/js/build/tools/localSearch.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/build/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/build/layouts/lazyload.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/build/tools/runtime.js"></script>
+
+    
+<script src="/js/build/libs/odometer.min.js"></script>
+
+    
+<link rel="stylesheet" href="/assets/odometer-theme-minimal.css">
+
+
+
+
+  
+<script src="/js/build/libs/Typed.min.js"></script>
+
+  
+<script src="/js/build/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+
+    
+<script src="/js/build/libs/anime.min.js"></script>
+
+
+
+
+
+    
+<script src="/js/build/tools/tocToggle.js" type="module" data-swup-reload-script=""></script>
+
+<script src="/js/build/layouts/toc.js" type="module" data-swup-reload-script=""></script>
+
+<script src="/js/build/plugins/tabs.js" type="module" data-swup-reload-script=""></script>
+
+
+
+
+<script src="/js/build/libs/moment-with-locales.min.js" data-swup-reload-script=""></script>
+
+
+<script src="/js/build/layouts/essays.js" type="module" data-swup-reload-script=""></script>
+
+
+
+
+
+	
+</body>
+
+</html>
