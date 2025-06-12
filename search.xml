@@ -27,49 +27,34 @@
       </tags>
   </entry>
   <entry>
-    <title>CUDA内存结构</title>
-    <url>/2025/03/30/CUDA%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84/</url>
-    <content><![CDATA[<h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><ul>
-<li>本来以为我已经懂了，但是在实践中发现，自己写的代码中同步时延占据了非常大的部分，所以打算再好好整理一下内存模型</li>
-<li>参考了<a class="link"   href="https://zhuanlan.zhihu.com/p/645330027" >CUDA编程基础<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>以及该作者的其他文章</li>
+    <title>CUDA内核函数执行环境标识符:global,device,host</title>
+    <url>/2025/06/12/CUDA%E5%86%85%E6%A0%B8%E5%87%BD%E6%95%B0%E6%89%A7%E8%A1%8C%E7%8E%AF%E5%A2%83%E6%A0%87%E8%AF%86%E7%AC%A6-global-device-host/</url>
+    <content><![CDATA[<h2 id="三种函数执行环境标识符"><a href="#三种函数执行环境标识符" class="headerlink" title="三种函数执行环境标识符"></a>三种函数执行环境标识符</h2><ul>
+<li>CUDA内核函数的执行环境有三种标识符：<code>global</code>, <code>device</code>, <code>host</code></li>
 </ul>
-<h2 id="GPU结构"><a href="#GPU结构" class="headerlink" title="GPU结构"></a>GPU结构</h2><ul>
-<li><p>每个线程在SP（Streaming Processor）中执行，每个SP有自己的寄存器和local memory</p>
-</li>
-<li><p>由多个SP和一块共享内存（Shared Memory）组成一个SM（Streaming Multiprocessor）</p>
-</li>
-<li><p>多个SM和一块全局内存（Global Memory）组成一个GPU</p>
-</li>
-<li><p>GPU的内存结构如下图所示：</p>
-<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">graph TD</span><br><span class="line">    A[GPU] --&gt;|多个| B[SM]</span><br><span class="line">    B --&gt;|多个| C[SP（线程处理器）]</span><br><span class="line">    B --&gt;|一块| D[Shared Memory]</span><br><span class="line">    A --&gt;|一块| E[Global Memory]</span><br><span class="line">    C --&gt;|寄存器和local memory| F[Local Memory]</span><br></pre></td></tr></table></figure></div></li>
+<h3 id="host"><a href="#host" class="headerlink" title="host"></a><code>host</code></h3><ul>
+<li><code>host</code>在主机（CPU）上执行的普通函数</li>
+<li>可以直接省略不写，不写就默认是<code>host</code></li>
 </ul>
-<h2 id="thread-block-grid"><a href="#thread-block-grid" class="headerlink" title="thread, block, grid"></a>thread, block, grid</h2><ul>
-<li>线程处理器SP对应thread</li>
-<li>多核处理器SM对应block</li>
-<li>设备device（一整个GPU）对应grid</li>
-<li><strong>注意！</strong>一般协作的都是块内的线程，也就是一个SM里面的线程<ul>
-<li>这些线程可以访问同一块共享内存（<code>__shared__</code>）</li>
-<li>这些线程可以通过__syncthreads()进行同步</li>
-<li>这些线程可以通过atomic函数进行原子操作，比如<code>atomicAdd()</code></li>
+<h3 id="global"><a href="#global" class="headerlink" title="global"></a><code>global</code></h3><ul>
+<li><code>global</code>在设备（GPU）上执行，也就是我们常说的GPU内核函数</li>
+<li>可以有参数，<strong>不能有返回值</strong></li>
+<li>CPU通过&lt;&lt;&lt;&gt;&gt;&gt;调用，可以由__host__调用</li>
+<li>可以调用__device__函数</li>
 </ul>
-</li>
-<li>不过在CUDA 9.0之后，CUDA支持了整个grid的sync操作：<div class="code-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line">grid.<span class="built_in">sync</span>();</span><br></pre></td></tr></table></figure></div></li>
+<h3 id="device"><a href="#device" class="headerlink" title="device"></a><code>device</code></h3><ul>
+<li><code>device</code>在GPU上执行，只能在GPU上被调用</li>
+<li>所以只有<strong>global</strong>和<strong>device</strong>可以调用__device__</li>
+<li>不能被host调用</li>
+<li>不能调用global</li>
 </ul>
-<h2 id="warp"><a href="#warp" class="headerlink" title="warp"></a>warp</h2><ul>
-<li>GPU的每一行由一个控制单元和多个SP组成，这些SP执行的指令是<strong>相同</strong>的</li>
-<li>这就是SIMT，这些线程的组合叫做warp</li>
-<li>warp的大小是32个线程</li>
-<li><strong>严重注意！</strong>如果一个warp中的线程执行的指令不一样，那么GPU会将这些线程分开执行，这样会导致性能下降，举例说明：<div class="code-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function">__global__ <span class="type">void</span> <span class="title">kernel</span><span class="params">(<span class="type">int</span> *data)</span> </span>&#123;</span><br><span class="line">    <span class="type">int</span> idx = threadIdx.x;</span><br><span class="line">    <span class="keyword">if</span> (data[idx] &gt; <span class="number">0</span>) &#123;  <span class="comment">// 部分线程走此分支，另一部分走else</span></span><br><span class="line">        data[idx] *= <span class="number">2</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        data[idx] += <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></li>
-<li>​执行流程：<ul>
-<li>先执行if (data[idx] &gt; 0)，<strong>禁用</strong>不满足条件的线程</li>
-<li>执行data[idx] *&#x3D; 2（仅活跃线程）</li>
-<li>重新启用所有线程，执行else分支，禁用满足if条件的线程</li>
-<li>执行data[idx] +&#x3D; 1（剩余线程）</li>
-</ul>
-</li>
-<li><strong>并不会实现if和else的并行！！</strong></li>
-</ul>
-<h2 id="TO-BE-CONTINUED"><a href="#TO-BE-CONTINUED" class="headerlink" title="TO BE CONTINUED"></a>TO BE CONTINUED</h2>]]></content>
+<h2 id="图片总结"><a href="#图片总结" class="headerlink" title="图片总结"></a>图片总结</h2><p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/image-1.png"
+                      alt="alt text"
+                ></p>
+]]></content>
       <categories>
         <category>CUDA</category>
       </categories>
@@ -125,6 +110,76 @@
 <li>我之前一直搞不懂，都有了warp了还要block这个概念干啥，其实block的概念更多的是在实际应用中起作用，比如我们算两个矩阵的加法，那么就很自然的会希望每个线程都去处理一个矩阵元素，那就会<strong>希望将负责的线程组织成一个二维的线程块</strong>，正好一一映射过去。那这一个block里面的线程自然是执行相同的代码，这一个block都会进入一个SM，然后可以通过共享内存通信。</li>
 </ul>
 ]]></content>
+      <categories>
+        <category>CUDA</category>
+      </categories>
+      <tags>
+        <tag>CUDA</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Makefile一个使用纠错记录</title>
+    <url>/2024/12/11/Makefile%E4%B8%80%E4%B8%AA%E4%BD%BF%E7%94%A8%E7%BA%A0%E9%94%99%E8%AE%B0%E5%BD%95/</url>
+    <content><![CDATA[<ul>
+<li>今天写课设的Makefile，遇到了一个问题，记录一下。<div class="code-container" data-rel="Makefile"><figure class="iseeu highlight makefile"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 包含路径设置</span></span><br><span class="line">INCLUDES := -IC:/source/ignisos/inc -IC:/source/ignisos/inc -I./user/</span><br><span class="line"></span><br><span class="line"><span class="comment"># 源文件和目标文件</span></span><br><span class="line">SRCS := user/syscall_lib.c user/syscall_wrap.S init/main.c</span><br><span class="line">OBJS := $(SRCS:.c=.o) $(SRCS:.S=.o)</span><br><span class="line">OFiles := user/*.o \</span><br><span class="line">		init/*.o </span><br><span class="line"><span class="comment"># 输出目录和 ELF 文件</span></span><br><span class="line">OUTPUT_DIR := elf</span><br><span class="line">OUTPUT_ELF := <span class="variable">$(OUTPUT_DIR)</span>/user_program.elf</span><br><span class="line"></span><br><span class="line"><span class="comment"># 编译规则</span></span><br><span class="line"><span class="section">%.o: %.c</span></span><br><span class="line">	<span class="variable">$(CC)</span> <span class="variable">$(CFLAGS)</span> <span class="variable">$(INCLUDES)</span> -std=gnu11 -c -fno-builtin -o <span class="variable">$@</span> <span class="variable">$&lt;</span></span><br><span class="line"></span><br><span class="line"><span class="section">%.o: %.S</span></span><br><span class="line">	<span class="variable">$(CC)</span> <span class="variable">$(CFLAGS)</span> <span class="variable">$(INCLUDES)</span> -c -fno-builtin -o <span class="variable">$@</span> <span class="variable">$&lt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 默认目标</span></span><br><span class="line"><span class="section">all: <span class="variable">$(OUTPUT_ELF)</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 链接规则</span></span><br><span class="line"><span class="variable">$(OUTPUT_ELF)</span>: <span class="variable">$(OBJS)</span></span><br><span class="line">	@mkdir -p <span class="variable">$(OUTPUT_DIR)</span></span><br><span class="line">	<span class="variable">$(LD)</span> <span class="variable">$(LDFLAGS)</span> -EL -msoft-float -march=m14kc -flto -nostartfiles -nostdlib -static -T user.lds -o <span class="variable">$@</span> <span class="variable">$(OFiles)</span></span><br><span class="line">	<span class="variable">$(OC)</span> --remove-section .MIPS.abiflags --remove-section .reginfo <span class="variable">$@</span></span><br><span class="line">	<span class="variable">$(SZ)</span> <span class="variable">$@</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 清理目标</span></span><br><span class="line"><span class="section">clean:</span></span><br><span class="line">	rm -f user/*.o init/*.o <span class="variable">$(OUTPUT_DIR)</span>/*</span><br><span class="line"></span><br><span class="line"><span class="meta"><span class="keyword">.PHONY</span>: all clean</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">include</span> <span class="keyword">include</span>.mk</span><br></pre></td></tr></table></figure></div></li>
+<li>一直在链接的时候出错，老是报类似这样的错误：<div class="code-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="code"><pre><span class="line">init/main.c:1:17: fatal error: lib.h: No such file or directory</span><br><span class="line"><span class="meta prompt_"> #</span><span class="language-bash">include <span class="string">&quot;lib.h&quot;</span></span></span><br><span class="line">                 ^</span><br><span class="line">compilation terminated.</span><br><span class="line">make: *** [init/main.o] Error 1</span><br></pre></td></tr></table></figure></div></li>
+<li>然后拿给我对象看，聪明的他发现了问题，在make打印出来的编译命令中，最后链接的这句长这样：<div class="code-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="code"><pre><span class="line">mips-mti-elf-gcc  -nostdlib -static -T user.lds -o elf/user_program.elf user/syscall_lib.o user/syscall_wrap.S init/main.o user/syscall_lib.c user/syscall_wrap.o init/main.c</span><br></pre></td></tr></table></figure></div></li>
+<li>我们用的mips套件，里面的链接器用不了，所以只能用gcc</li>
+<li>但这里面应该只链接.o文件才对，这句命令里面有.c和.S文件，gcc碰到这几个文件就会开心的跑去编译，结果编译的时候得找头文件啊，我们看看指定头文件路径的编译命令：<div class="code-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="code"><pre><span class="line">mips-mti-elf-gcc -EL -g -march=m14kc -msoft-float -O1 -G0 -IC:/source/ignisos/inc -IC:/source/ignisos/inc -I./user/ -c -fno-builtin -o user/syscall_wrap.o user/syscall_wrap.S</span><br></pre></td></tr></table></figure></div></li>
+<li>这里面-I指定了头文件路径，但是我们看上面那个链接的命令里面，是没有的，于是gcc跑去编译的时候，找不到头文件，就报错了</li>
+</ul>
+]]></content>
+      <categories>
+        <category>实验室实践</category>
+      </categories>
+      <tags>
+        <tag>Makefile</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>CUDA内存结构</title>
+    <url>/2025/03/30/CUDA%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84/</url>
+    <content><![CDATA[<h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><ul>
+<li>本来以为我已经懂了，但是在实践中发现，自己写的代码中同步时延占据了非常大的部分，所以打算再好好整理一下内存模型</li>
+<li>参考了<a class="link"   href="https://zhuanlan.zhihu.com/p/645330027" >CUDA编程基础<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>以及该作者的其他文章</li>
+</ul>
+<h2 id="GPU结构"><a href="#GPU结构" class="headerlink" title="GPU结构"></a>GPU结构</h2><ul>
+<li><p>每个线程在SP（Streaming Processor）中执行，每个SP有自己的寄存器和local memory</p>
+</li>
+<li><p>由多个SP和一块共享内存（Shared Memory）组成一个SM（Streaming Multiprocessor）</p>
+</li>
+<li><p>多个SM和一块全局内存（Global Memory）组成一个GPU</p>
+</li>
+<li><p>GPU的内存结构如下图所示：</p>
+<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">graph TD</span><br><span class="line">    A[GPU] --&gt;|多个| B[SM]</span><br><span class="line">    B --&gt;|多个| C[SP（线程处理器）]</span><br><span class="line">    B --&gt;|一块| D[Shared Memory]</span><br><span class="line">    A --&gt;|一块| E[Global Memory]</span><br><span class="line">    C --&gt;|寄存器和local memory| F[Local Memory]</span><br></pre></td></tr></table></figure></div></li>
+</ul>
+<h2 id="thread-block-grid"><a href="#thread-block-grid" class="headerlink" title="thread, block, grid"></a>thread, block, grid</h2><ul>
+<li>线程处理器SP对应thread</li>
+<li>多核处理器SM对应block</li>
+<li>设备device（一整个GPU）对应grid</li>
+<li><strong>注意！</strong>一般协作的都是块内的线程，也就是一个SM里面的线程<ul>
+<li>这些线程可以访问同一块共享内存（<code>__shared__</code>）</li>
+<li>这些线程可以通过__syncthreads()进行同步</li>
+<li>这些线程可以通过atomic函数进行原子操作，比如<code>atomicAdd()</code></li>
+</ul>
+</li>
+<li>不过在CUDA 9.0之后，CUDA支持了整个grid的sync操作：<div class="code-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line">grid.<span class="built_in">sync</span>();</span><br></pre></td></tr></table></figure></div></li>
+</ul>
+<h2 id="warp"><a href="#warp" class="headerlink" title="warp"></a>warp</h2><ul>
+<li>GPU的每一行由一个控制单元和多个SP组成，这些SP执行的指令是<strong>相同</strong>的</li>
+<li>这就是SIMT，这些线程的组合叫做warp</li>
+<li>warp的大小是32个线程</li>
+<li><strong>严重注意！</strong>如果一个warp中的线程执行的指令不一样，那么GPU会将这些线程分开执行，这样会导致性能下降，举例说明：<div class="code-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function">__global__ <span class="type">void</span> <span class="title">kernel</span><span class="params">(<span class="type">int</span> *data)</span> </span>&#123;</span><br><span class="line">    <span class="type">int</span> idx = threadIdx.x;</span><br><span class="line">    <span class="keyword">if</span> (data[idx] &gt; <span class="number">0</span>) &#123;  <span class="comment">// 部分线程走此分支，另一部分走else</span></span><br><span class="line">        data[idx] *= <span class="number">2</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        data[idx] += <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></li>
+<li>​执行流程：<ul>
+<li>先执行if (data[idx] &gt; 0)，<strong>禁用</strong>不满足条件的线程</li>
+<li>执行data[idx] *&#x3D; 2（仅活跃线程）</li>
+<li>重新启用所有线程，执行else分支，禁用满足if条件的线程</li>
+<li>执行data[idx] +&#x3D; 1（剩余线程）</li>
+</ul>
+</li>
+<li><strong>并不会实现if和else的并行！！</strong></li>
+</ul>
+<h2 id="TO-BE-CONTINUED"><a href="#TO-BE-CONTINUED" class="headerlink" title="TO BE CONTINUED"></a>TO BE CONTINUED</h2>]]></content>
       <categories>
         <category>CUDA</category>
       </categories>
@@ -220,25 +275,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Makefile一个使用纠错记录</title>
-    <url>/2024/12/11/Makefile%E4%B8%80%E4%B8%AA%E4%BD%BF%E7%94%A8%E7%BA%A0%E9%94%99%E8%AE%B0%E5%BD%95/</url>
-    <content><![CDATA[<ul>
-<li>今天写课设的Makefile，遇到了一个问题，记录一下。<div class="code-container" data-rel="Makefile"><figure class="iseeu highlight makefile"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 包含路径设置</span></span><br><span class="line">INCLUDES := -IC:/source/ignisos/inc -IC:/source/ignisos/inc -I./user/</span><br><span class="line"></span><br><span class="line"><span class="comment"># 源文件和目标文件</span></span><br><span class="line">SRCS := user/syscall_lib.c user/syscall_wrap.S init/main.c</span><br><span class="line">OBJS := $(SRCS:.c=.o) $(SRCS:.S=.o)</span><br><span class="line">OFiles := user/*.o \</span><br><span class="line">		init/*.o </span><br><span class="line"><span class="comment"># 输出目录和 ELF 文件</span></span><br><span class="line">OUTPUT_DIR := elf</span><br><span class="line">OUTPUT_ELF := <span class="variable">$(OUTPUT_DIR)</span>/user_program.elf</span><br><span class="line"></span><br><span class="line"><span class="comment"># 编译规则</span></span><br><span class="line"><span class="section">%.o: %.c</span></span><br><span class="line">	<span class="variable">$(CC)</span> <span class="variable">$(CFLAGS)</span> <span class="variable">$(INCLUDES)</span> -std=gnu11 -c -fno-builtin -o <span class="variable">$@</span> <span class="variable">$&lt;</span></span><br><span class="line"></span><br><span class="line"><span class="section">%.o: %.S</span></span><br><span class="line">	<span class="variable">$(CC)</span> <span class="variable">$(CFLAGS)</span> <span class="variable">$(INCLUDES)</span> -c -fno-builtin -o <span class="variable">$@</span> <span class="variable">$&lt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 默认目标</span></span><br><span class="line"><span class="section">all: <span class="variable">$(OUTPUT_ELF)</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 链接规则</span></span><br><span class="line"><span class="variable">$(OUTPUT_ELF)</span>: <span class="variable">$(OBJS)</span></span><br><span class="line">	@mkdir -p <span class="variable">$(OUTPUT_DIR)</span></span><br><span class="line">	<span class="variable">$(LD)</span> <span class="variable">$(LDFLAGS)</span> -EL -msoft-float -march=m14kc -flto -nostartfiles -nostdlib -static -T user.lds -o <span class="variable">$@</span> <span class="variable">$(OFiles)</span></span><br><span class="line">	<span class="variable">$(OC)</span> --remove-section .MIPS.abiflags --remove-section .reginfo <span class="variable">$@</span></span><br><span class="line">	<span class="variable">$(SZ)</span> <span class="variable">$@</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 清理目标</span></span><br><span class="line"><span class="section">clean:</span></span><br><span class="line">	rm -f user/*.o init/*.o <span class="variable">$(OUTPUT_DIR)</span>/*</span><br><span class="line"></span><br><span class="line"><span class="meta"><span class="keyword">.PHONY</span>: all clean</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">include</span> <span class="keyword">include</span>.mk</span><br></pre></td></tr></table></figure></div></li>
-<li>一直在链接的时候出错，老是报类似这样的错误：<div class="code-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="code"><pre><span class="line">init/main.c:1:17: fatal error: lib.h: No such file or directory</span><br><span class="line"><span class="meta prompt_"> #</span><span class="language-bash">include <span class="string">&quot;lib.h&quot;</span></span></span><br><span class="line">                 ^</span><br><span class="line">compilation terminated.</span><br><span class="line">make: *** [init/main.o] Error 1</span><br></pre></td></tr></table></figure></div></li>
-<li>然后拿给我对象看，聪明的他发现了问题，在make打印出来的编译命令中，最后链接的这句长这样：<div class="code-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="code"><pre><span class="line">mips-mti-elf-gcc  -nostdlib -static -T user.lds -o elf/user_program.elf user/syscall_lib.o user/syscall_wrap.S init/main.o user/syscall_lib.c user/syscall_wrap.o init/main.c</span><br></pre></td></tr></table></figure></div></li>
-<li>我们用的mips套件，里面的链接器用不了，所以只能用gcc</li>
-<li>但这里面应该只链接.o文件才对，这句命令里面有.c和.S文件，gcc碰到这几个文件就会开心的跑去编译，结果编译的时候得找头文件啊，我们看看指定头文件路径的编译命令：<div class="code-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="code"><pre><span class="line">mips-mti-elf-gcc -EL -g -march=m14kc -msoft-float -O1 -G0 -IC:/source/ignisos/inc -IC:/source/ignisos/inc -I./user/ -c -fno-builtin -o user/syscall_wrap.o user/syscall_wrap.S</span><br></pre></td></tr></table></figure></div></li>
-<li>这里面-I指定了头文件路径，但是我们看上面那个链接的命令里面，是没有的，于是gcc跑去编译的时候，找不到头文件，就报错了</li>
-</ul>
-]]></content>
-      <categories>
-        <category>实验室实践</category>
-      </categories>
-      <tags>
-        <tag>Makefile</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>NCCL代码阅读-03</title>
     <url>/2024/12/09/NCCL%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-03/</url>
     <content><![CDATA[<h2 id="通信组创建和销毁-官网给的例子，解释看注释"><a href="#通信组创建和销毁-官网给的例子，解释看注释" class="headerlink" title="通信组创建和销毁(官网给的例子，解释看注释)"></a>通信组创建和销毁(官网给的例子，解释看注释)</h2><h3 id="一个进程，一个线程，多个设备"><a href="#一个进程，一个线程，多个设备" class="headerlink" title="一个进程，一个线程，多个设备"></a>一个进程，一个线程，多个设备</h3><ul>
@@ -278,6 +314,177 @@
 <ul>
 <li>这是他的最初原型，在nccl&#x2F;src&#x2F;device&#x2F;sendrecv.h里面，我们可以看到他的一个针对sendrecv的特化：<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="code"><pre><span class="line">template &lt;typename T, typename RedOp&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">RunWorkBatch</span>&lt;</span>ncclFuncSendRecv, T, RedOp, NCCL_ALGO_RING, NCCL_PROTO_SIMPLE&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">static_assert</span>(<span class="keyword">sizeof</span>(T) == <span class="number">1</span>, <span class="string">&quot;SendRecv only works on single byte types T.&quot;</span>);</span><br><span class="line"></span><br><span class="line">    template &lt;typename Proto&gt;</span><br><span class="line">    __device__ <span class="type">void</span> <span class="title function_">runSend</span><span class="params">(<span class="type">int</span> tid, <span class="type">int</span> tn, <span class="type">int</span> group, <span class="keyword">struct</span> ncclDevWorkP2p *work)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">size_t</span> bytes = work-&gt;sendBytes;</span><br><span class="line">        <span class="type">int</span> chunkSize = work-&gt;sendIpcReg &amp;&amp; ncclShmem.comm.isNvlink ? (<span class="number">1</span> &lt;&lt; <span class="number">30</span>) : u32fp8Decode(work-&gt;sendChunkSize_u32fp8);</span><br><span class="line">        Primitives&lt;T, RedOp, FanAsymmetric&lt;<span class="number">0</span>, <span class="number">1</span>&gt;, <span class="number">1</span>, Proto, <span class="number">1</span>&gt;</span><br><span class="line">            prims(tid, tn, nullptr, &amp;work-&gt;sendRank, work-&gt;sendAddr, nullptr,</span><br><span class="line">                  <span class="comment">/*redOpArg(ignored)=*/</span><span class="number">0</span>, group, <span class="number">1</span>, <span class="number">1</span>, nullptr,</span><br><span class="line">                  <span class="comment">/*ipcReg=*/</span>work-&gt;sendIpcReg, <span class="comment">/*netReg=*/</span>work-&gt;sendRegistered, ncclShmem.comm.p2pChunkSize);</span><br><span class="line">        <span class="type">size_t</span> cursor = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">do</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="type">int</span> n = min(<span class="type">size_t</span>(chunkSize), bytes - cursor);</span><br><span class="line">            prims.directSend(cursor, cursor, n);</span><br><span class="line">            cursor += n;</span><br><span class="line">        &#125; <span class="keyword">while</span> (cursor &lt; bytes &amp;&amp; work-&gt;sendRegistered == <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    template &lt;typename Proto&gt;</span><br><span class="line">    __device__ <span class="type">void</span> <span class="title function_">runRecv</span><span class="params">(<span class="type">int</span> tid, <span class="type">int</span> tn, <span class="type">int</span> group, <span class="keyword">struct</span> ncclDevWorkP2p *work)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">size_t</span> bytes = work-&gt;recvBytes;</span><br><span class="line">        <span class="type">int</span> chunkSize = work-&gt;recvIpcReg &amp;&amp; ncclShmem.comm.isNvlink ? (<span class="number">1</span> &lt;&lt; <span class="number">30</span>) : u32fp8Decode(work-&gt;recvChunkSize_u32fp8);</span><br><span class="line">        Primitives&lt;T, RedOp, FanAsymmetric&lt;<span class="number">1</span>, <span class="number">0</span>&gt;, <span class="number">1</span>, Proto, <span class="number">1</span>&gt;</span><br><span class="line">            prims(tid, tn, &amp;work-&gt;recvRank, nullptr, nullptr, work-&gt;recvAddr,</span><br><span class="line">                  <span class="comment">/*redOpArg(ignored)=*/</span><span class="number">0</span>, group, <span class="number">1</span>, <span class="number">1</span>, nullptr,</span><br><span class="line">                  <span class="comment">/*ipcReg=*/</span>work-&gt;recvIpcReg, <span class="comment">/*netReg=*/</span>work-&gt;recvRegistered, ncclShmem.comm.p2pChunkSize);</span><br><span class="line">        <span class="type">size_t</span> cursor = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">do</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="type">int</span> n = min(<span class="type">size_t</span>(chunkSize), bytes - cursor);</span><br><span class="line">            prims.directRecv(cursor, cursor, n);</span><br><span class="line">            cursor += n;</span><br><span class="line">        &#125; <span class="keyword">while</span> (cursor &lt; bytes &amp;&amp; work-&gt;recvRegistered == <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    __device__ __forceinline__ <span class="type">void</span> <span class="title function_">run</span><span class="params">()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">const</span> <span class="type">int</span> tid = threadIdx.x;</span><br><span class="line">        <span class="type">const</span> <span class="type">int</span> tn = blockDim.x;</span><br><span class="line">        <span class="type">const</span> <span class="type">int</span> wid = tid / WARP_SIZE;</span><br><span class="line">        <span class="type">const</span> <span class="type">int</span> nWarps = tn / WARP_SIZE;</span><br><span class="line">        <span class="type">const</span> <span class="type">int</span> lane = tid % WARP_SIZE;</span><br><span class="line"></span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">Shared</span></span></span><br><span class="line"><span class="class">        &#123;</span></span><br><span class="line">            <span class="type">uint32_t</span> workSendMask; <span class="comment">// bitmasks of which work indices have send/recv</span></span><br><span class="line">            <span class="type">uint32_t</span> workRecvMask;</span><br><span class="line">        &#125;;</span><br><span class="line">        Shared *shared = (Shared *)ncclScratchForWarp(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">ncclDevWorkP2p</span> *<span class="title">works</span> =</span> (ncclDevWorkP2p *)ncclShmem.workStorage;</span><br><span class="line">        <span class="type">int</span> nWorks = ncclShmem.nWorks;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (wid == <span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// Modify the memory range of each work[] to reflect this channel&#x27;s</span></span><br><span class="line">            <span class="comment">// partition of the work. Since integer divides are very heavy it&#x27;s</span></span><br><span class="line">            <span class="comment">// best to do them all in one warp.</span></span><br><span class="line">            <span class="type">int</span> workIx = lane % <span class="number">16</span>;</span><br><span class="line">            <span class="type">int</span> isSend = lane &lt; <span class="number">16</span> ? <span class="number">0</span> : <span class="number">1</span>;</span><br><span class="line">            <span class="type">bool</span> hasWork = <span class="literal">false</span>;</span><br><span class="line">            <span class="keyword">if</span> (workIx &lt; nWorks)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="class"><span class="keyword">struct</span> <span class="title">ncclDevWorkP2p</span> *<span class="title">work</span> =</span> &amp;works[workIx];</span><br><span class="line">                <span class="type">size_t</span> bytes = isSend ? work-&gt;sendBytes : work-&gt;recvBytes;</span><br><span class="line">                <span class="type">int</span> nParts = isSend ? work-&gt;nSendChannels : work-&gt;nRecvChannels;</span><br><span class="line">                <span class="type">int</span> part = ncclP2pChannelToPart(work-&gt;nP2pChannels, work-&gt;channelBase, ncclShmem.channelId);</span><br><span class="line">                hasWork = (part &lt; nParts);</span><br><span class="line">                <span class="keyword">if</span> (nParts != <span class="number">0</span>)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="type">size_t</span> partBeg, partEnd;</span><br><span class="line">                    ncclP2pPartBounds(nParts, part, bytes, &amp;partBeg, &amp;partEnd);</span><br><span class="line">                    (isSend ? work-&gt;sendAddr : work-&gt;recvAddr) = (<span class="type">char</span> *)(isSend ? work-&gt;sendAddr : work-&gt;recvAddr) + partBeg;</span><br><span class="line">                    (isSend ? work-&gt;sendBytes : work-&gt;recvBytes) = partEnd - partBeg;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// Coverity reports a possible thread divergence due to not all threads participating in the collective.</span></span><br><span class="line">            <span class="comment">// However, the code ensures that the participation is on a per-warp basis.</span></span><br><span class="line">            <span class="comment">// coverity[device_thread_diverged:FALSE]</span></span><br><span class="line">            <span class="type">uint32_t</span> mask = __ballot_sync(~<span class="number">0u</span>, hasWork);</span><br><span class="line">            <span class="keyword">if</span> (lane == <span class="number">0</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                shared-&gt;workSendMask = mask &gt;&gt; <span class="number">16</span>;</span><br><span class="line">                shared-&gt;workRecvMask = mask &amp; <span class="number">0xffff</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// The fastest way to compute a warp uniform division x/y in [0,32) is to</span></span><br><span class="line">        <span class="comment">// use each lane to guess a solution and count the ones that don&#x27;t exceed</span></span><br><span class="line">        <span class="comment">// the numerator:</span></span><br><span class="line">        <span class="comment">//   __popc(__ballot_sync(~0u, y*(lane+1) &lt;= x))</span></span><br><span class="line">        <span class="comment">// That takes 1/3 the time of standard division and about 3/4 the time of</span></span><br><span class="line">        <span class="comment">// approximate floating point division:</span></span><br><span class="line">        <span class="comment">//   __float2int_rd(__fdividef(float(x),float(y))).</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// nWarpPerWork = nWarps/nWorks</span></span><br><span class="line">        <span class="type">int</span> nWarpPerWork = __popc(__ballot_sync(~<span class="number">0u</span>, nWorks * (lane + <span class="number">1</span>) &lt;= nWarps));</span><br><span class="line">        <span class="type">int</span> nRecvWarpPerWork = nWarpPerWork &lt;= <span class="number">4</span> ? nWarpPerWork / <span class="number">2</span> : (nWarpPerWork - <span class="number">1</span>) / <span class="number">2</span>;</span><br><span class="line">        <span class="type">int</span> nSendWarpPerWork = nWarpPerWork &lt;= <span class="number">4</span> ? nRecvWarpPerWork : nRecvWarpPerWork + <span class="number">1</span>;</span><br><span class="line">        <span class="comment">// This might reduce nWarpPerWork which is probably desirable. It is better</span></span><br><span class="line">        <span class="comment">// to have a balanced number of reading and writing threads even if that</span></span><br><span class="line">        <span class="comment">// leaves warps unused.</span></span><br><span class="line">        nWarpPerWork = nSendWarpPerWork + nRecvWarpPerWork;</span><br><span class="line">        <span class="comment">// The work index this warp belongs to: workIx = wid/nWarpPerWork</span></span><br><span class="line">        <span class="type">int</span> workIx = __popc(__ballot_sync(~<span class="number">0u</span>, (lane + <span class="number">1</span>) * nWarpPerWork &lt;= wid));</span><br><span class="line"></span><br><span class="line">        __syncthreads(); <span class="comment">// Wait for works[] and shared-&gt;* to be updated by warp=0</span></span><br><span class="line"></span><br><span class="line">        <span class="type">uint32_t</span> workSendMask = shared-&gt;workSendMask;</span><br><span class="line">        <span class="type">uint32_t</span> workRecvMask = shared-&gt;workRecvMask;</span><br><span class="line"></span><br><span class="line">        __syncthreads(); <span class="comment">// release scratch space used by shared-&gt;*</span></span><br><span class="line">        <span class="keyword">if</span> (nWorks &lt;= workIx)</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Thread range for whole work (send &amp; recv combined)</span></span><br><span class="line">        <span class="type">int</span> subtid = tid - workIx * nWarpPerWork * WARP_SIZE;</span><br><span class="line">        <span class="type">int</span> subtn = nWarpPerWork * WARP_SIZE;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// A send primtive of sufficient size requires 2 cuda barrier ids.</span></span><br><span class="line">        <span class="type">constexpr</span> <span class="type">int</span> nSendWarpsForExtraGroup = NCCL_SIMPLE_EXTRA_GROUP_IF_NTHREADS_GE / WARP_SIZE;</span><br><span class="line">        <span class="comment">// Count up all group ids used below this workIx:</span></span><br><span class="line">        <span class="type">int</span> group, extra;</span><br><span class="line">        <span class="comment">// Each recv gets one group id:</span></span><br><span class="line">        group = __popc(workRecvMask &amp; ((<span class="number">1</span> &lt;&lt; workIx) - <span class="number">1</span>));</span><br><span class="line">        <span class="comment">// Sends accompanying recvs get one and maybe an extra:</span></span><br><span class="line">        extra = (nSendWarpPerWork &gt;= nSendWarpsForExtraGroup) ? <span class="number">1</span> : <span class="number">0</span>;</span><br><span class="line">        group += __popc((workSendMask &amp; workRecvMask) &amp; ((<span class="number">1</span> &lt;&lt; workIx) - <span class="number">1</span>)) * (<span class="number">1</span> + extra);</span><br><span class="line">        <span class="comment">// Sends without recvs use more warps so compute extra accordingly:</span></span><br><span class="line">        extra = (nWarpPerWork &gt;= nSendWarpsForExtraGroup) ? <span class="number">1</span> : <span class="number">0</span>;</span><br><span class="line">        group += __popc((workSendMask &amp; ~workRecvMask) &amp; ((<span class="number">1</span> &lt;&lt; workIx) - <span class="number">1</span>)) * (<span class="number">1</span> + extra);</span><br><span class="line"></span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">ncclDevWorkP2p</span> *<span class="title">work</span> =</span> &amp;works[workIx];</span><br><span class="line">        <span class="type">bool</span> hasSend = <span class="number">1</span> &amp; (workSendMask &gt;&gt; workIx);</span><br><span class="line">        <span class="type">bool</span> hasRecv = <span class="number">1</span> &amp; (workRecvMask &gt;&gt; workIx);</span><br><span class="line">        <span class="type">bool</span> isCopy = work-&gt;sendRank == ncclShmem.comm.rank;</span><br><span class="line">        <span class="type">bool</span> isSend = !hasRecv || (hasSend &amp;&amp; subtid &lt; nSendWarpPerWork * WARP_SIZE);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!isCopy &amp;&amp; hasSend &amp;&amp; hasRecv)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// Translate thread ids to reflect just this send or recv as opposed to whole work.</span></span><br><span class="line">            <span class="keyword">if</span> (isSend)</span><br><span class="line">            &#123;</span><br><span class="line">                subtn = nSendWarpPerWork * WARP_SIZE;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                subtid -= nSendWarpPerWork * WARP_SIZE;</span><br><span class="line">                subtn = nRecvWarpPerWork * WARP_SIZE;</span><br><span class="line">                group += <span class="number">1</span> + (nSendWarpPerWork &gt;= nSendWarpsForExtraGroup ? <span class="number">1</span> : <span class="number">0</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (isCopy)</span><br><span class="line">        &#123;</span><br><span class="line">            reduceCopy&lt;COLL_UNROLL, RedOp, T, <span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="comment">/*PreOpSrcs=*/</span><span class="number">0</span>&gt;(subtid, subtn, <span class="number">0</span>, nullptr, <span class="literal">false</span>, <span class="number">1</span>, &amp;work-&gt;sendAddr, <span class="number">1</span>, &amp;work-&gt;recvAddr, (<span class="type">ssize_t</span>)work-&gt;sendBytes);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (isSend)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (work-&gt;sendProtoLL)</span><br><span class="line">            &#123;</span><br><span class="line">                runSend&lt;ProtoLL&gt;(subtid, subtn, group, work);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                runSend&lt;ProtoSimple&lt;<span class="number">1</span>, <span class="number">1</span>&gt;&gt;(subtid, subtn, group, work);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (work-&gt;recvProtoLL)</span><br><span class="line">            &#123;</span><br><span class="line">                runRecv&lt;ProtoLL&gt;(subtid, subtn, group, work);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                runRecv&lt;ProtoSimple&lt;<span class="number">1</span>, <span class="number">1</span>&gt;&gt;(subtid, subtn, group, work);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></div></li>
 <li>run里面调用了runSend,runRecv，里面调用了primitives原语，接下来可以前往nccl&#x2F;src&#x2F;device&#x2F;prims_ll128.h等文件查看相关内容</li>
+</ul>
+]]></content>
+      <categories>
+        <category>NCCL</category>
+      </categories>
+      <tags>
+        <tag>NCCL</tag>
+        <tag>代码阅读</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>NCCL代码阅读-04</title>
+    <url>/2024/12/15/NCCL%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-04/</url>
+    <content><![CDATA[<p>好的，再更具体一步，假设我们在 <strong>两个 GPU 做 AllReduce</strong> 时，数据的具体划分、传输，以及每一阶段的变化都会明确说明。</p>
+<hr>
+<h3 id="场景再具体化"><a href="#场景再具体化" class="headerlink" title="场景再具体化"></a><strong>场景再具体化</strong></h3><p>假设：</p>
+<ul>
+<li><strong>数据大小：16 个 <code>float</code> 元素</strong>（64 字节，总数据量很小，便于解释）。</li>
+<li>**数据类型：<code>float</code>**，每个元素 4 字节。</li>
+<li><strong>2 个 GPU</strong>（<code>nranks = 2</code>），使用环形拓扑（Ring）。</li>
+<li><strong>1 个通道</strong>（<code>nChannels = 1</code>，即所有数据由一个通道处理）。</li>
+<li><strong>每个 chunk 大小：8 个元素</strong>（<code>chunkCount = 8</code> 个元素，每个 chunk 为 32 字节）。</li>
+</ul>
+<h3 id="起始数据分布"><a href="#起始数据分布" class="headerlink" title="起始数据分布"></a><strong>起始数据分布</strong></h3><ul>
+<li>每个 GPU 初始有一份独立的数据：<ul>
+<li>GPU 0 的数据：<code>[A0, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15]</code></li>
+<li>GPU 1 的数据：<code>[B0, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15]</code></li>
+</ul>
+</li>
+</ul>
+<p>目标：完成 <strong>AllReduce（sum）</strong>，让每个 GPU 最终都得到：</p>
+<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">[ A0+B0, A1+B1, ..., A15+B15 ]</span><br></pre></td></tr></table></figure></div>
+
+<hr>
+<h3 id="数据划分"><a href="#数据划分" class="headerlink" title="数据划分"></a><strong>数据划分</strong></h3><ol>
+<li><p><strong>划分到通道：</strong></p>
+<ul>
+<li>只有一个通道（<code>nChannels = 1</code>），所有数据量（16 个元素）分配给这个通道。</li>
+<li><strong><code>channelCount = 16</code> 个元素</strong>。</li>
+</ul>
+</li>
+<li><p><strong>划分到 chunk：</strong></p>
+<ul>
+<li>每个 chunk 处理 <code>chunkCount = 8</code> 个元素。</li>
+<li><code>channelCount = 16</code> 被划分为 2 个 chunk：<ul>
+<li><strong>Chunk 0：<code>[A0, A1, ..., A7]</code></strong></li>
+<li><strong>Chunk 1：<code>[A8, A9, ..., A15]</code></strong></li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="运行代码的细节"><a href="#运行代码的细节" class="headerlink" title="运行代码的细节"></a><strong>运行代码的细节</strong></h3><h4 id="第一轮：elemOffset-0，处理第-1-个-chunk"><a href="#第一轮：elemOffset-0，处理第-1-个-chunk" class="headerlink" title="第一轮：elemOffset = 0，处理第 1 个 chunk"></a>第一轮：<code>elemOffset = 0</code>，处理第 1 个 chunk</h4><ul>
+<li><strong>数据：Chunk 0（前 8 个元素）</strong><ul>
+<li>GPU 0：<code>[A0, A1, ..., A7]</code></li>
+<li>GPU 1：<code>[B0, B1, ..., B7]</code></li>
+</ul>
+</li>
+</ul>
+<h5 id="1-GPU-0-发送-chunk-0"><a href="#1-GPU-0-发送-chunk-0" class="headerlink" title="(1) GPU 0 发送 chunk 0"></a><strong>(1) GPU 0 发送 chunk 0</strong></h5><div class="code-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line">prims.<span class="built_in">directSend</span>(offset, offset, nelem);</span><br></pre></td></tr></table></figure></div>
+<ul>
+<li>GPU 0 把 <code>[A0, A1, ..., A7]</code> 发送到 GPU 1。</li>
+</ul>
+<h5 id="2-GPU-1-接收并归约"><a href="#2-GPU-1-接收并归约" class="headerlink" title="(2) GPU 1 接收并归约"></a><strong>(2) GPU 1 接收并归约</strong></h5><div class="code-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line">prims.<span class="built_in">directRecvReduceDirectSend</span>(offset, offset, nelem);</span><br></pre></td></tr></table></figure></div>
+<ul>
+<li>GPU 1 接收 GPU 0 的数据 <code>[A0, A1, ..., A7]</code>，并和自己的数据 <code>[B0, B1, ..., B7]</code> 做归约（<code>sum</code>），结果为：<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">[A0+B0, A1+B1, ..., A7+B7]</span><br></pre></td></tr></table></figure></div></li>
+<li>GPU 1 将归约后的结果 <code>[A0+B0, A1+B1, ..., A7+B7]</code> 发送回 GPU 0。</li>
+</ul>
+<h5 id="3-GPU-0-接收归约结果"><a href="#3-GPU-0-接收归约结果" class="headerlink" title="(3) GPU 0 接收归约结果"></a><strong>(3) GPU 0 接收归约结果</strong></h5><div class="code-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line">prims.<span class="built_in">directRecv</span>(offset, offset, nelem);</span><br></pre></td></tr></table></figure></div>
+<ul>
+<li>GPU 0 接收归约后的数据 <code>[A0+B0, A1+B1, ..., A7+B7]</code>，存入自己的接收缓冲区。</li>
+</ul>
+<h4 id="第一轮完成，GPU-数据状态："><a href="#第一轮完成，GPU-数据状态：" class="headerlink" title="第一轮完成，GPU 数据状态："></a><strong>第一轮完成，GPU 数据状态：</strong></h4><ul>
+<li>GPU 0：<code>[A0+B0, A1+B1, ..., A7+B7, A8, A9, ..., A15]</code></li>
+<li>GPU 1：<code>[A0+B0, A1+B1, ..., A7+B7, B8, B9, ..., B15]</code></li>
+</ul>
+<hr>
+<h4 id="第二轮：elemOffset-8，处理第-2-个-chunk"><a href="#第二轮：elemOffset-8，处理第-2-个-chunk" class="headerlink" title="第二轮：elemOffset = 8，处理第 2 个 chunk"></a>第二轮：<code>elemOffset = 8</code>，处理第 2 个 chunk</h4><ul>
+<li><strong>数据：Chunk 1（后 8 个元素）</strong><ul>
+<li>GPU 0：<code>[A8, A9, ..., A15]</code></li>
+<li>GPU 1：<code>[B8, B9, ..., B15]</code></li>
+</ul>
+</li>
+</ul>
+<h5 id="1-GPU-0-发送-chunk-1"><a href="#1-GPU-0-发送-chunk-1" class="headerlink" title="(1) GPU 0 发送 chunk 1"></a><strong>(1) GPU 0 发送 chunk 1</strong></h5><div class="code-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line">prims.<span class="built_in">directSend</span>(offset, offset, nelem);</span><br></pre></td></tr></table></figure></div>
+<ul>
+<li>GPU 0 把 <code>[A8, A9, ..., A15]</code> 发送到 GPU 1。</li>
+</ul>
+<h5 id="2-GPU-1-接收并归约-1"><a href="#2-GPU-1-接收并归约-1" class="headerlink" title="(2) GPU 1 接收并归约"></a><strong>(2) GPU 1 接收并归约</strong></h5><div class="code-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line">prims.<span class="built_in">directRecvReduceDirectSend</span>(offset, offset, nelem);</span><br></pre></td></tr></table></figure></div>
+<ul>
+<li>GPU 1 接收 GPU 0 的数据 <code>[A8, A9, ..., A15]</code>，并和自己的数据 <code>[B8, B9, ..., B15]</code> 做归约（<code>sum</code>），结果为：<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">[A8+B8, A9+B9, ..., A15+B15]</span><br></pre></td></tr></table></figure></div></li>
+<li>GPU 1 将归约后的结果 <code>[A8+B8, A9+B9, ..., A15+B15]</code> 发送回 GPU 0。</li>
+</ul>
+<h5 id="3-GPU-0-接收归约结果-1"><a href="#3-GPU-0-接收归约结果-1" class="headerlink" title="(3) GPU 0 接收归约结果"></a><strong>(3) GPU 0 接收归约结果</strong></h5><div class="code-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line">prims.<span class="built_in">directRecv</span>(offset, offset, nelem);</span><br></pre></td></tr></table></figure></div>
+<ul>
+<li>GPU 0 接收归约后的数据 <code>[A8+B8, A9+B9, ..., A15+B15]</code>，存入自己的接收缓冲区。</li>
+</ul>
+<h4 id="第二轮完成，GPU-数据状态："><a href="#第二轮完成，GPU-数据状态：" class="headerlink" title="第二轮完成，GPU 数据状态："></a><strong>第二轮完成，GPU 数据状态：</strong></h4><ul>
+<li>GPU 0：<code>[A0+B0, A1+B1, ..., A15+B15]</code></li>
+<li>GPU 1：<code>[A0+B0, A1+B1, ..., A15+B15]</code></li>
+</ul>
+<hr>
+<h3 id="结果验证"><a href="#结果验证" class="headerlink" title="结果验证"></a><strong>结果验证</strong></h3><p>经过两轮通信，每个 GPU 的数据已经完成了 AllReduce 操作，最终数据是：</p>
+<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">[A0+B0, A1+B1, ..., A15+B15]</span><br></pre></td></tr></table></figure></div>
+
+<hr>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><h4 id="channelCount-是什么？"><a href="#channelCount-是什么？" class="headerlink" title="channelCount 是什么？"></a><strong><code>channelCount</code> 是什么？</strong></h4><ul>
+<li><code>channelCount</code> 表示当前通道需要处理的数据总量（以数据元素为单位）。</li>
+<li>在本例中：<ul>
+<li>数据总量是 <code>16</code> 个 <code>float</code> 元素。</li>
+<li>因为只有 1 个通道，所以 <code>channelCount = 16</code>。</li>
+</ul>
+</li>
+</ul>
+<h4 id="chunk-是什么？"><a href="#chunk-是什么？" class="headerlink" title="chunk 是什么？"></a><strong><code>chunk</code> 是什么？</strong></h4><ul>
+<li><code>chunk</code> 是通道内划分的最小数据单位。</li>
+<li>在本例中：<ul>
+<li>每个 <code>chunk</code> 包含 <code>8</code> 个 <code>float</code> 元素。</li>
+<li><code>channelCount = 16</code> 被划分为 2 个 <code>chunk</code>。</li>
+</ul>
+</li>
+</ul>
+<h4 id="通信的过程："><a href="#通信的过程：" class="headerlink" title="通信的过程："></a><strong>通信的过程：</strong></h4><ol>
+<li>每个通道负责一部分数据（<code>channelCount</code>）。</li>
+<li>数据进一步被划分为多个 <code>chunk</code>，每次传输一个或多个 <code>chunk</code>。</li>
+<li>每个 <code>chunk</code> 在环形拓扑中依次传递，完成发送、接收、归约和最终存储。</li>
+</ol>
+<p>这样划分的好处是：</p>
+<ul>
+<li><strong>并行化：</strong> 通道级和 chunk 级的并行分工可以高效利用带宽。</li>
+<li><strong>负载均衡：</strong> 每个 GPU 按 <code>chunk</code> 处理一部分数据，避免了单点瓶颈。</li>
+</ul>
+<p>希望这个具体的例子可以帮助你完全理解 <code>channelCount</code> 和 <code>chunk</code> 的含义以及它们在 AllReduce 中的具体作用！</p>
+<ul>
+<li><p>directRecvReduceDirectSend</p>
+</li>
+<li><p>recvReduceSend</p>
+</li>
+<li><p>GenericOp</p>
+</li>
+<li><p>directSend有两种：</p>
+<ul>
+<li>prims_simple走的是:  <div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="code"><pre><span class="line">  __device__ __forceinline__ <span class="type">void</span> <span class="title function_">directSend</span><span class="params">(<span class="type">intptr_t</span> inpIx, <span class="type">intptr_t</span> outIx, <span class="type">int</span> eltN)</span> &#123;</span><br><span class="line">  genericOp&lt;<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, Input, <span class="number">-1</span>&gt;(inpIx, outIx, eltN, <span class="literal">false</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></li>
+<li>ll和ll128走的是:  <div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="code"><pre><span class="line">  __device__ <span class="type">void</span> <span class="title function_">directSend</span><span class="params">(<span class="type">intptr_t</span> inpIx, <span class="type">intptr_t</span> outIx, <span class="type">int</span> eltN)</span> &#123;</span><br><span class="line">  static_cast&lt;RealPrimitives*&gt;(this)-&gt;send(inpIx, eltN);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">  __device__ <span class="type">void</span> <span class="title function_">send</span><span class="params">(<span class="type">intptr_t</span> inpIx, <span class="type">int</span> eltN)</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> GenericOp&lt;<span class="number">0</span>, <span class="number">1</span>, Input, <span class="number">-1</span>&gt;(inpIx, <span class="number">-1</span>, eltN, <span class="literal">false</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></li>
+</ul>
+</li>
+<li><p>调用reduceCopy的：</p>
+<ul>
+<li>sendrecv.h</li>
+<li>prims_simple.h</li>
+<li>reduce_scatter.h</li>
+<li>all_gather.h</li>
+</ul>
+</li>
+<li><p>runRing里面调用了</p>
+<ul>
+<li>prims.directSend(offset, offset, nelem);</li>
+<li>prims.directRecvReduceDirectSend(offset, offset, nelem);</li>
+<li>prims.directRecvReduceCopyDirectSend(offset, offset, nelem, &#x2F;<em>postOp&#x3D;</em>&#x2F;true);</li>
+<li>prims.directRecvCopyDirectSend(offset, nelem);</li>
+<li>prims.directRecv(offset, offset, nelem);</li>
+</ul>
+</li>
+<li><p>情况一，采用prims_simple</p>
+<ul>
+<li>directSend:  <div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="code"><pre><span class="line">  __device__ __forceinline__ <span class="type">void</span> <span class="title function_">directSend</span><span class="params">(<span class="type">intptr_t</span> inpIx, <span class="type">intptr_t</span> outIx, <span class="type">int</span> eltN)</span> &#123;</span><br><span class="line">  genericOp&lt;<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, Input, <span class="number">-1</span>&gt;(inpIx, outIx, eltN, <span class="literal">false</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+  然后调用genericOp  <div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="code"><pre><span class="line">  template &lt;<span class="type">int</span> DirectRecv1, <span class="type">int</span> DirectSend1, <span class="type">int</span> Recv, <span class="type">int</span> Send, <span class="type">int</span> SrcBuf, <span class="type">int</span> DstBuf&gt;</span><br><span class="line">__device__ __forceinline__ <span class="type">void</span> <span class="title function_">genericOp</span><span class="params">(</span></span><br><span class="line"><span class="params">    <span class="type">intptr_t</span> srcIx, <span class="type">intptr_t</span> dstIx, <span class="type">int</span> nelem, <span class="type">bool</span> postOp</span></span><br><span class="line"><span class="params">  )</span> &#123;</span><br><span class="line">  <span class="type">constexpr</span> <span class="type">int</span> DirectRecv = <span class="number">1</span> &amp;&amp; Direct &amp;&amp; DirectRecv1;</span><br><span class="line">  <span class="type">constexpr</span> <span class="type">int</span> DirectSend = <span class="number">1</span> &amp;&amp; Direct &amp;&amp; DirectSend1;</span><br><span class="line">  <span class="type">constexpr</span> <span class="type">int</span> Src = SrcBuf != <span class="number">-1</span>;</span><br><span class="line">  <span class="type">constexpr</span> <span class="type">int</span> Dst = DstBuf != <span class="number">-1</span>;</span><br><span class="line"></span><br><span class="line">  nelem = nelem &lt; <span class="number">0</span> ? <span class="number">0</span> : nelem;</span><br><span class="line">  <span class="type">int</span> sliceSize = stepSize*StepPerSlice;</span><br><span class="line">  sliceSize = max(divUp(nelem, <span class="number">16</span>*SlicePerChunk)*<span class="number">16</span>, sliceSize/<span class="number">32</span>);</span><br><span class="line">  <span class="type">int</span> slice = <span class="number">0</span>;</span><br><span class="line">  <span class="type">int</span> offset = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (tid &lt; nworkers &amp;&amp; offset &lt; nelem &amp;&amp; ((flags &amp; NetRegMode) == <span class="number">0</span>)) &#123;</span><br><span class="line">    <span class="comment">// Worker-only loop for non-empty slices. Non-workers and empty slices are</span></span><br><span class="line">    <span class="comment">// processed in the loop following this if block. The benefit of splitting</span></span><br><span class="line">    <span class="comment">// the loop like this is we pull two branches out of the critical path.</span></span><br><span class="line">    <span class="comment">// Using &quot;number of branch insns (taken or not) encountered dynamically&quot;</span></span><br><span class="line">    <span class="comment">// as the performance metric, then:</span></span><br><span class="line">    <span class="comment">//   perf_orig = 2*numslices</span></span><br><span class="line">    <span class="comment">//   perf_new = 2+numslices</span></span><br><span class="line">    <span class="comment">// So the new code and old code behave the same for numslices=2, and for</span></span><br><span class="line">    <span class="comment">// numslices&gt;2 the new code is superior. And note that in the case</span></span><br><span class="line">    <span class="comment">// numslices=1, the loop is trivially unrollable (single iteration) so we</span></span><br><span class="line">    <span class="comment">// don&#x27;t incur that that tail branch and we still have perf_new=2.</span></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    <span class="comment">// ORIGINAL CODE:</span></span><br><span class="line">    <span class="comment">//   unrolled for(slices) &#123;</span></span><br><span class="line">    <span class="comment">//     if(worker) &#123; // This branch removed</span></span><br><span class="line">    <span class="comment">//       wait();</span></span><br><span class="line">    <span class="comment">//       subBarrier();</span></span><br><span class="line">    <span class="comment">//       if(slice not empty) // This branch removed</span></span><br><span class="line">    <span class="comment">//         ReduceCopyMulti();</span></span><br><span class="line">    <span class="comment">//     &#125;</span></span><br><span class="line">    <span class="comment">//     barrier();</span></span><br><span class="line">    <span class="comment">//     post();</span></span><br><span class="line">    <span class="comment">//   &#125; // Since we no longer unroll, new branch added here</span></span><br><span class="line">    <span class="meta">#<span class="keyword">if</span> __CUDA_ARCH__ &lt; 700</span></span><br><span class="line">      <span class="comment">// Above doesn&#x27;t matter on older hardware.</span></span><br><span class="line">      <span class="meta">#<span class="keyword">pragma</span> unroll SlicePerChunk</span></span><br><span class="line">    <span class="meta">#<span class="keyword">else</span></span></span><br><span class="line">      <span class="meta">#<span class="keyword">pragma</span> unroll 1</span></span><br><span class="line">    <span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">    <span class="keyword">do</span> &#123;</span><br><span class="line">      sliceSize = sliceSize &lt; nelem-offset ? sliceSize : nelem-offset;</span><br><span class="line">      <span class="keyword">if</span> (tid == <span class="number">0</span>) &#123;</span><br><span class="line">        T* userInput = (T*)ncclShmem.groups[group].userInput;</span><br><span class="line">        T* userOutput = (T*)ncclShmem.groups[group].userOutput;</span><br><span class="line">        <span class="keyword">if</span> (Src) ncclShmem.groups[group].srcs[<span class="number">0</span>] = (SrcBuf==Input ? userInput : userOutput) + srcIx + offset;</span><br><span class="line">        <span class="keyword">if</span> (Dst) ncclShmem.groups[group].dsts[<span class="number">0</span>] = (DstBuf==Input ? userInput : userOutput) + dstIx + offset;</span><br><span class="line">      &#125;</span><br><span class="line">      waitPeer&lt;DirectRecv, DirectSend, Recv, Send, Src, Dst&gt;(srcIx, dstIx, offset, sliceSize);</span><br><span class="line">      subBarrier();</span><br><span class="line">      <span class="comment">/* if user abort the kernel, we don&#x27;t need to actually perform copy/reduce; just set size</span></span><br><span class="line"><span class="comment">       * to 0 to avoid unnecessary workload. */</span></span><br><span class="line">      <span class="type">int</span> workSize = ncclShmem.aborted ? <span class="number">0</span> : sliceSize;</span><br><span class="line">      <span class="keyword">if</span> (flags &amp; AnyNetDeviceUnpack) &#123;</span><br><span class="line">        ncclNetDeviceUnpack&lt;Recv&gt;(tid, tidInBlock, nworkers, group, ncclShmem.groups[group].devicePlugin.unpack.unpackNetDeviceIndexMask, Src, workSize);</span><br><span class="line">        <span class="comment">// Sync here to make sure all workers are reading from the updated srcs)</span></span><br><span class="line">        subBarrier();</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span> (DirectRecv &amp;&amp; ncclShmem.groups[group].srcs[<span class="number">0</span>] == ncclShmem.groups[group].dsts[<span class="number">0</span>]</span><br><span class="line">          <span class="comment">/* NVLS can have srcs[0] == dsts[0], but we cannot enter this &quot;if branch&quot;,</span></span><br><span class="line"><span class="comment">           * so we need to check whether MultimemSrcs and MultimemDsts are 0. */</span></span><br><span class="line">          &amp;&amp; MultimemSrcs == <span class="number">0</span> &amp;&amp; MultimemDsts == <span class="number">0</span> &amp;&amp; !Src) &#123;</span><br><span class="line">        <span class="comment">// We can only have one direct receive. Since srcs[0] == dstPtr+offset, skip one copy</span></span><br><span class="line">        <span class="keyword">if</span> (Send) &#123;</span><br><span class="line">          reduceCopy&lt;Unroll, RedOp, T, <span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, MaxSend, <span class="comment">/*PreOpSrcs*/</span><span class="number">0</span>&gt;</span><br><span class="line">            (tid, nworkers, <span class="comment">/*redArg*/</span><span class="number">0</span>, <span class="comment">/*preOpArgs*/</span>nullptr, <span class="comment">/*postOp*/</span><span class="literal">false</span>,</span><br><span class="line">             <span class="number">1</span>, ncclShmem.groups[group].srcs,</span><br><span class="line">             fan.nsend(), ncclShmem.groups[group].dsts+<span class="number">1</span>,</span><br><span class="line">             workSize);</span><br><span class="line">        &#125;</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (DirectSend &amp;&amp; !DirectRecv &amp;&amp; SrcBuf != Input &amp;&amp; ncclShmem.groups[group].dsts[Dst] == nullptr) &#123;</span><br><span class="line">        <span class="comment">// For broadcast in CollNet to do empty send</span></span><br><span class="line">        reduceCopy&lt;Unroll, RedOp, T, <span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="comment">/*PreOpSrcs*/</span><span class="number">0</span>&gt;</span><br><span class="line">          (tid, nworkers, ncclShmem.redOpArgs[<span class="number">0</span>],  nullptr, postOp,</span><br><span class="line">           Recv, ncclShmem.groups[group].srcs,</span><br><span class="line">           Dst, ncclShmem.groups[group].dsts,</span><br><span class="line">           workSize);</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (ncclShmem.groups[group].srcs[<span class="number">0</span>] &amp;&amp; ncclShmem.groups[group].dsts[<span class="number">0</span>]) &#123;</span><br><span class="line">        <span class="type">constexpr</span> <span class="type">int</span> PreOpSrcs = SrcBuf != Input ? <span class="number">0</span> :</span><br><span class="line">                                  DirectRecv*MaxRecv == NCCL_MAX_DIRECT_ARITY ? (<span class="number">1</span>+NCCL_MAX_DIRECT_ARITY) : <span class="number">1</span>;</span><br><span class="line">        reduceCopy&lt;Unroll, RedOp, T,</span><br><span class="line">          MultimemSrcs, Recv+Src, Recv*MaxRecv+Src,</span><br><span class="line">          MultimemDsts, Send+Dst, Send*MaxSend+Dst, PreOpSrcs&gt;</span><br><span class="line">          (tid, nworkers, ncclShmem.redOpArgs[<span class="number">0</span>], ncclShmem.redOpArgs, postOp,</span><br><span class="line">           Recv*fan.nrecv()+Src, ncclShmem.groups[group].srcs,</span><br><span class="line">           Send*fan.nsend()+Dst, ncclShmem.groups[group].dsts,</span><br><span class="line">           workSize);</span><br><span class="line">      &#125;</span><br><span class="line">      barrier(); <span class="comment">// This barrier has a counterpart in following loop</span></span><br><span class="line">      postPeer&lt;Recv, Send&gt;(<span class="number">0</span> &lt; sliceSize);</span><br><span class="line">      offset += sliceSize;</span><br><span class="line">      slice += <span class="number">1</span>;</span><br><span class="line">      <span class="comment">// Yes, for some template arguments this code will be unreachable.  That&#x27;s fine.</span></span><br><span class="line">      <span class="comment">// coverity[dead_error_line]</span></span><br><span class="line">    &#125; <span class="keyword">while</span> (slice &lt; SlicePerChunk &amp;&amp; offset &lt; nelem);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Non-workers come straight here. Workers too but only once the remaining</span></span><br><span class="line">  <span class="comment">// slices are all empty. Since empty slices are the uncommon case, and</span></span><br><span class="line">  <span class="comment">// worker perf is the limiter, perf-wise this loop is effectively unentered,</span></span><br><span class="line">  <span class="comment">// hence just a single branch insn.</span></span><br><span class="line">  <span class="meta">#<span class="keyword">pragma</span> unroll 1</span></span><br><span class="line">  <span class="keyword">while</span> (slice &lt; SlicePerChunk) &#123;</span><br><span class="line">    sliceSize = sliceSize &lt; nelem-offset ? sliceSize : nelem-offset;</span><br><span class="line">    &#123; <span class="comment">// Only workers could have Wait roles so we know the slice must be empty</span></span><br><span class="line">      <span class="comment">// since we&#x27;ve exited the loop above.</span></span><br><span class="line">      waitPeer&lt;DirectRecv, DirectSend, Recv, Send, Src, Dst&gt;(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    barrier(); <span class="comment">// Has couterpart in preceding worker-only loop.</span></span><br><span class="line">    postPeer&lt;Recv, Send&gt;(<span class="number">0</span> &lt; sliceSize);</span><br><span class="line">    offset += sliceSize;</span><br><span class="line">    slice += <span class="number">1</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+  然后里面directSend的条件下，调用了reduceCopy，进而调用reduceCopyPacks</li>
+</ul>
+</li>
 </ul>
 ]]></content>
       <categories>
@@ -628,174 +835,33 @@
       </tags>
   </entry>
   <entry>
-    <title>NCCL代码阅读-04</title>
-    <url>/2024/12/15/NCCL%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-04/</url>
-    <content><![CDATA[<p>好的，再更具体一步，假设我们在 <strong>两个 GPU 做 AllReduce</strong> 时，数据的具体划分、传输，以及每一阶段的变化都会明确说明。</p>
-<hr>
-<h3 id="场景再具体化"><a href="#场景再具体化" class="headerlink" title="场景再具体化"></a><strong>场景再具体化</strong></h3><p>假设：</p>
-<ul>
-<li><strong>数据大小：16 个 <code>float</code> 元素</strong>（64 字节，总数据量很小，便于解释）。</li>
-<li>**数据类型：<code>float</code>**，每个元素 4 字节。</li>
-<li><strong>2 个 GPU</strong>（<code>nranks = 2</code>），使用环形拓扑（Ring）。</li>
-<li><strong>1 个通道</strong>（<code>nChannels = 1</code>，即所有数据由一个通道处理）。</li>
-<li><strong>每个 chunk 大小：8 个元素</strong>（<code>chunkCount = 8</code> 个元素，每个 chunk 为 32 字节）。</li>
+    <title>NVSHMEM配置</title>
+    <url>/2025/02/21/NVSHMEM%E9%85%8D%E7%BD%AE/</url>
+    <content><![CDATA[<h2 id="环境说明"><a href="#环境说明" class="headerlink" title="环境说明"></a>环境说明</h2><ul>
+<li>Debian</li>
+<li>单机两卡两个NUMA节点</li>
+<li>我大部分使用的是源码编译，一开始没有给我分配sudo权限，后来必须要安装一个驱动，因此后面具有了sudo权限</li>
 </ul>
-<h3 id="起始数据分布"><a href="#起始数据分布" class="headerlink" title="起始数据分布"></a><strong>起始数据分布</strong></h3><ul>
-<li>每个 GPU 初始有一份独立的数据：<ul>
-<li>GPU 0 的数据：<code>[A0, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15]</code></li>
-<li>GPU 1 的数据：<code>[B0, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15]</code></li>
+<h2 id="依赖项：GDRCopy"><a href="#依赖项：GDRCopy" class="headerlink" title="依赖项：GDRCopy"></a>依赖项：GDRCopy</h2><ul>
+<li>从源码安装<div class="code-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="code"><pre><span class="line">`sudo apt install nvidia-dkms-&lt;your-nvidia-driver-version&gt;`</span><br><span class="line">make prefix=&lt;install-to-this-location&gt; CUDA=&lt;cuda-install-top-dir&gt; all install</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">比如make prefix=<span class="variable">$HOME</span>/gdrcopy CUDA=/usr/local/cuda all install</span></span><br><span class="line">sudo ./insmod.sh</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">insmod.sh用于加载内核模块，会把gdrdrv驱动先删掉再重新加载</span></span><br></pre></td></tr></table></figure></div></li>
 </ul>
-</li>
+<h2 id="依赖项：Hydra-process-manager"><a href="#依赖项：Hydra-process-manager" class="headerlink" title="依赖项：Hydra process manager"></a>依赖项：Hydra process manager</h2><ul>
+<li>在nvshmem_src里面有一个脚本install_hydra.sh<div class="code-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="code"><pre><span class="line">./install_hydra.sh &lt;download_path&gt; &lt;install_path&gt;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">比如 ./install_hydra.sh /home/cyu/hydra_src /home/cyu/hydra</span></span><br><span class="line">export HYDRA_HOME=&lt;install_path&gt;</span><br></pre></td></tr></table></figure></div></li>
 </ul>
-<p>目标：完成 <strong>AllReduce（sum）</strong>，让每个 GPU 最终都得到：</p>
-<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">[ A0+B0, A1+B1, ..., A15+B15 ]</span><br></pre></td></tr></table></figure></div>
-
-<hr>
-<h3 id="数据划分"><a href="#数据划分" class="headerlink" title="数据划分"></a><strong>数据划分</strong></h3><ol>
-<li><p><strong>划分到通道：</strong></p>
-<ul>
-<li>只有一个通道（<code>nChannels = 1</code>），所有数据量（16 个元素）分配给这个通道。</li>
-<li><strong><code>channelCount = 16</code> 个元素</strong>。</li>
-</ul>
-</li>
-<li><p><strong>划分到 chunk：</strong></p>
-<ul>
-<li>每个 chunk 处理 <code>chunkCount = 8</code> 个元素。</li>
-<li><code>channelCount = 16</code> 被划分为 2 个 chunk：<ul>
-<li><strong>Chunk 0：<code>[A0, A1, ..., A7]</code></strong></li>
-<li><strong>Chunk 1：<code>[A8, A9, ..., A15]</code></strong></li>
-</ul>
-</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="运行代码的细节"><a href="#运行代码的细节" class="headerlink" title="运行代码的细节"></a><strong>运行代码的细节</strong></h3><h4 id="第一轮：elemOffset-0，处理第-1-个-chunk"><a href="#第一轮：elemOffset-0，处理第-1-个-chunk" class="headerlink" title="第一轮：elemOffset = 0，处理第 1 个 chunk"></a>第一轮：<code>elemOffset = 0</code>，处理第 1 个 chunk</h4><ul>
-<li><strong>数据：Chunk 0（前 8 个元素）</strong><ul>
-<li>GPU 0：<code>[A0, A1, ..., A7]</code></li>
-<li>GPU 1：<code>[B0, B1, ..., B7]</code></li>
-</ul>
-</li>
-</ul>
-<h5 id="1-GPU-0-发送-chunk-0"><a href="#1-GPU-0-发送-chunk-0" class="headerlink" title="(1) GPU 0 发送 chunk 0"></a><strong>(1) GPU 0 发送 chunk 0</strong></h5><div class="code-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line">prims.<span class="built_in">directSend</span>(offset, offset, nelem);</span><br></pre></td></tr></table></figure></div>
-<ul>
-<li>GPU 0 把 <code>[A0, A1, ..., A7]</code> 发送到 GPU 1。</li>
-</ul>
-<h5 id="2-GPU-1-接收并归约"><a href="#2-GPU-1-接收并归约" class="headerlink" title="(2) GPU 1 接收并归约"></a><strong>(2) GPU 1 接收并归约</strong></h5><div class="code-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line">prims.<span class="built_in">directRecvReduceDirectSend</span>(offset, offset, nelem);</span><br></pre></td></tr></table></figure></div>
-<ul>
-<li>GPU 1 接收 GPU 0 的数据 <code>[A0, A1, ..., A7]</code>，并和自己的数据 <code>[B0, B1, ..., B7]</code> 做归约（<code>sum</code>），结果为：<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">[A0+B0, A1+B1, ..., A7+B7]</span><br></pre></td></tr></table></figure></div></li>
-<li>GPU 1 将归约后的结果 <code>[A0+B0, A1+B1, ..., A7+B7]</code> 发送回 GPU 0。</li>
-</ul>
-<h5 id="3-GPU-0-接收归约结果"><a href="#3-GPU-0-接收归约结果" class="headerlink" title="(3) GPU 0 接收归约结果"></a><strong>(3) GPU 0 接收归约结果</strong></h5><div class="code-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line">prims.<span class="built_in">directRecv</span>(offset, offset, nelem);</span><br></pre></td></tr></table></figure></div>
-<ul>
-<li>GPU 0 接收归约后的数据 <code>[A0+B0, A1+B1, ..., A7+B7]</code>，存入自己的接收缓冲区。</li>
-</ul>
-<h4 id="第一轮完成，GPU-数据状态："><a href="#第一轮完成，GPU-数据状态：" class="headerlink" title="第一轮完成，GPU 数据状态："></a><strong>第一轮完成，GPU 数据状态：</strong></h4><ul>
-<li>GPU 0：<code>[A0+B0, A1+B1, ..., A7+B7, A8, A9, ..., A15]</code></li>
-<li>GPU 1：<code>[A0+B0, A1+B1, ..., A7+B7, B8, B9, ..., B15]</code></li>
-</ul>
-<hr>
-<h4 id="第二轮：elemOffset-8，处理第-2-个-chunk"><a href="#第二轮：elemOffset-8，处理第-2-个-chunk" class="headerlink" title="第二轮：elemOffset = 8，处理第 2 个 chunk"></a>第二轮：<code>elemOffset = 8</code>，处理第 2 个 chunk</h4><ul>
-<li><strong>数据：Chunk 1（后 8 个元素）</strong><ul>
-<li>GPU 0：<code>[A8, A9, ..., A15]</code></li>
-<li>GPU 1：<code>[B8, B9, ..., B15]</code></li>
-</ul>
-</li>
-</ul>
-<h5 id="1-GPU-0-发送-chunk-1"><a href="#1-GPU-0-发送-chunk-1" class="headerlink" title="(1) GPU 0 发送 chunk 1"></a><strong>(1) GPU 0 发送 chunk 1</strong></h5><div class="code-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line">prims.<span class="built_in">directSend</span>(offset, offset, nelem);</span><br></pre></td></tr></table></figure></div>
-<ul>
-<li>GPU 0 把 <code>[A8, A9, ..., A15]</code> 发送到 GPU 1。</li>
-</ul>
-<h5 id="2-GPU-1-接收并归约-1"><a href="#2-GPU-1-接收并归约-1" class="headerlink" title="(2) GPU 1 接收并归约"></a><strong>(2) GPU 1 接收并归约</strong></h5><div class="code-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line">prims.<span class="built_in">directRecvReduceDirectSend</span>(offset, offset, nelem);</span><br></pre></td></tr></table></figure></div>
-<ul>
-<li>GPU 1 接收 GPU 0 的数据 <code>[A8, A9, ..., A15]</code>，并和自己的数据 <code>[B8, B9, ..., B15]</code> 做归约（<code>sum</code>），结果为：<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">[A8+B8, A9+B9, ..., A15+B15]</span><br></pre></td></tr></table></figure></div></li>
-<li>GPU 1 将归约后的结果 <code>[A8+B8, A9+B9, ..., A15+B15]</code> 发送回 GPU 0。</li>
-</ul>
-<h5 id="3-GPU-0-接收归约结果-1"><a href="#3-GPU-0-接收归约结果-1" class="headerlink" title="(3) GPU 0 接收归约结果"></a><strong>(3) GPU 0 接收归约结果</strong></h5><div class="code-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line">prims.<span class="built_in">directRecv</span>(offset, offset, nelem);</span><br></pre></td></tr></table></figure></div>
-<ul>
-<li>GPU 0 接收归约后的数据 <code>[A8+B8, A9+B9, ..., A15+B15]</code>，存入自己的接收缓冲区。</li>
-</ul>
-<h4 id="第二轮完成，GPU-数据状态："><a href="#第二轮完成，GPU-数据状态：" class="headerlink" title="第二轮完成，GPU 数据状态："></a><strong>第二轮完成，GPU 数据状态：</strong></h4><ul>
-<li>GPU 0：<code>[A0+B0, A1+B1, ..., A15+B15]</code></li>
-<li>GPU 1：<code>[A0+B0, A1+B1, ..., A15+B15]</code></li>
-</ul>
-<hr>
-<h3 id="结果验证"><a href="#结果验证" class="headerlink" title="结果验证"></a><strong>结果验证</strong></h3><p>经过两轮通信，每个 GPU 的数据已经完成了 AllReduce 操作，最终数据是：</p>
-<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">[A0+B0, A1+B1, ..., A15+B15]</span><br></pre></td></tr></table></figure></div>
-
-<hr>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><h4 id="channelCount-是什么？"><a href="#channelCount-是什么？" class="headerlink" title="channelCount 是什么？"></a><strong><code>channelCount</code> 是什么？</strong></h4><ul>
-<li><code>channelCount</code> 表示当前通道需要处理的数据总量（以数据元素为单位）。</li>
-<li>在本例中：<ul>
-<li>数据总量是 <code>16</code> 个 <code>float</code> 元素。</li>
-<li>因为只有 1 个通道，所以 <code>channelCount = 16</code>。</li>
-</ul>
-</li>
-</ul>
-<h4 id="chunk-是什么？"><a href="#chunk-是什么？" class="headerlink" title="chunk 是什么？"></a><strong><code>chunk</code> 是什么？</strong></h4><ul>
-<li><code>chunk</code> 是通道内划分的最小数据单位。</li>
-<li>在本例中：<ul>
-<li>每个 <code>chunk</code> 包含 <code>8</code> 个 <code>float</code> 元素。</li>
-<li><code>channelCount = 16</code> 被划分为 2 个 <code>chunk</code>。</li>
-</ul>
-</li>
-</ul>
-<h4 id="通信的过程："><a href="#通信的过程：" class="headerlink" title="通信的过程："></a><strong>通信的过程：</strong></h4><ol>
-<li>每个通道负责一部分数据（<code>channelCount</code>）。</li>
-<li>数据进一步被划分为多个 <code>chunk</code>，每次传输一个或多个 <code>chunk</code>。</li>
-<li>每个 <code>chunk</code> 在环形拓扑中依次传递，完成发送、接收、归约和最终存储。</li>
-</ol>
-<p>这样划分的好处是：</p>
-<ul>
-<li><strong>并行化：</strong> 通道级和 chunk 级的并行分工可以高效利用带宽。</li>
-<li><strong>负载均衡：</strong> 每个 GPU 按 <code>chunk</code> 处理一部分数据，避免了单点瓶颈。</li>
-</ul>
-<p>希望这个具体的例子可以帮助你完全理解 <code>channelCount</code> 和 <code>chunk</code> 的含义以及它们在 AllReduce 中的具体作用！</p>
-<ul>
-<li><p>directRecvReduceDirectSend</p>
-</li>
-<li><p>recvReduceSend</p>
-</li>
-<li><p>GenericOp</p>
-</li>
-<li><p>directSend有两种：</p>
-<ul>
-<li>prims_simple走的是:  <div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="code"><pre><span class="line">  __device__ __forceinline__ <span class="type">void</span> <span class="title function_">directSend</span><span class="params">(<span class="type">intptr_t</span> inpIx, <span class="type">intptr_t</span> outIx, <span class="type">int</span> eltN)</span> &#123;</span><br><span class="line">  genericOp&lt;<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, Input, <span class="number">-1</span>&gt;(inpIx, outIx, eltN, <span class="literal">false</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></li>
-<li>ll和ll128走的是:  <div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="code"><pre><span class="line">  __device__ <span class="type">void</span> <span class="title function_">directSend</span><span class="params">(<span class="type">intptr_t</span> inpIx, <span class="type">intptr_t</span> outIx, <span class="type">int</span> eltN)</span> &#123;</span><br><span class="line">  static_cast&lt;RealPrimitives*&gt;(this)-&gt;send(inpIx, eltN);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">  __device__ <span class="type">void</span> <span class="title function_">send</span><span class="params">(<span class="type">intptr_t</span> inpIx, <span class="type">int</span> eltN)</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> GenericOp&lt;<span class="number">0</span>, <span class="number">1</span>, Input, <span class="number">-1</span>&gt;(inpIx, <span class="number">-1</span>, eltN, <span class="literal">false</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></li>
-</ul>
-</li>
-<li><p>调用reduceCopy的：</p>
-<ul>
-<li>sendrecv.h</li>
-<li>prims_simple.h</li>
-<li>reduce_scatter.h</li>
-<li>all_gather.h</li>
-</ul>
-</li>
-<li><p>runRing里面调用了</p>
-<ul>
-<li>prims.directSend(offset, offset, nelem);</li>
-<li>prims.directRecvReduceDirectSend(offset, offset, nelem);</li>
-<li>prims.directRecvReduceCopyDirectSend(offset, offset, nelem, &#x2F;<em>postOp&#x3D;</em>&#x2F;true);</li>
-<li>prims.directRecvCopyDirectSend(offset, nelem);</li>
-<li>prims.directRecv(offset, offset, nelem);</li>
-</ul>
-</li>
-<li><p>情况一，采用prims_simple</p>
-<ul>
-<li>directSend:  <div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="code"><pre><span class="line">  __device__ __forceinline__ <span class="type">void</span> <span class="title function_">directSend</span><span class="params">(<span class="type">intptr_t</span> inpIx, <span class="type">intptr_t</span> outIx, <span class="type">int</span> eltN)</span> &#123;</span><br><span class="line">  genericOp&lt;<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, Input, <span class="number">-1</span>&gt;(inpIx, outIx, eltN, <span class="literal">false</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
-  然后调用genericOp  <div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="code"><pre><span class="line">  template &lt;<span class="type">int</span> DirectRecv1, <span class="type">int</span> DirectSend1, <span class="type">int</span> Recv, <span class="type">int</span> Send, <span class="type">int</span> SrcBuf, <span class="type">int</span> DstBuf&gt;</span><br><span class="line">__device__ __forceinline__ <span class="type">void</span> <span class="title function_">genericOp</span><span class="params">(</span></span><br><span class="line"><span class="params">    <span class="type">intptr_t</span> srcIx, <span class="type">intptr_t</span> dstIx, <span class="type">int</span> nelem, <span class="type">bool</span> postOp</span></span><br><span class="line"><span class="params">  )</span> &#123;</span><br><span class="line">  <span class="type">constexpr</span> <span class="type">int</span> DirectRecv = <span class="number">1</span> &amp;&amp; Direct &amp;&amp; DirectRecv1;</span><br><span class="line">  <span class="type">constexpr</span> <span class="type">int</span> DirectSend = <span class="number">1</span> &amp;&amp; Direct &amp;&amp; DirectSend1;</span><br><span class="line">  <span class="type">constexpr</span> <span class="type">int</span> Src = SrcBuf != <span class="number">-1</span>;</span><br><span class="line">  <span class="type">constexpr</span> <span class="type">int</span> Dst = DstBuf != <span class="number">-1</span>;</span><br><span class="line"></span><br><span class="line">  nelem = nelem &lt; <span class="number">0</span> ? <span class="number">0</span> : nelem;</span><br><span class="line">  <span class="type">int</span> sliceSize = stepSize*StepPerSlice;</span><br><span class="line">  sliceSize = max(divUp(nelem, <span class="number">16</span>*SlicePerChunk)*<span class="number">16</span>, sliceSize/<span class="number">32</span>);</span><br><span class="line">  <span class="type">int</span> slice = <span class="number">0</span>;</span><br><span class="line">  <span class="type">int</span> offset = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (tid &lt; nworkers &amp;&amp; offset &lt; nelem &amp;&amp; ((flags &amp; NetRegMode) == <span class="number">0</span>)) &#123;</span><br><span class="line">    <span class="comment">// Worker-only loop for non-empty slices. Non-workers and empty slices are</span></span><br><span class="line">    <span class="comment">// processed in the loop following this if block. The benefit of splitting</span></span><br><span class="line">    <span class="comment">// the loop like this is we pull two branches out of the critical path.</span></span><br><span class="line">    <span class="comment">// Using &quot;number of branch insns (taken or not) encountered dynamically&quot;</span></span><br><span class="line">    <span class="comment">// as the performance metric, then:</span></span><br><span class="line">    <span class="comment">//   perf_orig = 2*numslices</span></span><br><span class="line">    <span class="comment">//   perf_new = 2+numslices</span></span><br><span class="line">    <span class="comment">// So the new code and old code behave the same for numslices=2, and for</span></span><br><span class="line">    <span class="comment">// numslices&gt;2 the new code is superior. And note that in the case</span></span><br><span class="line">    <span class="comment">// numslices=1, the loop is trivially unrollable (single iteration) so we</span></span><br><span class="line">    <span class="comment">// don&#x27;t incur that that tail branch and we still have perf_new=2.</span></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    <span class="comment">// ORIGINAL CODE:</span></span><br><span class="line">    <span class="comment">//   unrolled for(slices) &#123;</span></span><br><span class="line">    <span class="comment">//     if(worker) &#123; // This branch removed</span></span><br><span class="line">    <span class="comment">//       wait();</span></span><br><span class="line">    <span class="comment">//       subBarrier();</span></span><br><span class="line">    <span class="comment">//       if(slice not empty) // This branch removed</span></span><br><span class="line">    <span class="comment">//         ReduceCopyMulti();</span></span><br><span class="line">    <span class="comment">//     &#125;</span></span><br><span class="line">    <span class="comment">//     barrier();</span></span><br><span class="line">    <span class="comment">//     post();</span></span><br><span class="line">    <span class="comment">//   &#125; // Since we no longer unroll, new branch added here</span></span><br><span class="line">    <span class="meta">#<span class="keyword">if</span> __CUDA_ARCH__ &lt; 700</span></span><br><span class="line">      <span class="comment">// Above doesn&#x27;t matter on older hardware.</span></span><br><span class="line">      <span class="meta">#<span class="keyword">pragma</span> unroll SlicePerChunk</span></span><br><span class="line">    <span class="meta">#<span class="keyword">else</span></span></span><br><span class="line">      <span class="meta">#<span class="keyword">pragma</span> unroll 1</span></span><br><span class="line">    <span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">    <span class="keyword">do</span> &#123;</span><br><span class="line">      sliceSize = sliceSize &lt; nelem-offset ? sliceSize : nelem-offset;</span><br><span class="line">      <span class="keyword">if</span> (tid == <span class="number">0</span>) &#123;</span><br><span class="line">        T* userInput = (T*)ncclShmem.groups[group].userInput;</span><br><span class="line">        T* userOutput = (T*)ncclShmem.groups[group].userOutput;</span><br><span class="line">        <span class="keyword">if</span> (Src) ncclShmem.groups[group].srcs[<span class="number">0</span>] = (SrcBuf==Input ? userInput : userOutput) + srcIx + offset;</span><br><span class="line">        <span class="keyword">if</span> (Dst) ncclShmem.groups[group].dsts[<span class="number">0</span>] = (DstBuf==Input ? userInput : userOutput) + dstIx + offset;</span><br><span class="line">      &#125;</span><br><span class="line">      waitPeer&lt;DirectRecv, DirectSend, Recv, Send, Src, Dst&gt;(srcIx, dstIx, offset, sliceSize);</span><br><span class="line">      subBarrier();</span><br><span class="line">      <span class="comment">/* if user abort the kernel, we don&#x27;t need to actually perform copy/reduce; just set size</span></span><br><span class="line"><span class="comment">       * to 0 to avoid unnecessary workload. */</span></span><br><span class="line">      <span class="type">int</span> workSize = ncclShmem.aborted ? <span class="number">0</span> : sliceSize;</span><br><span class="line">      <span class="keyword">if</span> (flags &amp; AnyNetDeviceUnpack) &#123;</span><br><span class="line">        ncclNetDeviceUnpack&lt;Recv&gt;(tid, tidInBlock, nworkers, group, ncclShmem.groups[group].devicePlugin.unpack.unpackNetDeviceIndexMask, Src, workSize);</span><br><span class="line">        <span class="comment">// Sync here to make sure all workers are reading from the updated srcs)</span></span><br><span class="line">        subBarrier();</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span> (DirectRecv &amp;&amp; ncclShmem.groups[group].srcs[<span class="number">0</span>] == ncclShmem.groups[group].dsts[<span class="number">0</span>]</span><br><span class="line">          <span class="comment">/* NVLS can have srcs[0] == dsts[0], but we cannot enter this &quot;if branch&quot;,</span></span><br><span class="line"><span class="comment">           * so we need to check whether MultimemSrcs and MultimemDsts are 0. */</span></span><br><span class="line">          &amp;&amp; MultimemSrcs == <span class="number">0</span> &amp;&amp; MultimemDsts == <span class="number">0</span> &amp;&amp; !Src) &#123;</span><br><span class="line">        <span class="comment">// We can only have one direct receive. Since srcs[0] == dstPtr+offset, skip one copy</span></span><br><span class="line">        <span class="keyword">if</span> (Send) &#123;</span><br><span class="line">          reduceCopy&lt;Unroll, RedOp, T, <span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, MaxSend, <span class="comment">/*PreOpSrcs*/</span><span class="number">0</span>&gt;</span><br><span class="line">            (tid, nworkers, <span class="comment">/*redArg*/</span><span class="number">0</span>, <span class="comment">/*preOpArgs*/</span>nullptr, <span class="comment">/*postOp*/</span><span class="literal">false</span>,</span><br><span class="line">             <span class="number">1</span>, ncclShmem.groups[group].srcs,</span><br><span class="line">             fan.nsend(), ncclShmem.groups[group].dsts+<span class="number">1</span>,</span><br><span class="line">             workSize);</span><br><span class="line">        &#125;</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (DirectSend &amp;&amp; !DirectRecv &amp;&amp; SrcBuf != Input &amp;&amp; ncclShmem.groups[group].dsts[Dst] == nullptr) &#123;</span><br><span class="line">        <span class="comment">// For broadcast in CollNet to do empty send</span></span><br><span class="line">        reduceCopy&lt;Unroll, RedOp, T, <span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="comment">/*PreOpSrcs*/</span><span class="number">0</span>&gt;</span><br><span class="line">          (tid, nworkers, ncclShmem.redOpArgs[<span class="number">0</span>],  nullptr, postOp,</span><br><span class="line">           Recv, ncclShmem.groups[group].srcs,</span><br><span class="line">           Dst, ncclShmem.groups[group].dsts,</span><br><span class="line">           workSize);</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (ncclShmem.groups[group].srcs[<span class="number">0</span>] &amp;&amp; ncclShmem.groups[group].dsts[<span class="number">0</span>]) &#123;</span><br><span class="line">        <span class="type">constexpr</span> <span class="type">int</span> PreOpSrcs = SrcBuf != Input ? <span class="number">0</span> :</span><br><span class="line">                                  DirectRecv*MaxRecv == NCCL_MAX_DIRECT_ARITY ? (<span class="number">1</span>+NCCL_MAX_DIRECT_ARITY) : <span class="number">1</span>;</span><br><span class="line">        reduceCopy&lt;Unroll, RedOp, T,</span><br><span class="line">          MultimemSrcs, Recv+Src, Recv*MaxRecv+Src,</span><br><span class="line">          MultimemDsts, Send+Dst, Send*MaxSend+Dst, PreOpSrcs&gt;</span><br><span class="line">          (tid, nworkers, ncclShmem.redOpArgs[<span class="number">0</span>], ncclShmem.redOpArgs, postOp,</span><br><span class="line">           Recv*fan.nrecv()+Src, ncclShmem.groups[group].srcs,</span><br><span class="line">           Send*fan.nsend()+Dst, ncclShmem.groups[group].dsts,</span><br><span class="line">           workSize);</span><br><span class="line">      &#125;</span><br><span class="line">      barrier(); <span class="comment">// This barrier has a counterpart in following loop</span></span><br><span class="line">      postPeer&lt;Recv, Send&gt;(<span class="number">0</span> &lt; sliceSize);</span><br><span class="line">      offset += sliceSize;</span><br><span class="line">      slice += <span class="number">1</span>;</span><br><span class="line">      <span class="comment">// Yes, for some template arguments this code will be unreachable.  That&#x27;s fine.</span></span><br><span class="line">      <span class="comment">// coverity[dead_error_line]</span></span><br><span class="line">    &#125; <span class="keyword">while</span> (slice &lt; SlicePerChunk &amp;&amp; offset &lt; nelem);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Non-workers come straight here. Workers too but only once the remaining</span></span><br><span class="line">  <span class="comment">// slices are all empty. Since empty slices are the uncommon case, and</span></span><br><span class="line">  <span class="comment">// worker perf is the limiter, perf-wise this loop is effectively unentered,</span></span><br><span class="line">  <span class="comment">// hence just a single branch insn.</span></span><br><span class="line">  <span class="meta">#<span class="keyword">pragma</span> unroll 1</span></span><br><span class="line">  <span class="keyword">while</span> (slice &lt; SlicePerChunk) &#123;</span><br><span class="line">    sliceSize = sliceSize &lt; nelem-offset ? sliceSize : nelem-offset;</span><br><span class="line">    &#123; <span class="comment">// Only workers could have Wait roles so we know the slice must be empty</span></span><br><span class="line">      <span class="comment">// since we&#x27;ve exited the loop above.</span></span><br><span class="line">      waitPeer&lt;DirectRecv, DirectSend, Recv, Send, Src, Dst&gt;(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    barrier(); <span class="comment">// Has couterpart in preceding worker-only loop.</span></span><br><span class="line">    postPeer&lt;Recv, Send&gt;(<span class="number">0</span> &lt; sliceSize);</span><br><span class="line">    offset += sliceSize;</span><br><span class="line">    slice += <span class="number">1</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
-  然后里面directSend的条件下，调用了reduceCopy，进而调用reduceCopyPacks</li>
-</ul>
-</li>
+<h2 id="NVSHMEM安装配置"><a href="#NVSHMEM安装配置" class="headerlink" title="NVSHMEM安装配置"></a>NVSHMEM安装配置</h2><ul>
+<li>使用cmake</li>
+<li>进入nvshmem_src目录<div class="code-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="code"><pre><span class="line">mkdir build</span><br><span class="line">cd build</span><br></pre></td></tr></table></figure></div></li>
+<li>进行cmake configure，把要设置的环境变量写到-D后面<div class="code-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="code"><pre><span class="line">cmake -S .. -B .  -DNVSHMEM_USE_GDRCOPY=1   -DNVSHMEM_MPI_SUPPORT=1  -DGDRCOPY_HOME=$HOME/gdrcopy   -DMPI_HOME=/usr/mpi/gcc/openmpi-4.1.7rc1   -DMPI_INCLUDE_DIR=/usr/mpi/gcc/openmpi-4.1.7rc1/include   -DMPI_LIBRARY=/usr/mpi/gcc/openmpi-4.1.7rc1/lib/libmpi.so -DNVSHMEM_IBGDA_SUPPORT=1 -DNVSHMEM_IBRC_SUPPORT=0</span><br></pre></td></tr></table></figure></div></li>
+<li>编译<div class="code-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="code"><pre><span class="line">make -j (nproc)</span><br></pre></td></tr></table></figure></div></li>
+<li>测试，留在nvshmem_src&#x2F;build目录，下面展示测试shmem_put_bw<div class="code-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$</span><span class="language-bash">HYDRA_HOME/bin/nvshmrun -n 2 -ppn 2 ./perftest/device/pt-to-pt/shmem_put_bw -b 8 -e 8388608 -c 256</span></span><br></pre></td></tr></table></figure></div></li>
 </ul>
 ]]></content>
       <categories>
-        <category>NCCL</category>
+        <category>实验室实践</category>
       </categories>
       <tags>
-        <tag>NCCL</tag>
-        <tag>代码阅读</tag>
+        <tag>NVSHMEM</tag>
+        <tag>GDRCopy</tag>
       </tags>
   </entry>
   <entry>
@@ -1087,36 +1153,6 @@
       </tags>
   </entry>
   <entry>
-    <title>NVSHMEM配置</title>
-    <url>/2025/02/21/NVSHMEM%E9%85%8D%E7%BD%AE/</url>
-    <content><![CDATA[<h2 id="环境说明"><a href="#环境说明" class="headerlink" title="环境说明"></a>环境说明</h2><ul>
-<li>Debian</li>
-<li>单机两卡两个NUMA节点</li>
-<li>我大部分使用的是源码编译，一开始没有给我分配sudo权限，后来必须要安装一个驱动，因此后面具有了sudo权限</li>
-</ul>
-<h2 id="依赖项：GDRCopy"><a href="#依赖项：GDRCopy" class="headerlink" title="依赖项：GDRCopy"></a>依赖项：GDRCopy</h2><ul>
-<li>从源码安装<div class="code-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="code"><pre><span class="line">`sudo apt install nvidia-dkms-&lt;your-nvidia-driver-version&gt;`</span><br><span class="line">make prefix=&lt;install-to-this-location&gt; CUDA=&lt;cuda-install-top-dir&gt; all install</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">比如make prefix=<span class="variable">$HOME</span>/gdrcopy CUDA=/usr/local/cuda all install</span></span><br><span class="line">sudo ./insmod.sh</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">insmod.sh用于加载内核模块，会把gdrdrv驱动先删掉再重新加载</span></span><br></pre></td></tr></table></figure></div></li>
-</ul>
-<h2 id="依赖项：Hydra-process-manager"><a href="#依赖项：Hydra-process-manager" class="headerlink" title="依赖项：Hydra process manager"></a>依赖项：Hydra process manager</h2><ul>
-<li>在nvshmem_src里面有一个脚本install_hydra.sh<div class="code-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="code"><pre><span class="line">./install_hydra.sh &lt;download_path&gt; &lt;install_path&gt;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">比如 ./install_hydra.sh /home/cyu/hydra_src /home/cyu/hydra</span></span><br><span class="line">export HYDRA_HOME=&lt;install_path&gt;</span><br></pre></td></tr></table></figure></div></li>
-</ul>
-<h2 id="NVSHMEM安装配置"><a href="#NVSHMEM安装配置" class="headerlink" title="NVSHMEM安装配置"></a>NVSHMEM安装配置</h2><ul>
-<li>使用cmake</li>
-<li>进入nvshmem_src目录<div class="code-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="code"><pre><span class="line">mkdir build</span><br><span class="line">cd build</span><br></pre></td></tr></table></figure></div></li>
-<li>进行cmake configure，把要设置的环境变量写到-D后面<div class="code-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="code"><pre><span class="line">cmake -S .. -B .  -DNVSHMEM_USE_GDRCOPY=1   -DNVSHMEM_MPI_SUPPORT=1  -DGDRCOPY_HOME=$HOME/gdrcopy   -DMPI_HOME=/usr/mpi/gcc/openmpi-4.1.7rc1   -DMPI_INCLUDE_DIR=/usr/mpi/gcc/openmpi-4.1.7rc1/include   -DMPI_LIBRARY=/usr/mpi/gcc/openmpi-4.1.7rc1/lib/libmpi.so -DNVSHMEM_IBGDA_SUPPORT=1 -DNVSHMEM_IBRC_SUPPORT=0</span><br></pre></td></tr></table></figure></div></li>
-<li>编译<div class="code-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="code"><pre><span class="line">make -j (nproc)</span><br></pre></td></tr></table></figure></div></li>
-<li>测试，留在nvshmem_src&#x2F;build目录，下面展示测试shmem_put_bw<div class="code-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$</span><span class="language-bash">HYDRA_HOME/bin/nvshmrun -n 2 -ppn 2 ./perftest/device/pt-to-pt/shmem_put_bw -b 8 -e 8388608 -c 256</span></span><br></pre></td></tr></table></figure></div></li>
-</ul>
-]]></content>
-      <categories>
-        <category>实验室实践</category>
-      </categories>
-      <tags>
-        <tag>NVSHMEM</tag>
-        <tag>GDRCopy</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>hexo常用命令</title>
     <url>/2024/12/04/hexo%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
     <content><![CDATA[<h2 id="新建一篇文章"><a href="#新建一篇文章" class="headerlink" title="新建一篇文章"></a>新建一篇文章</h2><div class="code-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">hexo new <span class="string">&quot;文章标题&quot;</span></span><br></pre></td></tr></table></figure></div>
@@ -1195,33 +1231,6 @@
       <tags>
         <tag>代码阅读</tag>
         <tag>pragma-weak</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>实验室服务器nccl部署命令</title>
-    <url>/2024/12/04/%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8nccl%E9%83%A8%E7%BD%B2%E5%91%BD%E4%BB%A4/</url>
-    <content><![CDATA[<h1 id="nccl编译"><a href="#nccl编译" class="headerlink" title="nccl编译"></a>nccl编译</h1><div class="code-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">make src.build CUDA_HOME=/usr/lib/nvidia-cuda-toolkit/ NVCC_GENCODE=<span class="string">&quot;-gencode=arch=compute_80,code=sm_80&quot;</span></span><br></pre></td></tr></table></figure></div>
-
-<h1 id="查看各种库的安装路径"><a href="#查看各种库的安装路径" class="headerlink" title="查看各种库的安装路径"></a>查看各种库的安装路径</h1><ul>
-<li>由于管理员最初好像是用apt安装的，所以可以这样查找</li>
-<li>以查找mpi为例<div class="code-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">dpkg -S mpicc</span><br></pre></td></tr></table></figure></div></li>
-</ul>
-<h1 id="nccl-test编译"><a href="#nccl-test编译" class="headerlink" title="nccl-test编译"></a>nccl-test编译</h1><div class="code-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">make MPI=1 MPI_HOME=/usr/mpi/gcc/openmpi-4.1.7a1 CUDA_HOME=/usr/lib/nvidia-cuda-toolkit/ NCCL_HOME=/home/cyu/tccl-2024/nccl/build</span><br></pre></td></tr></table></figure></div>
-
-<h1 id="nccl-test测试"><a href="#nccl-test测试" class="headerlink" title="nccl-test测试"></a>nccl-test测试</h1><div class="code-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">export</span> LD_LIBRARY_PATH=/home/cyu/tccl-2024/nccl/build/lib:<span class="variable">$LD_LIBRARY_PATH</span></span><br><span class="line">./build/all_reduce_perf -b 8 -e 128M -f 2 -g 2</span><br></pre></td></tr></table></figure></div>
-
-<h1 id="如果mpi的库修改了版本"><a href="#如果mpi的库修改了版本" class="headerlink" title="如果mpi的库修改了版本"></a>如果mpi的库修改了版本</h1><div class="code-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="code"><pre><span class="line">vim ~/.bashrc</span><br></pre></td></tr></table></figure></div>
-<ul>
-<li>在文件末尾添加：<div class="code-container" data-rel="Txt"><figure class="iseeu highlight txt"><table><tr><td class="code"><pre><span class="line">export PATH=/usr/mpi/gcc/openmpi-4.1.7rc1/bin:$PATH</span><br><span class="line">export LD_LIBRARY_PATH=/usr/mpi/gcc/openmpi-4.1.7rc1/lib:$LD_LIBRARY_PATH</span><br></pre></td></tr></table></figure></div></li>
-<li>保存退出，然后source ~&#x2F;.bashrc生效</li>
-</ul>
-]]></content>
-      <categories>
-        <category>实验室实践</category>
-      </categories>
-      <tags>
-        <tag>nccl</tag>
-        <tag>实验室</tag>
       </tags>
   </entry>
   <entry>
@@ -1460,6 +1469,33 @@
       </categories>
       <tags>
         <tag>系统</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>实验室服务器nccl部署命令</title>
+    <url>/2024/12/04/%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8nccl%E9%83%A8%E7%BD%B2%E5%91%BD%E4%BB%A4/</url>
+    <content><![CDATA[<h1 id="nccl编译"><a href="#nccl编译" class="headerlink" title="nccl编译"></a>nccl编译</h1><div class="code-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">make src.build CUDA_HOME=/usr/lib/nvidia-cuda-toolkit/ NVCC_GENCODE=<span class="string">&quot;-gencode=arch=compute_80,code=sm_80&quot;</span></span><br></pre></td></tr></table></figure></div>
+
+<h1 id="查看各种库的安装路径"><a href="#查看各种库的安装路径" class="headerlink" title="查看各种库的安装路径"></a>查看各种库的安装路径</h1><ul>
+<li>由于管理员最初好像是用apt安装的，所以可以这样查找</li>
+<li>以查找mpi为例<div class="code-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">dpkg -S mpicc</span><br></pre></td></tr></table></figure></div></li>
+</ul>
+<h1 id="nccl-test编译"><a href="#nccl-test编译" class="headerlink" title="nccl-test编译"></a>nccl-test编译</h1><div class="code-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">make MPI=1 MPI_HOME=/usr/mpi/gcc/openmpi-4.1.7a1 CUDA_HOME=/usr/lib/nvidia-cuda-toolkit/ NCCL_HOME=/home/cyu/tccl-2024/nccl/build</span><br></pre></td></tr></table></figure></div>
+
+<h1 id="nccl-test测试"><a href="#nccl-test测试" class="headerlink" title="nccl-test测试"></a>nccl-test测试</h1><div class="code-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">export</span> LD_LIBRARY_PATH=/home/cyu/tccl-2024/nccl/build/lib:<span class="variable">$LD_LIBRARY_PATH</span></span><br><span class="line">./build/all_reduce_perf -b 8 -e 128M -f 2 -g 2</span><br></pre></td></tr></table></figure></div>
+
+<h1 id="如果mpi的库修改了版本"><a href="#如果mpi的库修改了版本" class="headerlink" title="如果mpi的库修改了版本"></a>如果mpi的库修改了版本</h1><div class="code-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="code"><pre><span class="line">vim ~/.bashrc</span><br></pre></td></tr></table></figure></div>
+<ul>
+<li>在文件末尾添加：<div class="code-container" data-rel="Txt"><figure class="iseeu highlight txt"><table><tr><td class="code"><pre><span class="line">export PATH=/usr/mpi/gcc/openmpi-4.1.7rc1/bin:$PATH</span><br><span class="line">export LD_LIBRARY_PATH=/usr/mpi/gcc/openmpi-4.1.7rc1/lib:$LD_LIBRARY_PATH</span><br></pre></td></tr></table></figure></div></li>
+<li>保存退出，然后source ~&#x2F;.bashrc生效</li>
+</ul>
+]]></content>
+      <categories>
+        <category>实验室实践</category>
+      </categories>
+      <tags>
+        <tag>nccl</tag>
+        <tag>实验室</tag>
       </tags>
   </entry>
   <entry>

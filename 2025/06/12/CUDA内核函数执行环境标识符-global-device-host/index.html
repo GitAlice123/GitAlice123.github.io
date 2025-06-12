@@ -13,7 +13,7 @@
     
     <!--- Seo Part-->
     
-    <link rel="canonical" href="https://GitAlice123.github.io/2024/12/04/实验室服务器nccl部署命令/"/>
+    <link rel="canonical" href="https://GitAlice123.github.io/2025/06/12/cuda内核函数执行环境标识符-global-device-host/"/>
     <meta name="robots" content="index,follow">
     <meta name="googlebot" content="index,follow">
     <meta name="revisit-after" content="1 days">
@@ -23,17 +23,16 @@
         
         <meta name="description" content="Hexo Theme Redefine, Redefine Your Hexo Journey.">
 <meta property="og:type" content="article">
-<meta property="og:title" content="实验室服务器nccl部署命令">
-<meta property="og:url" content="https://gitalice123.github.io/2024/12/04/%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8nccl%E9%83%A8%E7%BD%B2%E5%91%BD%E4%BB%A4/index.html">
+<meta property="og:title" content="CUDA内核函数执行环境标识符:global,device,host">
+<meta property="og:url" content="https://gitalice123.github.io/2025/06/12/CUDA%E5%86%85%E6%A0%B8%E5%87%BD%E6%95%B0%E6%89%A7%E8%A1%8C%E7%8E%AF%E5%A2%83%E6%A0%87%E8%AF%86%E7%AC%A6-global-device-host/index.html">
 <meta property="og:site_name" content="Alice&#39;s Notebook">
 <meta property="og:description" content="Hexo Theme Redefine, Redefine Your Hexo Journey.">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://gitalice123.github.io/images/redefine-og.webp">
-<meta property="article:published_time" content="2024-12-04T08:53:34.000Z">
-<meta property="article:modified_time" content="2025-01-03T07:21:23.724Z">
+<meta property="article:published_time" content="2025-06-12T03:28:27.000Z">
+<meta property="article:modified_time" content="2025-06-12T03:59:43.076Z">
 <meta property="article:author" content="Alice Yu">
-<meta property="article:tag" content="nccl">
-<meta property="article:tag" content="实验室">
+<meta property="article:tag" content="CUDA">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://gitalice123.github.io/images/redefine-og.webp">
     
@@ -47,7 +46,7 @@
     
     <title>
         
-            实验室服务器nccl部署命令 | Alice&#39;s Notebook
+            CUDA内核函数执行环境标识符:global,device,host | Alice&#39;s Notebook
         
     </title>
 
@@ -385,7 +384,7 @@
 		<div class="article-title relative w-full">
 			
 			<div class="w-full flex items-center pt-6 justify-start">
-				<h1 class="article-title-regular text-second-text-color tracking-tight text-4xl md:text-6xl font-semibold px-2 sm:px-6 md:px-8 py-3">实验室服务器nccl部署命令</h1>
+				<h1 class="article-title-regular text-second-text-color tracking-tight text-4xl md:text-6xl font-semibold px-2 sm:px-6 md:px-8 py-3">CUDA内核函数执行环境标识符:global,device,host</h1>
 			</div>
 			
 		</div>
@@ -406,15 +405,15 @@
 					<div class="article-meta-info">
     <span class="article-date article-meta-item">
         <i class="fa-regular fa-pen-fancy"></i>&nbsp;
-        <span class="desktop">2024-12-04 16:53:34</span>
-        <span class="mobile">2024-12-04 16:53:34</span>
+        <span class="desktop">2025-06-12 11:28:27</span>
+        <span class="mobile">2025-06-12 11:28:27</span>
         <span class="hover-info">创建</span>
     </span>
     
         <span class="article-date article-meta-item">
             <i class="fa-regular fa-wrench"></i>&nbsp;
-            <span class="desktop">2025-01-03 15:21:23</span>
-            <span class="mobile">2025-01-03 15:21:23</span>
+            <span class="desktop">2025-06-12 11:59:43</span>
+            <span class="mobile">2025-06-12 11:59:43</span>
             <span class="hover-info">更新</span>
         </span>
     
@@ -428,7 +427,7 @@
                     
                         
                         <li>
-                            <a href="/categories/%E5%AE%9E%E9%AA%8C%E5%AE%A4%E5%AE%9E%E8%B7%B5/">实验室实践</a>&nbsp;
+                            <a href="/categories/CUDA/">CUDA</a>&nbsp;
                         </li>
                     
                     
@@ -442,11 +441,7 @@
             <ul>
                 
                     <li>
-                        <a href="/tags/nccl/">nccl</a>&nbsp;
-                    </li>
-                
-                    <li>
-                        | <a href="/tags/%E5%AE%9E%E9%AA%8C%E5%AE%A4/">实验室</a>&nbsp;
+                        <a href="/tags/CUDA/">CUDA</a>&nbsp;
                     </li>
                 
             </ul>
@@ -472,21 +467,31 @@
 
 
 		<div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
-			<h1 id="nccl编译"><a href="#nccl编译" class="headerlink" title="nccl编译"></a>nccl编译</h1><div class="code-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make src.build CUDA_HOME=/usr/lib/nvidia-cuda-toolkit/ NVCC_GENCODE=<span class="string">&quot;-gencode=arch=compute_80,code=sm_80&quot;</span></span><br></pre></td></tr></table></figure></div>
-
-<h1 id="查看各种库的安装路径"><a href="#查看各种库的安装路径" class="headerlink" title="查看各种库的安装路径"></a>查看各种库的安装路径</h1><ul>
-<li>由于管理员最初好像是用apt安装的，所以可以这样查找</li>
-<li>以查找mpi为例<div class="code-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dpkg -S mpicc</span><br></pre></td></tr></table></figure></div></li>
+			<h2 id="三种函数执行环境标识符"><a href="#三种函数执行环境标识符" class="headerlink" title="三种函数执行环境标识符"></a>三种函数执行环境标识符</h2><ul>
+<li>CUDA内核函数的执行环境有三种标识符：<code>global</code>, <code>device</code>, <code>host</code></li>
 </ul>
-<h1 id="nccl-test编译"><a href="#nccl-test编译" class="headerlink" title="nccl-test编译"></a>nccl-test编译</h1><div class="code-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make MPI=1 MPI_HOME=/usr/mpi/gcc/openmpi-4.1.7a1 CUDA_HOME=/usr/lib/nvidia-cuda-toolkit/ NCCL_HOME=/home/cyu/tccl-2024/nccl/build</span><br></pre></td></tr></table></figure></div>
-
-<h1 id="nccl-test测试"><a href="#nccl-test测试" class="headerlink" title="nccl-test测试"></a>nccl-test测试</h1><div class="code-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> LD_LIBRARY_PATH=/home/cyu/tccl-2024/nccl/build/lib:<span class="variable">$LD_LIBRARY_PATH</span></span><br><span class="line">./build/all_reduce_perf -b 8 -e 128M -f 2 -g 2</span><br></pre></td></tr></table></figure></div>
-
-<h1 id="如果mpi的库修改了版本"><a href="#如果mpi的库修改了版本" class="headerlink" title="如果mpi的库修改了版本"></a>如果mpi的库修改了版本</h1><div class="code-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim ~/.bashrc</span><br></pre></td></tr></table></figure></div>
-<ul>
-<li>在文件末尾添加：<div class="code-container" data-rel="Txt"><figure class="iseeu highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">export PATH=/usr/mpi/gcc/openmpi-4.1.7rc1/bin:$PATH</span><br><span class="line">export LD_LIBRARY_PATH=/usr/mpi/gcc/openmpi-4.1.7rc1/lib:$LD_LIBRARY_PATH</span><br></pre></td></tr></table></figure></div></li>
-<li>保存退出，然后source ~&#x2F;.bashrc生效</li>
+<h3 id="host"><a href="#host" class="headerlink" title="host"></a><code>host</code></h3><ul>
+<li><code>host</code>在主机（CPU）上执行的普通函数</li>
+<li>可以直接省略不写，不写就默认是<code>host</code></li>
 </ul>
+<h3 id="global"><a href="#global" class="headerlink" title="global"></a><code>global</code></h3><ul>
+<li><code>global</code>在设备（GPU）上执行，也就是我们常说的GPU内核函数</li>
+<li>可以有参数，<strong>不能有返回值</strong></li>
+<li>CPU通过&lt;&lt;&lt;&gt;&gt;&gt;调用，可以由__host__调用</li>
+<li>可以调用__device__函数</li>
+</ul>
+<h3 id="device"><a href="#device" class="headerlink" title="device"></a><code>device</code></h3><ul>
+<li><code>device</code>在GPU上执行，只能在GPU上被调用</li>
+<li>所以只有<strong>global</strong>和<strong>device</strong>可以调用__device__</li>
+<li>不能被host调用</li>
+<li>不能调用global</li>
+</ul>
+<h2 id="图片总结"><a href="#图片总结" class="headerlink" title="图片总结"></a>图片总结</h2><p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/image-1.png"
+                      alt="alt text"
+                ></p>
 
 		</div>
 
@@ -496,11 +501,7 @@
 		<ul class="post-tags-box text-lg mt-1.5 flex-wrap justify-center flex md:hidden">
 			
 			<li class="tag-item mx-0.5">
-				<a href="/tags/nccl/">#nccl</a>&nbsp;
-			</li>
-			
-			<li class="tag-item mx-0.5">
-				<a href="/tags/%E5%AE%9E%E9%AA%8C%E5%AE%A4/">#实验室</a>&nbsp;
+				<a href="/tags/CUDA/">#CUDA</a>&nbsp;
 			</li>
 			
 		</ul>
@@ -511,23 +512,11 @@
 		
 		<div class="article-nav my-8 flex justify-between items-center px-2 sm:px-6 md:px-8">
 			
-			<div class="article-prev border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
-				<a class="prev" rel="prev" href="/2024/12/08/%E5%90%8C%E6%AD%A5%E6%9C%BA%E5%88%B6/">
-					<span class="left arrow-icon flex justify-center items-center">
-						<i class="fa-solid fa-chevron-left"></i>
-					</span>
-					<span class="title flex justify-center items-center">
-						<span class="post-nav-title-item">同步机制</span>
-						<span class="post-nav-item">上一篇</span>
-					</span>
-				</a>
-			</div>
-			
 			
 			<div class="article-next border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
-				<a class="next" rel="next" href="/2024/12/04/hexo%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">
+				<a class="next" rel="next" href="/2025/03/30/CUDA%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84/">
 					<span class="title flex justify-center items-center">
-						<span class="post-nav-title-item">hexo常用命令</span>
+						<span class="post-nav-title-item">CUDA内存结构</span>
 						<span class="post-nav-item">下一篇</span>
 					</span>
 					<span class="right arrow-icon flex justify-center items-center">
@@ -548,8 +537,8 @@
 		<div class="post-toc-wrap">
 	<div class="post-toc">
 		<div class="toc-title">目录</div>
-		<div class="page-title">实验室服务器nccl部署命令</div>
-		<ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#nccl%E7%BC%96%E8%AF%91"><span class="nav-text">nccl编译</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E5%90%84%E7%A7%8D%E5%BA%93%E7%9A%84%E5%AE%89%E8%A3%85%E8%B7%AF%E5%BE%84"><span class="nav-text">查看各种库的安装路径</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#nccl-test%E7%BC%96%E8%AF%91"><span class="nav-text">nccl-test编译</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#nccl-test%E6%B5%8B%E8%AF%95"><span class="nav-text">nccl-test测试</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A6%82%E6%9E%9Cmpi%E7%9A%84%E5%BA%93%E4%BF%AE%E6%94%B9%E4%BA%86%E7%89%88%E6%9C%AC"><span class="nav-text">如果mpi的库修改了版本</span></a></li></ol>
+		<div class="page-title">CUDA内核函数执行环境标识符:global,device,host</div>
+		<ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E7%A7%8D%E5%87%BD%E6%95%B0%E6%89%A7%E8%A1%8C%E7%8E%AF%E5%A2%83%E6%A0%87%E8%AF%86%E7%AC%A6"><span class="nav-text">三种函数执行环境标识符</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#host"><span class="nav-text">host</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#global"><span class="nav-text">global</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#device"><span class="nav-text">device</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%BE%E7%89%87%E6%80%BB%E7%BB%93"><span class="nav-text">图片总结</span></a></li></ol>
 
 	</div>
 </div>

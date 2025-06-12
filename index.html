@@ -415,7 +415,7 @@
         <div class="label text-third-text-color text-sm">分类</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">19</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">20</div>
         <div class="label text-third-text-color text-sm">文章</div>
     </a>
 </div>
@@ -492,7 +492,7 @@
         <div class="label text-third-text-color text-sm">分类</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">19</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">20</div>
         <div class="label text-third-text-color text-sm">文章</div>
     </a>
 </div>
@@ -507,6 +507,84 @@
 			<div class="main-content">
 				<div class="home-content-container">
     <ul class="home-article-list">
+        
+            <li class="home-article-item">
+
+                
+
+                
+
+                
+                <div class="flex flex-col gap-5 px-7 pb-7 pt-7">
+                    <h3 class="home-article-title">
+                        <a href="/2025/06/12/CUDA%E5%86%85%E6%A0%B8%E5%87%BD%E6%95%B0%E6%89%A7%E8%A1%8C%E7%8E%AF%E5%A2%83%E6%A0%87%E8%AF%86%E7%AC%A6-global-device-host/">
+                            CUDA内核函数执行环境标识符:global,device,host
+                        </a>
+                    </h3>
+
+                    <div class="home-article-content markdown-body">
+                        
+                            
+                            三种函数执行环境标识符
+CUDA内核函数的执行环境有三种标识符：global, device, host
+
+host
+host在主机（CPU）上执行的普通函数
+可以直接省略不写，不写就默认是host
+
+global
+global在设备（GPU）上执行，也就是我们常说的GPU内核函数
+可以有参数，不能有返回值
+CPU通过&lt;&lt;&lt;&gt;&gt;&gt;调用，可以由__host_...
+                        
+                    </div>
+
+                    <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fa-solid fa-calendars"></i>&nbsp;
+            <span class="home-article-date" data-date="Thu Jun 12 2025 11:28:27 GMT+0800">
+                
+                    2025-06-12
+                
+            </span>
+        </span>
+        
+            <span class="home-article-category">
+                <i class="fa-solid fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/CUDA/">CUDA</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+        
+        
+            <span class="home-article-tag">
+                <i class="fa-solid fa-tags"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/tags/CUDA/">CUDA</a>&nbsp;
+                        </li>
+                    
+                </ul>
+            </span>
+        
+    </div>
+
+    <a href="/2025/06/12/CUDA%E5%86%85%E6%A0%B8%E5%87%BD%E6%95%B0%E6%89%A7%E8%A1%8C%E7%8E%AF%E5%A2%83%E6%A0%87%E8%AF%86%E7%AC%A6-global-device-host/">阅读全文<span class="seo-reader-text">CUDA内核函数执行环境标识符:global,device,host</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
+</div>
+
+                </div>
+            </li>
         
             <li class="home-article-item">
 
@@ -1182,81 +1260,6 @@ ncclLaunchKernel前面的内容和《NCCL代码阅读-01》里面记录的sendre
                 </div>
             </li>
         
-            <li class="home-article-item">
-
-                
-
-                
-
-                
-                <div class="flex flex-col gap-5 px-7 pb-7 pt-7">
-                    <h3 class="home-article-title">
-                        <a href="/2024/12/15/tmux%E4%BD%BF%E7%94%A8/">
-                            tmux使用
-                        </a>
-                    </h3>
-
-                    <div class="home-article-content markdown-body">
-                        
-                            
-                            需求
-我想在服务器上运行一个程序，但是这个程序耗时很长，我想断掉我本地机器和服务器的连接然后关机睡觉，但是我希望服务器上继续在跑
-解决方案：tmux
-
-tmux安装
-因为我用的服务器是组里面的多人服务器，所以我不能用root权限直接安装，又懒得用源码，于是就用conda虚拟环境安装12conda install -c conda-forge tmuxtmux -V
-
-tmux使用创建一个新的...
-                        
-                    </div>
-
-                    <div class="home-article-meta-info-container">
-    <div class="home-article-meta-info">
-        <span><i class="fa-solid fa-calendars"></i>&nbsp;
-            <span class="home-article-date" data-date="Sun Dec 15 2024 20:32:07 GMT+0800">
-                
-                    2024-12-15
-                
-            </span>
-        </span>
-        
-            <span class="home-article-category">
-                <i class="fa-solid fa-folders"></i>&nbsp;
-            <ul>
-                
-                
-                    
-                        
-                        <li>
-                            <a href="/categories/%E5%AE%9E%E9%AA%8C%E5%AE%A4%E5%AE%9E%E8%B7%B5/">实验室实践</a>&nbsp;
-                        </li>
-                    
-                    
-                
-            </ul>
-        </span>
-        
-        
-            <span class="home-article-tag">
-                <i class="fa-solid fa-tags"></i>&nbsp;
-                <ul>
-                    
-                        <li>
-                            
-                            <a href="/tags/tmux/">tmux</a>&nbsp;
-                        </li>
-                    
-                </ul>
-            </span>
-        
-    </div>
-
-    <a href="/2024/12/15/tmux%E4%BD%BF%E7%94%A8/">阅读全文<span class="seo-reader-text">tmux使用</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
-</div>
-
-                </div>
-            </li>
-        
     </ul>
 
     <div class="home-paginator px-7 py-5">
@@ -1287,7 +1290,7 @@ tmux使用创建一个新的...
                 
                 <p class="post-count space-x-0.5">
                     <span>
-                        共撰写了 19 篇文章
+                        共撰写了 20 篇文章
                     </span>
                     
                 </p>
