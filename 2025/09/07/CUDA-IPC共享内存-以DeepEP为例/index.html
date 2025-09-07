@@ -13,7 +13,7 @@
     
     <!--- Seo Part-->
     
-    <link rel="canonical" href="https://GitAlice123.github.io/2025/02/16/结构体继承小知识点/"/>
+    <link rel="canonical" href="https://GitAlice123.github.io/2025/09/07/cuda-ipc共享内存-以deepep为例/"/>
     <meta name="robots" content="index,follow">
     <meta name="googlebot" content="index,follow">
     <meta name="revisit-after" content="1 days">
@@ -23,16 +23,16 @@
         
         <meta name="description" content="Hexo Theme Redefine, Redefine Your Hexo Journey.">
 <meta property="og:type" content="article">
-<meta property="og:title" content="结构体继承小知识点">
-<meta property="og:url" content="https://gitalice123.github.io/2025/02/16/%E7%BB%93%E6%9E%84%E4%BD%93%E7%BB%A7%E6%89%BF%E5%B0%8F%E7%9F%A5%E8%AF%86%E7%82%B9/index.html">
+<meta property="og:title" content="CUDA IPC共享内存-以DeepEP为例">
+<meta property="og:url" content="https://gitalice123.github.io/2025/09/07/CUDA-IPC%E5%85%B1%E4%BA%AB%E5%86%85%E5%AD%98-%E4%BB%A5DeepEP%E4%B8%BA%E4%BE%8B/index.html">
 <meta property="og:site_name" content="Alice&#39;s Notebook">
 <meta property="og:description" content="Hexo Theme Redefine, Redefine Your Hexo Journey.">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://gitalice123.github.io/images/redefine-og.webp">
-<meta property="article:published_time" content="2025-02-16T05:18:23.000Z">
-<meta property="article:modified_time" content="2025-02-16T05:22:26.472Z">
+<meta property="article:published_time" content="2025-09-07T04:05:37.000Z">
+<meta property="article:modified_time" content="2025-09-07T04:13:11.421Z">
 <meta property="article:author" content="Alice Yu">
-<meta property="article:tag" content="结构体">
+<meta property="article:tag" content="CUDA">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://gitalice123.github.io/images/redefine-og.webp">
     
@@ -46,7 +46,7 @@
     
     <title>
         
-            结构体继承小知识点 | Alice&#39;s Notebook
+            CUDA IPC共享内存-以DeepEP为例 | Alice&#39;s Notebook
         
     </title>
 
@@ -384,7 +384,7 @@
 		<div class="article-title relative w-full">
 			
 			<div class="w-full flex items-center pt-6 justify-start">
-				<h1 class="article-title-regular text-second-text-color tracking-tight text-4xl md:text-6xl font-semibold px-2 sm:px-6 md:px-8 py-3">结构体继承小知识点</h1>
+				<h1 class="article-title-regular text-second-text-color tracking-tight text-4xl md:text-6xl font-semibold px-2 sm:px-6 md:px-8 py-3">CUDA IPC共享内存-以DeepEP为例</h1>
 			</div>
 			
 		</div>
@@ -405,15 +405,15 @@
 					<div class="article-meta-info">
     <span class="article-date article-meta-item">
         <i class="fa-regular fa-pen-fancy"></i>&nbsp;
-        <span class="desktop">2025-02-16 13:18:23</span>
-        <span class="mobile">2025-02-16 13:18:23</span>
+        <span class="desktop">2025-09-07 12:05:37</span>
+        <span class="mobile">2025-09-07 12:05:37</span>
         <span class="hover-info">创建</span>
     </span>
     
         <span class="article-date article-meta-item">
             <i class="fa-regular fa-wrench"></i>&nbsp;
-            <span class="desktop">2025-02-16 13:22:26</span>
-            <span class="mobile">2025-02-16 13:22:26</span>
+            <span class="desktop">2025-09-07 12:13:11</span>
+            <span class="mobile">2025-09-07 12:13:11</span>
             <span class="hover-info">更新</span>
         </span>
     
@@ -427,7 +427,17 @@
                     
                         
                         <li>
-                            <a href="/categories/%E8%AF%AD%E8%A8%80/">语言</a>&nbsp;
+                            <a href="/categories/CUDA/">CUDA</a>&nbsp;
+                        </li>
+                    
+                    
+                
+                    
+                        
+                            <li>></li>
+                        
+                        <li>
+                            <a href="/categories/CUDA/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9F%A5%E8%AF%86/">操作系统知识</a>&nbsp;
                         </li>
                     
                     
@@ -441,7 +451,7 @@
             <ul>
                 
                     <li>
-                        <a href="/tags/%E7%BB%93%E6%9E%84%E4%BD%93/">结构体</a>&nbsp;
+                        <a href="/tags/CUDA/">CUDA</a>&nbsp;
                     </li>
                 
             </ul>
@@ -467,12 +477,18 @@
 
 
 		<div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
-			<h2 id="C中结构体的继承"><a href="#C中结构体的继承" class="headerlink" title="C中结构体的继承"></a>C中结构体的继承</h2><ul>
-<li>起因是一段代码，我没看懂，简化一下是这样：<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Base</span> &#123;</span></span><br><span class="line">  <span class="type">int</span> x;</span><br><span class="line">  <span class="type">int</span> y;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Derived</span> &#123;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">Base</span> <span class="title">base</span>;</span></span><br><span class="line">  <span class="type">int</span> z;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">Derived</span> <span class="title">d</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">Base</span>* <span class="title">b</span> =</span> (<span class="keyword">struct</span> Base*)&amp;d;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 通过 b 访问 Base 的成员</span></span><br><span class="line">  b-&gt;x = <span class="number">1</span>;</span><br><span class="line">  b-&gt;y = <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 通过 d 访问 Derived 的成员</span></span><br><span class="line">  d.z = <span class="number">3</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 输出结果</span></span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;b-&gt;x = %d, b-&gt;y = %d\n&quot;</span>, b-&gt;x, b-&gt;y);  <span class="comment">// 输出: b-&gt;x = 1, b-&gt;y = 2</span></span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;d.z = %d\n&quot;</span>, d.z);                     <span class="comment">// 输出: d.z = 3</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// 尝试通过 b 访问 z（错误）</span></span><br><span class="line">  <span class="comment">// b-&gt;z = 4;  // 这行代码会导致编译错误</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></li>
-<li>实际上，base是derived的基类，derived相较之base多出了一个z属性。</li>
-<li>之所以把base作为derived的第一个变量，就是因为结构体中，第一个变量的地址和整个结构体的起点地址是重合的。</li>
-<li>所以如果把这个结构体转换成Base类型，就可以直接作为base结构体来访问</li>
-<li>后面如果还需要访问多出来的z属性，可以转换回Derived类型</li>
+			<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><ul>
+<li>deepep当中，RDMA到nvlink域的转发之前一直以为是先从RDMA recv buffer到nvlink的本地buffer，然后再从nvlink本地buffer到其他GPU的nvlink buffer</li>
+<li>实际上，deepep是直接从RDMA recv buffer到其他GPU的nvlink buffer</li>
+<li>这就涉及到cuda ipc共享内存的概念</li>
+</ul>
+<h1 id="相关代码"><a href="#相关代码" class="headerlink" title="相关代码"></a>相关代码</h1><div class="code-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (num_nvl_bytes &gt; <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="comment">// Local IPC: alloc local memory and set local IPC handle</span></span><br><span class="line">    <span class="comment">// 在这个GPU上分配内存，并把分配的内存的地址存在buffer_ptrs[nvl_rank]中</span></span><br><span class="line">    <span class="built_in">CUDA_CHECK</span>(<span class="built_in">cudaMalloc</span>(&amp;buffer_ptrs[nvl_rank], num_nvl_bytes + fifo_bytes + buffer_ptr_bytes + task_ptr_bytes));</span><br><span class="line">    <span class="comment">// 获取该内存块的IPC句柄（相当于获取&quot;内存钥匙&quot;），输出：IPC句柄，输入：内存地址</span></span><br><span class="line">    <span class="built_in">CUDA_CHECK</span>(<span class="built_in">cudaIpcGetMemHandle</span>(&amp;ipc_handles[nvl_rank], buffer_ptrs[nvl_rank]));</span><br><span class="line">    buffer_ptrs_gpu = <span class="built_in">reinterpret_cast</span>&lt;<span class="type">void</span>**&gt;(<span class="built_in">reinterpret_cast</span>&lt;<span class="type">uint8_t</span>*&gt;(buffer_ptrs[nvl_rank]) + num_nvl_bytes + fifo_bytes);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Set task fifo</span></span><br><span class="line">    <span class="built_in">EP_HOST_ASSERT</span>(NUM_MAX_FIFO_SLOTS % num_nvl_ranks == <span class="number">0</span>);</span><br><span class="line">    task_fifo_ptrs[nvl_rank] = <span class="built_in">reinterpret_cast</span>&lt;<span class="type">int</span>*&gt;(<span class="built_in">reinterpret_cast</span>&lt;<span class="type">uint8_t</span>*&gt;(buffer_ptrs[nvl_rank]) + num_nvl_bytes);</span><br><span class="line">    task_fifo_ptrs_gpu = <span class="built_in">reinterpret_cast</span>&lt;<span class="type">int</span>**&gt;(<span class="built_in">reinterpret_cast</span>&lt;<span class="type">uint8_t</span>*&gt;(buffer_ptrs[nvl_rank]) + num_nvl_bytes + fifo_bytes + buffer_ptr_bytes);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// No need to synchronize, will do a full device sync during `sync`</span></span><br><span class="line">    <span class="built_in">CUDA_CHECK</span>(<span class="built_in">cudaMemsetAsync</span>(task_fifo_ptrs[nvl_rank], <span class="number">0</span>, fifo_bytes, comm_stream));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>, offset = rdma_rank * num_nvl_ranks; i &lt; num_nvl_ranks; ++ i) &#123;</span><br><span class="line">    <span class="built_in">EP_HOST_ASSERT</span>(all_gathered_handles[offset + i].<span class="built_in">has_value</span>());</span><br><span class="line">    <span class="keyword">auto</span> handle_str = std::<span class="built_in">string</span>(all_gathered_handles[offset + i].<span class="built_in">value</span>());</span><br><span class="line">    <span class="built_in">EP_HOST_ASSERT</span>(handle_str.<span class="built_in">size</span>() == CUDA_IPC_HANDLE_SIZE);</span><br><span class="line">    <span class="comment">// 如果是远程GPU</span></span><br><span class="line">    <span class="keyword">if</span> (offset + i != rank) &#123;</span><br><span class="line">        <span class="comment">// 复制他的钥匙</span></span><br><span class="line">        std::<span class="built_in">memcpy</span>(ipc_handles[i].reserved, handle_str.<span class="built_in">c_str</span>(), CUDA_IPC_HANDLE_SIZE);</span><br><span class="line">        <span class="comment">// 用钥匙打开他的门，输入：IPC句柄，输出：把获得权限的远程内存地址存在buffer_ptrs[i]中</span></span><br><span class="line">        <span class="built_in">CUDA_CHECK</span>(<span class="built_in">cudaIpcOpenMemHandle</span>(&amp;buffer_ptrs[i], ipc_handles[i], cudaIpcMemLazyEnablePeerAccess));</span><br><span class="line">        <span class="comment">// 设置任务队列指针</span></span><br><span class="line">        task_fifo_ptrs[i] = <span class="built_in">reinterpret_cast</span>&lt;<span class="type">int</span>*&gt;(<span class="built_in">reinterpret_cast</span>&lt;<span class="type">uint8_t</span>*&gt;(buffer_ptrs[i]) + num_nvl_bytes);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 如果是自己的GPU，检查自己的钥匙是否正确</span></span><br><span class="line">        <span class="built_in">EP_HOST_ASSERT</span>(std::<span class="built_in">memcmp</span>(ipc_handles[i].reserved, handle_str.<span class="built_in">c_str</span>(), CUDA_IPC_HANDLE_SIZE) == <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li>所以实际上，buffer_ptrs数组中有num_nvl_ranks个元素，每个元素都是一个GPU的内存地址</li>
+<li>其中buffer_ptrs[本地GPU的rank]是本地分配的</li>
+<li>其他buffer_ptrs[远程GPU的rank]是通过cuda ipc打开的远程内存地址</li>
+<li>这样就实现了直接从RDMA recv buffer到远程GPU的nvlink buffer的零拷贝传输</li>
 </ul>
 
 		</div>
@@ -483,7 +499,7 @@
 		<ul class="post-tags-box text-lg mt-1.5 flex-wrap justify-center flex md:hidden">
 			
 			<li class="tag-item mx-0.5">
-				<a href="/tags/%E7%BB%93%E6%9E%84%E4%BD%93/">#结构体</a>&nbsp;
+				<a href="/tags/CUDA/">#CUDA</a>&nbsp;
 			</li>
 			
 		</ul>
@@ -494,23 +510,11 @@
 		
 		<div class="article-nav my-8 flex justify-between items-center px-2 sm:px-6 md:px-8">
 			
-			<div class="article-prev border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
-				<a class="prev" rel="prev" href="/2025/02/21/NVSHMEM%E9%85%8D%E7%BD%AE/">
-					<span class="left arrow-icon flex justify-center items-center">
-						<i class="fa-solid fa-chevron-left"></i>
-					</span>
-					<span class="title flex justify-center items-center">
-						<span class="post-nav-title-item">NVSHMEM配置</span>
-						<span class="post-nav-item">上一篇</span>
-					</span>
-				</a>
-			</div>
-			
 			
 			<div class="article-next border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
-				<a class="next" rel="next" href="/2025/01/09/%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C/">
+				<a class="next" rel="next" href="/2025/08/25/%E8%BD%AF%E7%A1%AC%E9%93%BE%E6%8E%A5/">
 					<span class="title flex justify-center items-center">
-						<span class="post-nav-title-item">内存屏障</span>
+						<span class="post-nav-title-item">软硬链接</span>
 						<span class="post-nav-item">下一篇</span>
 					</span>
 					<span class="right arrow-icon flex justify-center items-center">
@@ -531,8 +535,8 @@
 		<div class="post-toc-wrap">
 	<div class="post-toc">
 		<div class="toc-title">目录</div>
-		<div class="page-title">结构体继承小知识点</div>
-		<ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#C%E4%B8%AD%E7%BB%93%E6%9E%84%E4%BD%93%E7%9A%84%E7%BB%A7%E6%89%BF"><span class="nav-text">C中结构体的继承</span></a></li></ol>
+		<div class="page-title">CUDA IPC共享内存-以DeepEP为例</div>
+		<ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E4%BB%A3%E7%A0%81"><span class="nav-text">相关代码</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol>
 
 	</div>
 </div>
