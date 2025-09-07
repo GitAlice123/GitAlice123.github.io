@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="Hexo Theme Redefine">
+    
+    <meta name="author" content="Alice Yu">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="https://GitAlice123.github.io/2025/09/07/pybind机制/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+    
+    
+        
+        <meta name="description" content="Hexo Theme Redefine, Redefine Your Hexo Journey.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="pybind机制">
+<meta property="og:url" content="https://gitalice123.github.io/2025/09/07/pybind%E6%9C%BA%E5%88%B6/index.html">
+<meta property="og:site_name" content="Alice&#39;s Notebook">
+<meta property="og:description" content="Hexo Theme Redefine, Redefine Your Hexo Journey.">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitalice123.github.io/images/redefine-og.webp">
+<meta property="article:published_time" content="2025-09-07T06:52:47.000Z">
+<meta property="article:modified_time" content="2025-09-07T11:57:49.505Z">
+<meta property="article:author" content="Alice Yu">
+<meta property="article:tag" content="pybind">
+<meta property="article:tag" content="nvshmem">
+<meta property="article:tag" content="setup.py">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitalice123.github.io/images/redefine-og.webp">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/images/myicon.jpg" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/myicon.jpg">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/images/myicon.jpg">
+    <!--- Page Info-->
+    
+    <title>
+        
+            pybind机制 | Alice&#39;s Notebook
+        
+    </title>
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/css/build/tailwind.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/GeistMono/geist-mono.css">
+
+    
+<link rel="stylesheet" href="/fonts/Geist/geist.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+    
+    
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"gitalice123.github.io","root":"/","language":"zh-CN","path":"search.xml"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"delete_mask":false,"title_alignment":"left","headings_top_spacing":{"h1":"3.2rem","h2":"2.4rem","h3":"1.9rem","h4":"1.6rem","h5":"1.4rem","h6":"1.3rem"}},"word_count":{"enable":true,"count":true,"min2read":true},"author_label":{"enable":true,"auto":false,"list":[]},"code_block":{"copy":true,"style":"mac","highlight_theme":{"light":"github","dark":"vs2015"},"font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":false,"default":"cc_by_nc_sa"},"lazyload":true,"pangu_js":false,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null},"title":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":true,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":{"enable":false,"custom_message":null},"open_graph":{"enable":true,"image":"/images/redefine-og.webp","description":"Hexo Theme Redefine, Redefine Your Hexo Journey."},"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/images/wallhaven-wqery6-light.webp","dark":"/images/wallhaven-wqery6-dark.webp"},"title":"Alice's Notebook","subtitle":{"text":["你当像鸟，飞往你的山"],"hitokoto":{"enable":false,"show_author":true,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":true,"smart_backspace":true},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":false,"style":"default","links":{"github":"https://github.com/GitAlice123","instagram":null,"zhihu":null,"twitter":null,"email":"2822983966@qq.com"},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"11.4.1"}},"version":"2.8.2","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"About":{"icon":"fa-regular fa-user","submenus":{"Me":"/about","Github":"https://github.com/GitAlice123","Blog":"https://www.alicesnotebook.cn/"}}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":{"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"Tags":{"path":"/tags","icon":"fa-regular fa-tags"},"Categories":{"path":"/categories","icon":"fa-regular fa-folder"}}},"article_date_format":"auto","excerpt_length":200,"categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2024/12/7 11:45:14"};
+    window.lang_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+
+<body>
+	<div class="progress-bar-container">
+	
+
+	
+	<span class="pjax-progress-bar"></span>
+	<!--        <span class="swup-progress-icon">-->
+	<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+	<!--        </span>-->
+	
+</div>
+
+<main class="page-container" id="swup">
+
+	
+
+	<div class="main-content-container flex flex-col justify-between min-h-dvh">
+		<div class="main-content-header">
+			<header class="navbar-container px-6 md:px-12">
+    <div class="navbar-content transition-navbar ">
+        <div class="left">
+            
+                <a class="logo-image h-8 w-8 sm:w-10 sm:h-10 mr-3" href="/">
+                    <img src="/images/myicon.jpg" class="w-full h-full rounded-sm">
+                </a>
+            
+            <a class="logo-title" href="/">
+                
+                Alice&#39;s Notebook
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    首页
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archives"
+                                        >
+                                    <i class="fa-regular fa-archive fa-fw"></i>
+                                    归档
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class="has-dropdown"
+                                   href="#"
+                                        onClick=&#34;return false;&#34;>
+                                    <i class="fa-regular fa-user fa-fw"></i>
+                                    关于
+                                    <i class="fa-solid fa-chevron-down fa-fw"></i>
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                                    <ul class="sub-menu">
+                                        
+                                            <li>
+                                                <a href="/about">
+                                                    ME
+                                                </a>
+                                            </li>
+                                        
+                                            <li>
+                                                <a target="_blank" rel="noopener" href="https://github.com/GitAlice123">
+                                                    GITHUB
+                                                </a>
+                                            </li>
+                                        
+                                            <li>
+                                                <a target="_blank" rel="noopener" href="https://www.alicesnotebook.cn/">
+                                                    BLOG
+                                                </a>
+                                            </li>
+                                        
+                                    </ul>
+                                
+                            </li>
+                    
+                    
+                        <li class="navbar-item search search-popup-trigger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-dvh w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                首页
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archives"
+                        >
+                            <span>
+                                归档
+                            </span>
+                            
+                                <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item-sub text-base my-1.5 flex flex-col w-full">
+                        
+                        <div class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary cursor-pointer text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                             navbar-data-toggle="submenu-About"
+                        >
+                            <span>
+                                关于
+                            </span>
+                            
+                                <i class="fa-solid fa-chevron-right fa-sm fa-fw transition-all"></i>
+                            
+                        </div>
+                        
+
+                        
+                            <div class="flex-col items-start px-2 py-2 hidden" data-target="submenu-About">
+                                
+                                    <div class="drawer-navbar-item text-base flex flex-col justify-center items-start hover:underline active:underline hover:underline-offset-1 rounded-3xl">
+                                        <a class=" text-third-text-color text-xl"
+                                           href="/about">ME</a>
+                                    </div>
+                                
+                                    <div class="drawer-navbar-item text-base flex flex-col justify-center items-start hover:underline active:underline hover:underline-offset-1 rounded-3xl">
+                                        <a class=" text-third-text-color text-xl"
+                                           target="_blank" rel="noopener" href="https://github.com/GitAlice123">GITHUB</a>
+                                    </div>
+                                
+                                    <div class="drawer-navbar-item text-base flex flex-col justify-center items-start hover:underline active:underline hover:underline-offset-1 rounded-3xl">
+                                        <a class=" text-third-text-color text-xl"
+                                           target="_blank" rel="noopener" href="https://www.alicesnotebook.cn/">BLOG</a>
+                                    </div>
+                                
+                            </div>
+                        
+                    </li>
+            
+
+            
+            
+                
+                    
+                    
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full active"
+                           href="/tags"
+                        >
+                            <span>Tags</span>
+                            <i class="fa-regular fa-tags fa-sm fa-fw"></i>
+                        </a>
+                    </li>
+                
+                    
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full active"
+                           href="/categories"
+                        >
+                            <span>Categories</span>
+                            <i class="fa-regular fa-folder fa-sm fa-fw"></i>
+                        </a>
+                    </li>
+                
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">18</div>
+        <div class="label text-third-text-color text-sm">标签</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">6</div>
+        <div class="label text-third-text-color text-sm">分类</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">24</div>
+        <div class="label text-third-text-color text-sm">文章</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+		</div>
+
+		<div class="main-content-body transition-fade-up">
+			
+
+			<div class="main-content">
+				<div class="post-page-container flex relative justify-between box-border w-full h-full">
+	<div class="article-content-container">
+
+		<div class="article-title relative w-full">
+			
+			<div class="w-full flex items-center pt-6 justify-start">
+				<h1 class="article-title-regular text-second-text-color tracking-tight text-4xl md:text-6xl font-semibold px-2 sm:px-6 md:px-8 py-3">pybind机制</h1>
+			</div>
+			
+		</div>
+
+		
+		<div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+			<div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+				<img src="/images/myicon.jpg">
+			</div>
+			<div class="info flex flex-col justify-between">
+				<div class="author flex items-center">
+					<span class="name text-default-text-color text-lg font-semibold">Alice Yu</span>
+					
+					<span class="author-label ml-1.5 text-xs px-2 py-0.5 rounded-small text-third-text-color border border-shadow-color-1">Lv3</span>
+					
+				</div>
+				<div class="meta-info">
+					<div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2025-09-07 14:52:47</span>
+        <span class="mobile">2025-09-07 14:52:47</span>
+        <span class="hover-info">创建</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2025-09-07 19:57:49</span>
+            <span class="mobile">2025-09-07 19:57:49</span>
+            <span class="hover-info">更新</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/%E5%AE%9E%E9%AA%8C%E5%AE%A4%E5%AE%9E%E8%B7%B5/">实验室实践</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fa-regular fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/pybind/">pybind</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/nvshmem/">nvshmem</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/setup-py/">setup.py</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fa-regular fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+				</div>
+			</div>
+		</div>
+		
+
+		
+
+
+		<div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+			<h1 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h1><ul>
+<li>python里面调用C++代码</li>
+</ul>
+<h1 id="举例说明：小demo拆解"><a href="#举例说明：小demo拆解" class="headerlink" title="举例说明：小demo拆解"></a>举例说明：小demo拆解</h1><ul>
+<li>链接：<a class="link"   target="_blank" rel="noopener" href="https://github.com/GitAlice123/datacopy_nvshmem_pybind" >datacopy_nvshmem_pybind<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></li>
+</ul>
+<h2 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h2><ul>
+<li>因为跨服务器的传输，不用MPI的话就得用pytorch提供的分布式通信接口</li>
+<li>pytorch的分布式通信接口是python的</li>
+<li>所以必须得用python调用底层编写的C++代码</li>
+<li>这个项目还有一个麻烦的事情是必须要使用到nvshmem库，一些链接过程也写在这里</li>
+</ul>
+<h2 id="代码结构"><a href="#代码结构" class="headerlink" title="代码结构"></a>代码结构</h2><div class="code-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">├─include</span><br><span class="line">└─src</span><br><span class="line">    ├─datacopy.cu</span><br><span class="line">    └─pybind_data_copy.cpp</span><br><span class="line">└─build.sh</span><br><span class="line">└─CMakeLists.txt</span><br><span class="line">└─setup.py</span><br><span class="line">└─test.py</span><br></pre></td></tr></table></figure></div>
+<h2 id="include文件夹"><a href="#include文件夹" class="headerlink" title="include文件夹"></a>include文件夹</h2><ul>
+<li>没什么特别的，include里面包含了一些头文件</li>
+</ul>
+<h2 id="src文件夹"><a href="#src文件夹" class="headerlink" title="src文件夹"></a>src文件夹</h2><ul>
+<li>datacopy.cu：主要是实现了数据传输的功能，用的是普通的C++语法和CUDA语法</li>
+<li>pybind_data_copy.cpp：主要是实现了python和C++的接口，用的是pybind11的语法<div class="code-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;pybind11/pybind11.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;pybind11/stl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;double_buffer_manager.h&quot;</span> </span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 这两个函数实现在datacopy.cu里面</span></span><br><span class="line"><span class="function">std::vector&lt;<span class="type">uint8_t</span>&gt; <span class="title">get_unique_id</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">init_nvshmem</span><span class="params">(<span class="type">const</span> std::vector&lt;<span class="type">uint8_t</span>&gt;&amp; root_unique_id, <span class="type">int</span> rank, <span class="type">int</span> world_size)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> py = pybind11;</span><br><span class="line"></span><br><span class="line"><span class="built_in">PYBIND11_MODULE</span>(pydatacopy, m) &#123;</span><br><span class="line">    py::<span class="built_in">class_</span>&lt;DoubleBufferManager&gt;(m, <span class="string">&quot;DoubleBufferManager&quot;</span>)</span><br><span class="line">        .<span class="built_in">def</span>(py::init&lt;&gt;())</span><br><span class="line">        .<span class="built_in">def</span>(<span class="string">&quot;init&quot;</span>, &amp;DoubleBufferManager::init, <span class="string">&quot;Initialize double buffer&quot;</span>)</span><br><span class="line">        .<span class="built_in">def</span>(<span class="string">&quot;cleanup&quot;</span>, &amp;DoubleBufferManager::cleanup, <span class="string">&quot;Cleanup double buffer&quot;</span>)</span><br><span class="line">        .<span class="built_in">def</span>(<span class="string">&quot;test_bandwidth&quot;</span>, &amp;DoubleBufferManager::test_bandwidth, <span class="string">&quot;Test bandwidth&quot;</span>);</span><br><span class="line">    </span><br><span class="line">    m.<span class="built_in">def</span>(<span class="string">&quot;get_unique_id&quot;</span>, &amp;get_unique_id, <span class="string">&quot;Generate a unique ID for NVSHMEM initialization&quot;</span>);</span><br><span class="line">    m.<span class="built_in">def</span>(<span class="string">&quot;init_nvshmem&quot;</span>, &amp;init_nvshmem, <span class="string">&quot;Initialize NVSHMEM&quot;</span>,</span><br><span class="line">          py::<span class="built_in">arg</span>(<span class="string">&quot;root_unique_id&quot;</span>), py::<span class="built_in">arg</span>(<span class="string">&quot;rank&quot;</span>), py::<span class="built_in">arg</span>(<span class="string">&quot;world_size&quot;</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></li>
+<li>主要是用PYBIND11_MODULE宏定义了一个名为pydatacopy的模块</li>
+<li>这个模块包含了一个名为DoubleBufferManager的类和两个函数get_unique_id和init_nvshmem</li>
+<li>这样就可以在python中import pydatacopy，然后使用DoubleBufferManager类和这两个函数</li>
+</ul>
+<h2 id="build-sh"><a href="#build-sh" class="headerlink" title="build.sh"></a>build.sh</h2><div class="code-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># if no build dir, create one</span></span><br><span class="line"><span class="built_in">mkdir</span> -p build</span><br><span class="line"><span class="built_in">cd</span> build</span><br><span class="line"></span><br><span class="line"><span class="built_in">export</span> NVSHMEM_HOME=/usr/local/nvshmem</span><br><span class="line"><span class="built_in">export</span> Python_ROOT_DIR=$(python3.12 -c <span class="string">&quot;import sys; print(sys.prefix)&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">export</span> TORCH_CUDA_ARCH_LIST=<span class="string">&quot;9.0&quot;</span></span><br><span class="line"></span><br><span class="line">cmake .. \</span><br><span class="line">    -G Ninja \  <span class="comment"># use ninja instead of make to get faster</span></span><br><span class="line">    -DCMAKE_BUILD_TYPE=Release \</span><br><span class="line">    -DCMAKE_CUDA_ARCHITECTURES=90 \</span><br><span class="line">    -DPython_EXECUTABLE=$(<span class="built_in">which</span> python3.12) \</span><br><span class="line">    -DTorch_DIR=/usr/local/lib/python3.12/dist-packages/torch/share/cmake/Torch \</span><br><span class="line">    -Dpybind11_DIR=$(python3.12 -c <span class="string">&quot;import pybind11; print(pybind11.get_cmake_dir())&quot;</span>)</span><br><span class="line"></span><br><span class="line">ninja -j$(<span class="built_in">nproc</span>)</span><br></pre></td></tr></table></figure></div>
+<ul>
+<li>第一行的<code>#!/bin/bash</code>表示这个脚本是用bash解释器来执行的，这个指令必须放在脚本的第一行</li>
+<li><code>mkdir -p build</code>：创建一个名为build的目录，<code>-p</code>选项表示如果要创建的一个目录路径下任何一个目录不存在，都会自动创建出来，一次可以创建多个目录</li>
+<li><code>export NVSHMEM_HOME=/usr/local/nvshmem</code>：设置环境变量NVSHMEM_HOME为&#x2F;usr&#x2F;local&#x2F;nvshmem，这是nvshmem库的安装路径</li>
+<li><code>export Python_ROOT_DIR=$(python3.12 -c &quot;import sys; print(sys.prefix)&quot;)</code>：设置环境变量Python_ROOT_DIR为python3.12的安装路径<ul>
+<li><code>python3.12 -c &quot;import sys; print(sys.prefix)&quot;</code>：这条命令会输出python3.12的安装路径</li>
+<li><code>$(...)</code>：这是命令替换的语法，会把命令的输出结果赋值给变量 </li>
+<li>当 CMake 执行 find_package(Python COMPONENTS Interpreter Development)时：会首先检查 Python_ROOT_DIR，使用该路径查找 Python 开发文件，验证找到的 Python 版本是否符合要求</li>
+<li>如果在标准安装中，返回python的安装根目录；如果是虚拟环境，返回虚拟环境的根目录</li>
+<li>不设置可能导致找到错误版本的python</li>
+</ul>
+</li>
+<li><code>cmake .. \</code>：运行cmake命令，<code>..</code>表示上一级目录，也就是项目的根目录</li>
+<li><code>-G Ninja \</code>：指定使用Ninja作为构建系统，Ninja是一种更快的替代Make的构建工具</li>
+<li><code>-DCMAKE_BUILD_TYPE=Release \</code>：指定构建类型为Release，表示生成优化过的代码</li>
+<li><code>-DCMAKE_CUDA_ARCHITECTURES=90 \</code>：指定CUDA的计算能力为9.0，H20可用</li>
+<li><code>-DPython_EXECUTABLE=$(which python3.12) \</code>：指定python解释器的路径</li>
+<li><code>-DTorch_DIR=/usr/local/lib/python3.12/dist-packages/torch/share/cmake/Torch \</code>：指定pytorch的CMake配置文件路径，这个路径下面实际上存的是一些.cmake文件</li>
+<li><code>-Dpybind11_DIR=$(python3.12 -c &quot;import pybind11; print(pybind11.get_cmake_dir())&quot;)</code>：指定pybind11的CMake配置文件路径，编译好pybind11之后，这个目录下面存的也就是一些.cmake文件</li>
+<li><code>ninja -j$(nproc)</code>：运行ninja，编译</li>
+</ul>
+<h2 id="CMakeLists-txt"><a href="#CMakeLists-txt" class="headerlink" title="CMakeLists.txt"></a>CMakeLists.txt</h2><ul>
+<li>解释见注释<div class="code-container" data-rel="Cmake"><figure class="iseeu highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">cmake_minimum_required</span>(VERSION <span class="number">3.18</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置项目名称和使用的语言，这里用到C++和CUDA</span></span><br><span class="line"><span class="keyword">project</span>(pydatacopy LANGUAGES CXX CUDA)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置编译选项，关闭冗长的编译输出</span></span><br><span class="line"><span class="keyword">set</span>(CMAKE_VERBOSE_MAKEFILE <span class="keyword">OFF</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># ccache加速编译，在系统中查找ccache程序，把路径赋值给CCACHE_PROGRAM变量</span></span><br><span class="line"><span class="keyword">find_program</span>(CCACHE_PROGRAM ccache)</span><br><span class="line"><span class="keyword">if</span>(CCACHE_PROGRAM)</span><br><span class="line">    <span class="keyword">set</span>(CMAKE_CXX_COMPILER_LAUNCHER <span class="variable">$&#123;CCACHE_PROGRAM&#125;</span>)</span><br><span class="line">    <span class="keyword">set</span>(CMAKE_CUDA_COMPILER_LAUNCHER <span class="variable">$&#123;CCACHE_PROGRAM&#125;</span>)</span><br><span class="line">    <span class="keyword">message</span>(STATUS <span class="string">&quot;Using ccache for compilation acceleration&quot;</span>)</span><br><span class="line"><span class="keyword">endif</span>()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查找python这个外部依赖包，3.12版本，REQUIRED表示必须找到，否则报错，COMPONENTS后面的内容指定需要的部分，需要解释器和开发文件，这里会优先查找Python_ROOT_DIR变量指定的路径</span></span><br><span class="line"><span class="keyword">find_package</span>(Python <span class="number">3.12</span> REQUIRED COMPONENTS Interpreter Development)</span><br><span class="line"><span class="keyword">message</span>(STATUS <span class="string">&quot;Python include dirs: $&#123;Python_INCLUDE_DIRS&#125;&quot;</span>)</span><br><span class="line"><span class="keyword">message</span>(STATUS <span class="string">&quot;Python libraries: $&#123;Python_LIBRARIES&#125;&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># set()：CMake 命令，用于定义变量</span></span><br><span class="line"><span class="keyword">set</span>(TORCH_DIR <span class="string">&quot;/usr/local/lib/python3.12/dist-packages/torch/share/cmake/Torch&quot;</span>)</span><br><span class="line"><span class="keyword">message</span>(STATUS <span class="string">&quot;Using Torch at: $&#123;TORCH_DIR&#125;&quot;</span>)</span><br><span class="line"><span class="comment"># CMAKE_PREFIX_PATH：CMake 的特殊变量，用于存储查找包的路径列表</span></span><br><span class="line"><span class="comment"># list(APPEND ...)：向列表末尾添加新元素</span></span><br><span class="line"><span class="comment"># 作用是将 TORCH_DIR 添加到 CMAKE_PREFIX_PATH 中，这样 find_package(Torch ...) 时就会在这个路径下查找TorchConfig.cmake</span></span><br><span class="line"><span class="keyword">list</span>(APPEND CMAKE_PREFIX_PATH <span class="variable">$&#123;TORCH_DIR&#125;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">set</span>(CMAKE_CUDA_ARCHITECTURES <span class="string">&quot;90&quot;</span>)</span><br><span class="line"><span class="keyword">set</span>(TORCH_CUDA_ARCH_LIST <span class="string">&quot;9.0&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用torch的cmake配置文件，用于查找外部依赖包</span></span><br><span class="line"><span class="keyword">find_package</span>(Torch REQUIRED CONFIG)</span><br><span class="line"></span><br><span class="line"><span class="keyword">find_package</span>(pybind11 REQUIRED CONFIG)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">set</span>(NVSHMEM_HOME <span class="string">&quot;/usr/local/nvshmem&quot;</span>)</span><br><span class="line"><span class="keyword">message</span>(STATUS <span class="string">&quot;Using NVSHMEM at: $&#123;NVSHMEM_HOME&#125;&quot;</span>)</span><br><span class="line"><span class="keyword">set</span>(NVSHMEM_LIB <span class="string">&quot;$&#123;NVSHMEM_HOME&#125;/lib/libnvshmem.a&quot;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">find_package</span>(CUDAToolkit REQUIRED)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置源文件</span></span><br><span class="line"><span class="keyword">set</span>(SOURCES </span><br><span class="line">    src/pybind_data_copy.cpp</span><br><span class="line">    src/data_copy.cu</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 包含头文件目录</span></span><br><span class="line"><span class="keyword">include_directories</span>(<span class="variable">$&#123;CMAKE_CURRENT_SOURCE_DIR&#125;</span>/<span class="keyword">include</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 7. 获取 Python 模块后缀</span></span><br><span class="line"><span class="keyword">execute_process</span>(</span><br><span class="line">    <span class="keyword">COMMAND</span> python3.<span class="number">12</span> -c <span class="string">&quot;import sysconfig; print(sysconfig.get_config_var(&#x27;EXT_SUFFIX&#x27;))&quot;</span></span><br><span class="line">    OUTPUT_VARIABLE PYTHON_MODULE_SUFFIX</span><br><span class="line">    OUTPUT_STRIP_TRAILING_WHITESPACE</span><br><span class="line">)</span><br><span class="line"><span class="keyword">message</span>(STATUS <span class="string">&quot;Python module suffix: $&#123;PYTHON_MODULE_SUFFIX&#125;&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 8. 创建模块</span></span><br><span class="line"><span class="comment"># 创建一个名为 pydatacopy的共享库（动态链接库），这将成为 Python 可导入的扩展模块</span></span><br><span class="line"><span class="keyword">add_library</span>(pydatacopy SHARED <span class="variable">$&#123;SOURCES&#125;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># prefix：设置库文件名的前缀为空字符串，默认情况下，Linux/Mac 共享库有 lib前缀（如 libpydatacopy.so），Python 扩展模块不需要前缀，所以设为空</span></span><br><span class="line"><span class="comment"># suffix：设置库文件的后缀为 Python 模块的标准后缀（如 .so 或 .pyd），确保生成的文件名符合 Python 的要求</span></span><br><span class="line"><span class="comment"># POSITION_INDEPENDENT_CODE ON：生成位置无关代码（PIC），这对于共享库是必要的，多个程序共享同一段代码。位置无关的意思是代码可以加载到内存的任何位置，用的都是相对地址</span></span><br><span class="line"><span class="comment"># CUDA_SEPARABLE_COMPILATION ON：启用 CUDA 的可分离编译，这允许 CUDA 代码跨多个文件进行编译和链接</span></span><br><span class="line"><span class="keyword">set_target_properties</span>(pydatacopy PROPERTIES</span><br><span class="line">    PREFIX <span class="string">&quot;&quot;</span></span><br><span class="line">    SUFFIX <span class="string">&quot;$&#123;PYTHON_MODULE_SUFFIX&#125;&quot;</span></span><br><span class="line">    POSITION_INDEPENDENT_CODE <span class="keyword">ON</span></span><br><span class="line">    CUDA_SEPARABLE_COMPILATION <span class="keyword">ON</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 9. 添加包含目录</span></span><br><span class="line"><span class="keyword">target_include_directories</span>(pydatacopy PRIVATE</span><br><span class="line">    <span class="variable">$&#123;CMAKE_CURRENT_SOURCE_DIR&#125;</span>/<span class="keyword">include</span></span><br><span class="line">    <span class="variable">$&#123;Python_INCLUDE_DIRS&#125;</span></span><br><span class="line">    <span class="variable">$&#123;Torch_INCLUDE_DIRS&#125;</span></span><br><span class="line">    <span class="variable">$&#123;pybind11_INCLUDE_DIRS&#125;</span></span><br><span class="line">    <span class="variable">$&#123;NVSHMEM_HOME&#125;</span>/<span class="keyword">include</span></span><br><span class="line">    <span class="variable">$&#123;CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES&#125;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 10. 添加链接库</span></span><br><span class="line"><span class="keyword">target_link_libraries</span>(pydatacopy PRIVATE</span><br><span class="line">    <span class="variable">$&#123;TORCH_LIBRARIES&#125;</span></span><br><span class="line">    <span class="variable">$&#123;Python_LIBRARIES&#125;</span></span><br><span class="line">    cudart</span><br><span class="line">    <span class="variable">$&#123;NVSHMEM_LIB&#125;</span></span><br><span class="line">    dl</span><br><span class="line">    pybind11::pybind11</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 11. 添加编译选项 - 强制指定架构</span></span><br><span class="line"><span class="keyword">target_compile_options</span>(pydatacopy PRIVATE</span><br><span class="line">    $&lt;$&lt;COMPILE_LANGUAGE:CUDA&gt;:</span><br><span class="line">        -Xcompiler=-fPIC</span><br><span class="line">        --expt-relaxed-constexpr</span><br><span class="line">        --ptxas-options=-O3  <span class="comment"># 优化PTX汇编</span></span><br><span class="line">        --maxrregcount=<span class="number">64</span>    <span class="comment"># 限制寄存器使用以提高并行度</span></span><br><span class="line">        --use_fast_math      <span class="comment"># 使用快速数学（精度略低但更快）</span></span><br><span class="line">        --gpu-architecture=compute_90  <span class="comment"># 强制指定计算能力</span></span><br><span class="line">        --gpu-code=sm_90    <span class="comment"># 强制指定目标架构</span></span><br><span class="line">    &gt;</span><br><span class="line">    $&lt;$&lt;COMPILE_LANGUAGE:CXX&gt;:</span><br><span class="line">        -fPIC</span><br><span class="line">        -O3</span><br><span class="line">        -march=native        <span class="comment"># 使用本地CPU架构优化</span></span><br><span class="line">    &gt;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 12. 设置输出目录</span></span><br><span class="line"><span class="keyword">set_target_properties</span>(pydatacopy PROPERTIES</span><br><span class="line">    LIBRARY_OUTPUT_DIRECTORY <span class="variable">$&#123;CMAKE_SOURCE_DIR&#125;</span></span><br><span class="line">    CUDA_RESOLVE_DEVICE_SYMBOLS <span class="keyword">ON</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 13. 安装规则</span></span><br><span class="line"><span class="keyword">install</span>(TARGETS pydatacopy </span><br><span class="line">    LIBRARY DESTINATION lib</span><br><span class="line">    ARCHIVE DESTINATION lib</span><br><span class="line">)</span><br></pre></td></tr></table></figure></div></li>
+</ul>
+
+		</div>
+
+		
+
+		
+		<ul class="post-tags-box text-lg mt-1.5 flex-wrap justify-center flex md:hidden">
+			
+			<li class="tag-item mx-0.5">
+				<a href="/tags/pybind/">#pybind</a>&nbsp;
+			</li>
+			
+			<li class="tag-item mx-0.5">
+				<a href="/tags/nvshmem/">#nvshmem</a>&nbsp;
+			</li>
+			
+			<li class="tag-item mx-0.5">
+				<a href="/tags/setup-py/">#setup.py</a>&nbsp;
+			</li>
+			
+		</ul>
+		
+
+		
+
+		
+		<div class="article-nav my-8 flex justify-between items-center px-2 sm:px-6 md:px-8">
+			
+			
+			<div class="article-next border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+				<a class="next" rel="next" href="/2025/08/25/%E8%BD%AF%E7%A1%AC%E9%93%BE%E6%8E%A5/">
+					<span class="title flex justify-center items-center">
+						<span class="post-nav-title-item">软硬链接</span>
+						<span class="post-nav-item">下一篇</span>
+					</span>
+					<span class="right arrow-icon flex justify-center items-center">
+						<i class="fa-solid fa-chevron-right"></i>
+					</span>
+				</a>
+			</div>
+			
+		</div>
+		
+
+
+		
+	</div>
+
+	
+	<div class="toc-content-container">
+		<div class="post-toc-wrap">
+	<div class="post-toc">
+		<div class="toc-title">目录</div>
+		<div class="page-title">pybind机制</div>
+		<ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-text">使用场景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%BE%E4%BE%8B%E8%AF%B4%E6%98%8E%EF%BC%9A%E5%B0%8Fdemo%E6%8B%86%E8%A7%A3"><span class="nav-text">举例说明：小demo拆解</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%AE%E6%A0%87"><span class="nav-text">目标</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%84"><span class="nav-text">代码结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#include%E6%96%87%E4%BB%B6%E5%A4%B9"><span class="nav-text">include文件夹</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#src%E6%96%87%E4%BB%B6%E5%A4%B9"><span class="nav-text">src文件夹</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#build-sh"><span class="nav-text">build.sh</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CMakeLists-txt"><span class="nav-text">CMakeLists.txt</span></a></li></ol></li></ol>
+
+	</div>
+</div>
+	</div>
+	
+</div>
+			</div>
+
+			
+		</div>
+
+		<div class="main-content-footer">
+			<footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2024</span>
+              -
+            
+            2025&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">Alice Yu</a>
+            
+                
+                <p class="post-count space-x-0.5">
+                    <span>
+                        共撰写了 24 篇文章
+                    </span>
+                    
+                </p>
+            
+        </div>
+        
+            <script data-swup-reload-script src="https://cn.vercount.one/js"></script>
+            <div class="relative text-center lg:absolute lg:right-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-right">
+                
+                    <span id="busuanzi_container_site_uv" class="lg:!block">
+                        <span class="text-sm">访问人数</span>
+                        <span id="busuanzi_value_site_uv"></span>
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv" class="lg:!block">
+                        <span class="text-sm">总访问量</span>
+                        <span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">由 <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a> 驱动</span>
+            <span class="text-sm lg:block">主题&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.8.2</a></span>
+        </div>
+        
+            <div class="icp-info my-1"><a target="_blank" rel="nofollow" href="
+                
+                https://beian.miit.gov.cn
+                
+                ">皖ICP备2024057877号-1</a></div>
+        
+        
+            <div>
+                博客已运行 <span class="odometer" id="runtime_days" ></span> 天 <span class="odometer" id="runtime_hours"></span> 小时 <span class="odometer" id="runtime_minutes"></span> 分钟 <span class="odometer" id="runtime_seconds"></span> 秒
+            </div>
+        
+        
+            <script data-swup-reload-script>
+                try {
+                    function odometer_init() {
+                    const elements = document.querySelectorAll('.odometer');
+                    elements.forEach(el => {
+                        new Odometer({
+                            el,
+                            format: '( ddd).dd',
+                            duration: 200
+                        });
+                    });
+                    }
+                    odometer_init();
+                } catch (error) {}
+            </script>
+        
+        
+        
+    </div>  
+</footer>
+		</div>
+	</div>
+
+	
+	<div class="post-tools">
+		<div class="post-tools-container">
+	<ul class="article-tools-list">
+		<!-- TOC aside toggle -->
+		
+		<li class="right-bottom-tools page-aside-toggle">
+			<i class="fa-regular fa-outdent"></i>
+		</li>
+		
+
+		<!-- go comment -->
+		
+	</ul>
+</div>
+	</div>
+	
+
+	<div class="right-side-tools-container">
+		<div class="side-tools-container">
+	<ul class="hidden-tools-list">
+		<li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+			<i class="fa-regular fa-magnifying-glass-plus"></i>
+		</li>
+
+		<li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+			<i class="fa-regular fa-magnifying-glass-minus"></i>
+		</li>
+
+		<li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+			<i class="fa-regular fa-moon"></i>
+		</li>
+
+		<!-- rss -->
+		
+
+		
+
+		<li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+			<i class="fa-regular fa-arrow-down"></i>
+		</li>
+	</ul>
+
+	<ul class="visible-tools-list">
+		<li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+			<i class="fa-regular fa-cog fa-spin"></i>
+		</li>
+		
+		<li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+			<i class="arrow-up fas fa-arrow-up"></i>
+			<span class="percent"></span>
+		</li>
+		
+		
+	</ul>
+</div>
+	</div>
+
+	<div class="image-viewer-container">
+	<img src="">
+</div>
+
+	
+	<div class="search-pop-overlay">
+	<div class="popup search-popup">
+		<div class="search-header">
+			<span class="search-input-field-pre">
+				<i class="fa-solid fa-keyboard"></i>
+			</span>
+			<div class="search-input-container">
+				<input autocomplete="off" autocorrect="off" autocapitalize="off" placeholder="站内搜索您需要的内容..." spellcheck="false" type="search" class="search-input">
+			</div>
+			<span class="popup-btn-close">
+				<i class="fa-solid fa-times"></i>
+			</span>
+		</div>
+		<div id="search-result">
+			<div id="no-result">
+				<i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
+			</div>
+		</div>
+	</div>
+</div>
+	
+
+</main>
+
+
+
+<script src="/js/build/libs/Swup.min.js"></script>
+
+<script src="/js/build/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/build/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+	
+<script src="/js/build/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/build/utils.js" type="module"></script>
+
+<script src="/js/build/main.js" type="module"></script>
+
+<script src="/js/build/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/build/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/build/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/build/layouts/categoryList.js" type="module"></script>
+
+
+
+    
+<script src="/js/build/tools/localSearch.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/build/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/build/layouts/lazyload.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/build/tools/runtime.js"></script>
+
+    
+<script src="/js/build/libs/odometer.min.js"></script>
+
+    
+<link rel="stylesheet" href="/assets/odometer-theme-minimal.css">
+
+
+
+
+  
+<script src="/js/build/libs/Typed.min.js"></script>
+
+  
+<script src="/js/build/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+
+    
+<script src="/js/build/libs/anime.min.js"></script>
+
+
+
+
+
+    
+<script src="/js/build/tools/tocToggle.js" type="module" data-swup-reload-script=""></script>
+
+<script src="/js/build/layouts/toc.js" type="module" data-swup-reload-script=""></script>
+
+<script src="/js/build/plugins/tabs.js" type="module" data-swup-reload-script=""></script>
+
+
+
+
+<script src="/js/build/libs/moment-with-locales.min.js" data-swup-reload-script=""></script>
+
+
+<script src="/js/build/layouts/essays.js" type="module" data-swup-reload-script=""></script>
+
+
+
+
+
+	
+</body>
+
+</html>
