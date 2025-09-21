@@ -13,7 +13,7 @@
     
     <!--- Seo Part-->
     
-    <link rel="canonical" href="https://GitAlice123.github.io/2025/03/30/cuda-cuda-runtime等概念辨析/"/>
+    <link rel="canonical" href="https://GitAlice123.github.io/categories/cuda/操作系统知识/"/>
     <meta name="robots" content="index,follow">
     <meta name="googlebot" content="index,follow">
     <meta name="revisit-after" content="1 days">
@@ -22,17 +22,14 @@
     
         
         <meta name="description" content="Hexo Theme Redefine, Redefine Your Hexo Journey.">
-<meta property="og:type" content="article">
-<meta property="og:title" content="CUDA,CUDA runtime等概念辨析">
-<meta property="og:url" content="https://gitalice123.github.io/2025/03/30/CUDA-CUDA-runtime%E7%AD%89%E6%A6%82%E5%BF%B5%E8%BE%A8%E6%9E%90/index.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Alice&#39;s Notebook">
+<meta property="og:url" content="https://gitalice123.github.io/categories/CUDA/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9F%A5%E8%AF%86/index.html">
 <meta property="og:site_name" content="Alice&#39;s Notebook">
 <meta property="og:description" content="Hexo Theme Redefine, Redefine Your Hexo Journey.">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://gitalice123.github.io/images/redefine-og.webp">
-<meta property="article:published_time" content="2025-03-30T07:17:54.000Z">
-<meta property="article:modified_time" content="2025-03-30T07:37:16.162Z">
 <meta property="article:author" content="Alice Yu">
-<meta property="article:tag" content="CUDA">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://gitalice123.github.io/images/redefine-og.webp">
     
@@ -46,7 +43,7 @@
     
     <title>
         
-            CUDA,CUDA runtime等概念辨析 | Alice&#39;s Notebook
+            分类: 操作系统知识 | Alice&#39;s Notebook
         
     </title>
 
@@ -378,175 +375,59 @@
 			
 
 			<div class="main-content">
-				<div class="post-page-container flex relative justify-between box-border w-full h-full">
-	<div class="article-content-container">
-
-		<div class="article-title relative w-full">
-			
-			<div class="w-full flex items-center pt-6 justify-start">
-				<h1 class="article-title-regular text-second-text-color tracking-tight text-4xl md:text-6xl font-semibold px-2 sm:px-6 md:px-8 py-3">CUDA,CUDA runtime等概念辨析</h1>
-			</div>
-			
-		</div>
-
-		
-		<div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
-			<div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
-				<img src="/images/myicon.jpg">
-			</div>
-			<div class="info flex flex-col justify-between">
-				<div class="author flex items-center">
-					<span class="name text-default-text-color text-lg font-semibold">Alice Yu</span>
-					
-					<span class="author-label ml-1.5 text-xs px-2 py-0.5 rounded-small text-third-text-color border border-shadow-color-1">Lv3</span>
-					
-				</div>
-				<div class="meta-info">
-					<div class="article-meta-info">
-    <span class="article-date article-meta-item">
-        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
-        <span class="desktop">2025-03-30 15:17:54</span>
-        <span class="mobile">2025-03-30 15:17:54</span>
-        <span class="hover-info">创建</span>
-    </span>
-    
-        <span class="article-date article-meta-item">
-            <i class="fa-regular fa-wrench"></i>&nbsp;
-            <span class="desktop">2025-03-30 15:37:16</span>
-            <span class="mobile">2025-03-30 15:37:16</span>
-            <span class="hover-info">更新</span>
-        </span>
-    
-
-    
-        <span class="article-categories article-meta-item">
-            <i class="fa-regular fa-folders"></i>&nbsp;
-            <ul>
-                
-                
-                    
-                        
-                        <li>
-                            <a href="/categories/CUDA/">CUDA</a>&nbsp;
-                        </li>
-                    
-                    
-                
-            </ul>
-        </span>
-    
-    
-        <span class="article-tags article-meta-item">
-            <i class="fa-regular fa-tags"></i>&nbsp;
-            <ul>
-                
-                    <li>
-                        <a href="/tags/CUDA/">CUDA</a>&nbsp;
-                    </li>
-                
-            </ul>
-        </span>
-    
-
-    
-    
-    
-    
-        <span class="article-pv article-meta-item">
-            <i class="fa-regular fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
-        </span>
-    
-</div>
-
-				</div>
-			</div>
-		</div>
-		
-
-		
-
-
-		<div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
-			<h2 id="CUDA包含的核心组件"><a href="#CUDA包含的核心组件" class="headerlink" title="CUDA包含的核心组件"></a>CUDA包含的核心组件</h2><ul>
-<li>CUDA C&#x2F;C++语言拓展（现在最新的还支持python了，nv真的强）</li>
-<li>CUDA工具链：nvcc,nsight等</li>
-<li>CUDA driver API：底层驱动接口，直接操作GPU硬件</li>
-</ul>
-<h2 id="CUDA-runtime"><a href="#CUDA-runtime" class="headerlink" title="CUDA runtime"></a>CUDA runtime</h2><ul>
-<li>是CUDA架构中的软件中间层，是<strong>CUDA driver API</strong>的封装</li>
-<li>比如提供了cudaMalloc&#x2F;cudaMemcpy等函数</li>
-<li>说白了就是各种.so,dll等动态链接库、头文件、CUDA Driver API库（libcuda.so或nvcuda.dll）</li>
-<li>一个简化的工作流程：<div class="code-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 示例：CPU调用CUDA Runtime API完成向量加法</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cuda_runtime.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function">__global__ <span class="type">void</span> <span class="title">addVectors</span><span class="params">(<span class="type">float</span> *a, <span class="type">float</span> *b, <span class="type">float</span> *c, <span class="type">int</span> n)</span> </span>&#123;</span><br><span class="line">    <span class="type">int</span> i = threadIdx.x + blockIdx.x * blockDim.x;</span><br><span class="line">    <span class="keyword">if</span> (i &lt; n) c[i] = a[i] + b[i];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="type">int</span> n = <span class="number">1024</span>;</span><br><span class="line">    <span class="type">float</span> *h_a, *h_b, *h_c; <span class="comment">// 主机内存</span></span><br><span class="line">    <span class="type">float</span> *d_a, *d_b, *d_c; <span class="comment">// 设备显存</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 1. Runtime分配显存</span></span><br><span class="line">    <span class="built_in">cudaMalloc</span>(&amp;d_a, n * <span class="built_in">sizeof</span>(<span class="type">float</span>));</span><br><span class="line">    <span class="built_in">cudaMalloc</span>(&amp;d_b, n * <span class="built_in">sizeof</span>(<span class="type">float</span>));</span><br><span class="line">    <span class="built_in">cudaMalloc</span>(&amp;d_c, n * <span class="built_in">sizeof</span>(<span class="type">float</span>));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 2. 数据从主机复制到设备（Runtime管理传输）</span></span><br><span class="line">    <span class="built_in">cudaMemcpy</span>(d_a, h_a, n * <span class="built_in">sizeof</span>(<span class="type">float</span>), cudaMemcpyHostToDevice);</span><br><span class="line">    <span class="built_in">cudaMemcpy</span>(d_b, h_b, n * <span class="built_in">sizeof</span>(<span class="type">float</span>), cudaMemcpyHostToDevice);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 3. 启动GPU内核（Runtime调度执行，runtime将内核交给CUDA driver）</span></span><br><span class="line">    addVectors&lt;&lt;&lt;<span class="built_in">ceil</span>(n/<span class="number">256.0</span>), <span class="number">256</span>&gt;&gt;&gt;(d_a, d_b, d_c, n);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 4. 数据从设备复制回主机（Runtime同步等待完成）</span></span><br><span class="line">    <span class="built_in">cudaMemcpy</span>(h_c, d_c, n * <span class="built_in">sizeof</span>(<span class="type">float</span>), cudaMemcpyDeviceToHost);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 5. Runtime释放显存</span></span><br><span class="line">    <span class="built_in">cudaFree</span>(d_a);</span><br><span class="line">    <span class="built_in">cudaFree</span>(d_b);</span><br><span class="line">    <span class="built_in">cudaFree</span>(d_c);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></li>
-</ul>
-<h2 id="CUDA-driver"><a href="#CUDA-driver" class="headerlink" title="CUDA driver"></a>CUDA driver</h2><ul>
-<li>是CUDA架构中的底层驱动接口，直接操作GPU硬件</li>
-<li>比如提供了cuMemAlloc&#x2F;cuMemcpy等函数</li>
-</ul>
-
-		</div>
-
-		
-
-		
-		<ul class="post-tags-box text-lg mt-1.5 flex-wrap justify-center flex md:hidden">
-			
-			<li class="tag-item mx-0.5">
-				<a href="/tags/CUDA/">#CUDA</a>&nbsp;
-			</li>
-			
-		</ul>
-		
-
-		
-
-		
-		<div class="article-nav my-8 flex justify-between items-center px-2 sm:px-6 md:px-8">
-			
-			<div class="article-prev border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
-				<a class="prev" rel="prev" href="/2025/03/30/CUDA%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84/">
-					<span class="left arrow-icon flex justify-center items-center">
-						<i class="fa-solid fa-chevron-left"></i>
-					</span>
-					<span class="title flex justify-center items-center">
-						<span class="post-nav-title-item">CUDA内存结构</span>
-						<span class="post-nav-item">上一篇</span>
-					</span>
-				</a>
-			</div>
-			
-			
-			<div class="article-next border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
-				<a class="next" rel="next" href="/2025/02/21/NVSHMEM%E9%85%8D%E7%BD%AE/">
-					<span class="title flex justify-center items-center">
-						<span class="post-nav-title-item">NVSHMEM配置</span>
-						<span class="post-nav-item">下一篇</span>
-					</span>
-					<span class="right arrow-icon flex justify-center items-center">
-						<i class="fa-solid fa-chevron-right"></i>
-					</span>
-				</a>
-			</div>
-			
-		</div>
-		
-
-
-		
-	</div>
+				<div class="page-template-container">
+	
 
 	
-	<div class="toc-content-container">
-		<div class="post-toc-wrap">
-	<div class="post-toc">
-		<div class="toc-title">目录</div>
-		<div class="page-title">CUDA,CUDA runtime等概念辨析</div>
-		<ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#CUDA%E5%8C%85%E5%90%AB%E7%9A%84%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6"><span class="nav-text">CUDA包含的核心组件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CUDA-runtime"><span class="nav-text">CUDA runtime</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CUDA-driver"><span class="nav-text">CUDA driver</span></a></li></ol>
+	<div class="category-name">
+    <i class="fa-solid fa-folder"></i>&nbsp;操作系统知识
+</div>
+<div class="category-post-list">
+    
+<div class="archive-list-container">
+    
+        <section class="archive-item mb-spacing-unit last:mb-0">
+            <div class="archive-item-header flex flex-row items-center mb-2">
+                <span class="archive-year font-semibold text-3xl mr-2">2025</span>
+                <span class="archive-year-post-count text-xs md:text-sm font-bold rounded-small bg-third-background-color py-[2px] px-[10px] border border-border-color">1</span>
+            </div>
+            
+            <ul class="article-list pl-0 md:pl-8 text-lg leading-[1.5]">
+                
+                    
+                    
+                         <!-- Close the previous LI if not the first item -->
+                        <li class="article-item space-y-2 px-6 pt-10 pb-2 text-xl relative border-l-2 border-border-color" date-is='09-07'>
+                    
+                    <a href="/2025/09/07/CUDA-IPC%E5%85%B1%E4%BA%AB%E5%86%85%E5%AD%98-%E4%BB%A5DeepEP%E4%B8%BA%E4%BE%8B/" class="block w-fit">
+                        <span class="article-title my-0.5 text-2xl">CUDA IPC共享内存-以DeepEP为例</span>
+                    </a>
+                    
+                
+                </li> <!-- Ensure the last item is properly closed -->
+            </ul>
+        </section>
+    
+</div>
+</div>
 
-	</div>
-</div>
-	</div>
 	
+
+	<div class="page-template-content markdown-body">
+		
+
+		
+	</div>
+
+	<div class="page-template-comments">
+		
+	</div>
 </div>
+
+<div class="paginator">
+	<span class="page-number current">1</span>
+</div>
+  
 			</div>
 
 			
@@ -630,22 +511,6 @@
 		</div>
 	</div>
 
-	
-	<div class="post-tools">
-		<div class="post-tools-container">
-	<ul class="article-tools-list">
-		<!-- TOC aside toggle -->
-		
-		<li class="right-bottom-tools page-aside-toggle">
-			<i class="fa-regular fa-outdent"></i>
-		</li>
-		
-
-		<!-- go comment -->
-		
-	</ul>
-</div>
-	</div>
 	
 
 	<div class="right-side-tools-container">
@@ -749,7 +614,6 @@
         containers: ["#swup"],
     });
 </script>
-
 
 
 

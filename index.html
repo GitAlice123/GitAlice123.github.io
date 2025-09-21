@@ -411,11 +411,11 @@
         <div class="label text-third-text-color text-sm">标签</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">6</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">7</div>
         <div class="label text-third-text-color text-sm">分类</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">24</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">25</div>
         <div class="label text-third-text-color text-sm">文章</div>
     </a>
 </div>
@@ -488,11 +488,11 @@
         <div class="label text-third-text-color text-sm">标签</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">6</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">7</div>
         <div class="label text-third-text-color text-sm">分类</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">24</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">25</div>
         <div class="label text-third-text-color text-sm">文章</div>
     </a>
 </div>
@@ -593,6 +593,89 @@ pytorch的分布式通信接口是python的
     </div>
 
     <a href="/2025/09/07/pybind%E6%9C%BA%E5%88%B6/">阅读全文<span class="seo-reader-text">pybind机制</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
+</div>
+
+                </div>
+            </li>
+        
+            <li class="home-article-item">
+
+                
+
+                
+
+                
+                <div class="flex flex-col gap-5 px-7 pb-7 pt-7">
+                    <h3 class="home-article-title">
+                        <a href="/2025/09/07/CUDA-IPC%E5%85%B1%E4%BA%AB%E5%86%85%E5%AD%98-%E4%BB%A5DeepEP%E4%B8%BA%E4%BE%8B/">
+                            CUDA IPC共享内存-以DeepEP为例
+                        </a>
+                    </h3>
+
+                    <div class="home-article-content markdown-body">
+                        
+                            
+                            前言
+deepep当中，RDMA到nvlink域的转发之前一直以为是先从RDMA recv buffer到nvlink的本地buffer，然后再从nvlink本地buffer到其他GPU的nvlink buffer
+实际上，deepep是直接从RDMA recv buffer到其他GPU的nvlink buffer
+这就涉及到cuda ipc共享内存的概念
+
+相关代码123456789101...
+                        
+                    </div>
+
+                    <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fa-solid fa-calendars"></i>&nbsp;
+            <span class="home-article-date" data-date="Sun Sep 07 2025 12:05:37 GMT+0800">
+                
+                    2025-09-07
+                
+            </span>
+        </span>
+        
+            <span class="home-article-category">
+                <i class="fa-solid fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/CUDA/">CUDA</a>&nbsp;
+                        </li>
+                    
+                    
+                
+                    
+                        
+                            <li>></li>
+                        
+                        <li>
+                            <a href="/categories/CUDA/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9F%A5%E8%AF%86/">操作系统知识</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+        
+        
+            <span class="home-article-tag">
+                <i class="fa-solid fa-tags"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/tags/CUDA/">CUDA</a>&nbsp;
+                        </li>
+                    
+                </ul>
+            </span>
+        
+    </div>
+
+    <a href="/2025/09/07/CUDA-IPC%E5%85%B1%E4%BA%AB%E5%86%85%E5%AD%98-%E4%BB%A5DeepEP%E4%B8%BA%E4%BE%8B/">阅读全文<span class="seo-reader-text">CUDA IPC共享内存-以DeepEP为例</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
 </div>
 
                 </div>
@@ -1197,75 +1280,6 @@ Debian
                 </div>
             </li>
         
-            <li class="home-article-item">
-
-                
-
-                
-
-                
-                <div class="flex flex-col gap-5 px-7 pb-7 pt-7">
-                    <h3 class="home-article-title">
-                        <a href="/2025/01/09/%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C/">
-                            内存屏障
-                        </a>
-                    </h3>
-
-                    <div class="home-article-content markdown-body">
-                        
-                            
-                            内存屏障（Memory Barrier，或称作 Memory Fence）是用于控制处理器在多线程（或多核）环境中对内存访问的顺序的机制。它是一种同步原语，用于确保特定的内存操作（例如，读取和写入）按照预期的顺序执行。内存屏障在并发编程中非常重要，尤其是在多核处理器上，因为不同处理器的缓存可能导致数据的“乱序”执行和“不可见”问题。
-为什么需要内存屏障？在现代计算机系统中，处理器和内存之间通...
-                        
-                    </div>
-
-                    <div class="home-article-meta-info-container">
-    <div class="home-article-meta-info">
-        <span><i class="fa-solid fa-calendars"></i>&nbsp;
-            <span class="home-article-date" data-date="Thu Jan 09 2025 22:28:23 GMT+0800">
-                
-                    2025-01-09
-                
-            </span>
-        </span>
-        
-            <span class="home-article-category">
-                <i class="fa-solid fa-folders"></i>&nbsp;
-            <ul>
-                
-                
-                    
-                        
-                        <li>
-                            <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9F%A5%E8%AF%86/">操作系统知识</a>&nbsp;
-                        </li>
-                    
-                    
-                
-            </ul>
-        </span>
-        
-        
-            <span class="home-article-tag">
-                <i class="fa-solid fa-tags"></i>&nbsp;
-                <ul>
-                    
-                        <li>
-                            
-                            <a href="/tags/%E7%B3%BB%E7%BB%9F/">系统</a>&nbsp;
-                        </li>
-                    
-                </ul>
-            </span>
-        
-    </div>
-
-    <a href="/2025/01/09/%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C/">阅读全文<span class="seo-reader-text">内存屏障</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
-</div>
-
-                </div>
-            </li>
-        
     </ul>
 
     <div class="home-paginator px-7 py-5">
@@ -1296,7 +1310,7 @@ Debian
                 
                 <p class="post-count space-x-0.5">
                     <span>
-                        共撰写了 24 篇文章
+                        共撰写了 25 篇文章
                     </span>
                     
                 </p>
