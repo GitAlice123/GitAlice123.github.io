@@ -407,7 +407,7 @@
 
         <div class="statistics flex justify-around my-2.5">
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">20</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">22</div>
         <div class="label text-third-text-color text-sm">标签</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
@@ -415,7 +415,7 @@
         <div class="label text-third-text-color text-sm">分类</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">27</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">30</div>
         <div class="label text-third-text-color text-sm">文章</div>
     </a>
 </div>
@@ -484,7 +484,7 @@
 </div>
                 <div class="statistics flex justify-around my-2.5">
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">20</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">22</div>
         <div class="label text-third-text-color text-sm">标签</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
@@ -492,7 +492,7 @@
         <div class="label text-third-text-color text-sm">分类</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">27</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">30</div>
         <div class="label text-third-text-color text-sm">文章</div>
     </a>
 </div>
@@ -507,6 +507,225 @@
 			<div class="main-content">
 				<div class="home-content-container">
     <ul class="home-article-list">
+        
+            <li class="home-article-item">
+
+                
+
+                
+
+                
+                <div class="flex flex-col gap-5 px-7 pb-7 pt-7">
+                    <h3 class="home-article-title">
+                        <a href="/2025/11/13/cache-line%E4%BC%98%E5%8C%96/">
+                            cache line优化
+                        </a>
+                    </h3>
+
+                    <div class="home-article-content markdown-body">
+                        
+                            
+                            CPU 缓存的一点背景知识现代 CPU 访问内存不是按“字节”访问，而是按 cache line（缓存行） 为最小单位加载的。典型的 cache line 大小为 64 字节。
+当一个线程写入某个地址时，CPU 会把该地址所在的整条 cache line 标记为“已修改 (dirty)”，并通过硬件的 cache coherence 协议（MESI）去通知其它 CPU 核心“我改过这个 ca...
+                        
+                    </div>
+
+                    <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fa-solid fa-calendars"></i>&nbsp;
+            <span class="home-article-date" data-date="Thu Nov 13 2025 16:21:41 GMT+0800">
+                
+                    2025-11-13
+                
+            </span>
+        </span>
+        
+            <span class="home-article-category">
+                <i class="fa-solid fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9F%A5%E8%AF%86/">操作系统知识</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+        
+        
+            <span class="home-article-tag">
+                <i class="fa-solid fa-tags"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/tags/cache/">cache</a>&nbsp;
+                        </li>
+                    
+                </ul>
+            </span>
+        
+    </div>
+
+    <a href="/2025/11/13/cache-line%E4%BC%98%E5%8C%96/">阅读全文<span class="seo-reader-text">cache line优化</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
+</div>
+
+                </div>
+            </li>
+        
+            <li class="home-article-item">
+
+                
+
+                
+
+                
+                <div class="flex flex-col gap-5 px-7 pb-7 pt-7">
+                    <h3 class="home-article-title">
+                        <a href="/2025/11/06/PCIe-BAR/">
+                            PCIe BAR
+                        </a>
+                    </h3>
+
+                    <div class="home-article-content markdown-body">
+                        
+                            
+                            PCI express的物理地址空间
+* 在 PCI Express 的系统架构中，存在一个统一的物理地址空间。
+* 网卡看到的0x1111和GPU看到的0x1111是一样的
+
+PCI express BAR
+相当于每个pcie设备有自己的办公室编号范围（BAR空间所规划的范围）12345678910111213网卡想读GPU显存中偏移500处的数据↓网卡知道GPU的BAR2窗口在物理地址1...
+                        
+                    </div>
+
+                    <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fa-solid fa-calendars"></i>&nbsp;
+            <span class="home-article-date" data-date="Thu Nov 06 2025 10:09:55 GMT+0800">
+                
+                    2025-11-06
+                
+            </span>
+        </span>
+        
+            <span class="home-article-category">
+                <i class="fa-solid fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9F%A5%E8%AF%86/">操作系统知识</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+        
+        
+            <span class="home-article-tag">
+                <i class="fa-solid fa-tags"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/tags/PCIE/">PCIE</a>&nbsp;
+                        </li>
+                    
+                </ul>
+            </span>
+        
+    </div>
+
+    <a href="/2025/11/06/PCIe-BAR/">阅读全文<span class="seo-reader-text">PCIe BAR</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
+</div>
+
+                </div>
+            </li>
+        
+            <li class="home-article-item">
+
+                
+
+                
+
+                
+                <div class="flex flex-col gap-5 px-7 pb-7 pt-7">
+                    <h3 class="home-article-title">
+                        <a href="/2025/10/09/Linux-home%E5%B7%AE%E5%BC%82%EF%BC%88%E4%BB%85%E4%B8%AA%E4%BA%BA%E8%AE%B0%E5%BD%95%E7%9A%84%E8%B6%85%E7%AE%80%E5%8D%95%E7%9F%A5%E8%AF%86%E7%82%B9%EF%BC%89/">
+                            Linux home差异（仅个人记录的超简单知识点）
+                        </a>
+                    </h3>
+
+                    <div class="home-article-content markdown-body">
+                        
+                            
+                            问题起因
+事情是这样的，我之前用linux机器要么只在root权限下用，要么只在普通权限下用
+这次先在普通权限下用，然后我要访问~&#x2F;perf&#x2F;perftest，一切OK
+但是切换到root权限（sudo su）之后就没有这个文件夹了
+
+原因分析
+核心是环境变量差异​​
+​普通用户​​：echo $HOME
+输出：&#x2F;home&#x2F;your_username
+...
+                        
+                    </div>
+
+                    <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fa-solid fa-calendars"></i>&nbsp;
+            <span class="home-article-date" data-date="Thu Oct 09 2025 19:44:13 GMT+0800">
+                
+                    2025-10-09
+                
+            </span>
+        </span>
+        
+            <span class="home-article-category">
+                <i class="fa-solid fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/%E5%AE%9E%E9%AA%8C%E5%AE%A4%E5%AE%9E%E8%B7%B5/">实验室实践</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+        
+        
+            <span class="home-article-tag">
+                <i class="fa-solid fa-tags"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/tags/Linux/">Linux</a>&nbsp;
+                        </li>
+                    
+                </ul>
+            </span>
+        
+    </div>
+
+    <a href="/2025/10/09/Linux-home%E5%B7%AE%E5%BC%82%EF%BC%88%E4%BB%85%E4%B8%AA%E4%BA%BA%E8%AE%B0%E5%BD%95%E7%9A%84%E8%B6%85%E7%AE%80%E5%8D%95%E7%9F%A5%E8%AF%86%E7%82%B9%EF%BC%89/">阅读全文<span class="seo-reader-text">Linux home差异（仅个人记录的超简单知识点）</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
+</div>
+
+                </div>
+            </li>
         
             <li class="home-article-item">
 
@@ -1060,235 +1279,6 @@ stash的内容会被保存在一个栈中，可以随时查看和恢复。
                 </div>
             </li>
         
-            <li class="home-article-item">
-
-                
-
-                
-
-                
-                <div class="flex flex-col gap-5 px-7 pb-7 pt-7">
-                    <h3 class="home-article-title">
-                        <a href="/2025/06/12/CUDA%E5%86%85%E6%A0%B8%E5%87%BD%E6%95%B0%E6%89%A7%E8%A1%8C%E7%8E%AF%E5%A2%83%E6%A0%87%E8%AF%86%E7%AC%A6-global-device-host/">
-                            CUDA内核函数执行环境标识符:global,device,host
-                        </a>
-                    </h3>
-
-                    <div class="home-article-content markdown-body">
-                        
-                            
-                            三种函数执行环境标识符
-CUDA内核函数的执行环境有三种标识符：global, device, host
-
-host
-host在主机（CPU）上执行的普通函数
-可以直接省略不写，不写就默认是host
-
-global
-global在设备（GPU）上执行，也就是我们常说的GPU内核函数
-可以有参数，不能有返回值
-CPU通过&lt;&lt;&lt;&gt;&gt;&gt;调用，可以由__host_...
-                        
-                    </div>
-
-                    <div class="home-article-meta-info-container">
-    <div class="home-article-meta-info">
-        <span><i class="fa-solid fa-calendars"></i>&nbsp;
-            <span class="home-article-date" data-date="Thu Jun 12 2025 11:28:27 GMT+0800">
-                
-                    2025-06-12
-                
-            </span>
-        </span>
-        
-            <span class="home-article-category">
-                <i class="fa-solid fa-folders"></i>&nbsp;
-            <ul>
-                
-                
-                    
-                        
-                        <li>
-                            <a href="/categories/CUDA/">CUDA</a>&nbsp;
-                        </li>
-                    
-                    
-                
-            </ul>
-        </span>
-        
-        
-            <span class="home-article-tag">
-                <i class="fa-solid fa-tags"></i>&nbsp;
-                <ul>
-                    
-                        <li>
-                            
-                            <a href="/tags/CUDA/">CUDA</a>&nbsp;
-                        </li>
-                    
-                </ul>
-            </span>
-        
-    </div>
-
-    <a href="/2025/06/12/CUDA%E5%86%85%E6%A0%B8%E5%87%BD%E6%95%B0%E6%89%A7%E8%A1%8C%E7%8E%AF%E5%A2%83%E6%A0%87%E8%AF%86%E7%AC%A6-global-device-host/">阅读全文<span class="seo-reader-text">CUDA内核函数执行环境标识符:global,device,host</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
-</div>
-
-                </div>
-            </li>
-        
-            <li class="home-article-item">
-
-                
-
-                
-
-                
-                <div class="flex flex-col gap-5 px-7 pb-7 pt-7">
-                    <h3 class="home-article-title">
-                        <a href="/2025/03/30/CUDA%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84/">
-                            CUDA内存结构
-                        </a>
-                    </h3>
-
-                    <div class="home-article-content markdown-body">
-                        
-                            
-                            写在前面
-本来以为我已经懂了，但是在实践中发现，自己写的代码中同步时延占据了非常大的部分，所以打算再好好整理一下内存模型
-参考了CUDA编程基础以及该作者的其他文章
-
-GPU结构
-每个线程在SP（Streaming Processor）中执行，每个SP有自己的寄存器和local memory
-
-由多个SP和一块共享内存（Shared Memory）组成一个SM（Streaming Multi...
-                        
-                    </div>
-
-                    <div class="home-article-meta-info-container">
-    <div class="home-article-meta-info">
-        <span><i class="fa-solid fa-calendars"></i>&nbsp;
-            <span class="home-article-date" data-date="Sun Mar 30 2025 15:37:50 GMT+0800">
-                
-                    2025-03-30
-                
-            </span>
-        </span>
-        
-            <span class="home-article-category">
-                <i class="fa-solid fa-folders"></i>&nbsp;
-            <ul>
-                
-                
-                    
-                        
-                        <li>
-                            <a href="/categories/CUDA/">CUDA</a>&nbsp;
-                        </li>
-                    
-                    
-                
-            </ul>
-        </span>
-        
-        
-            <span class="home-article-tag">
-                <i class="fa-solid fa-tags"></i>&nbsp;
-                <ul>
-                    
-                        <li>
-                            
-                            <a href="/tags/CUDA/">CUDA</a>&nbsp;
-                        </li>
-                    
-                </ul>
-            </span>
-        
-    </div>
-
-    <a href="/2025/03/30/CUDA%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84/">阅读全文<span class="seo-reader-text">CUDA内存结构</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
-</div>
-
-                </div>
-            </li>
-        
-            <li class="home-article-item">
-
-                
-
-                
-
-                
-                <div class="flex flex-col gap-5 px-7 pb-7 pt-7">
-                    <h3 class="home-article-title">
-                        <a href="/2025/03/30/CUDA-CUDA-runtime%E7%AD%89%E6%A6%82%E5%BF%B5%E8%BE%A8%E6%9E%90/">
-                            CUDA,CUDA runtime等概念辨析
-                        </a>
-                    </h3>
-
-                    <div class="home-article-content markdown-body">
-                        
-                            
-                            CUDA包含的核心组件
-CUDA C&#x2F;C++语言拓展（现在最新的还支持python了，nv真的强）
-CUDA工具链：nvcc,nsight等
-CUDA driver API：底层驱动接口，直接操作GPU硬件
-
-CUDA runtime
-是CUDA架构中的软件中间层，是CUDA driver API的封装
-比如提供了cudaMalloc&#x2F;cudaMemcpy等函数
-说白了就...
-                        
-                    </div>
-
-                    <div class="home-article-meta-info-container">
-    <div class="home-article-meta-info">
-        <span><i class="fa-solid fa-calendars"></i>&nbsp;
-            <span class="home-article-date" data-date="Sun Mar 30 2025 15:17:54 GMT+0800">
-                
-                    2025-03-30
-                
-            </span>
-        </span>
-        
-            <span class="home-article-category">
-                <i class="fa-solid fa-folders"></i>&nbsp;
-            <ul>
-                
-                
-                    
-                        
-                        <li>
-                            <a href="/categories/CUDA/">CUDA</a>&nbsp;
-                        </li>
-                    
-                    
-                
-            </ul>
-        </span>
-        
-        
-            <span class="home-article-tag">
-                <i class="fa-solid fa-tags"></i>&nbsp;
-                <ul>
-                    
-                        <li>
-                            
-                            <a href="/tags/CUDA/">CUDA</a>&nbsp;
-                        </li>
-                    
-                </ul>
-            </span>
-        
-    </div>
-
-    <a href="/2025/03/30/CUDA-CUDA-runtime%E7%AD%89%E6%A6%82%E5%BF%B5%E8%BE%A8%E6%9E%90/">阅读全文<span class="seo-reader-text">CUDA,CUDA runtime等概念辨析</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
-</div>
-
-                </div>
-            </li>
-        
     </ul>
 
     <div class="home-paginator px-7 py-5">
@@ -1319,7 +1309,7 @@ CUDA runtime
                 
                 <p class="post-count space-x-0.5">
                     <span>
-                        共撰写了 27 篇文章
+                        共撰写了 30 篇文章
                     </span>
                     
                 </p>

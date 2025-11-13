@@ -1771,4 +1771,99 @@
         <tag>系统</tag>
       </tags>
   </entry>
+  <entry>
+    <title>PCIe BAR</title>
+    <url>/2025/11/06/PCIe-BAR/</url>
+    <content><![CDATA[<h1 id="PCI-express的物理地址空间"><a href="#PCI-express的物理地址空间" class="headerlink" title="PCI express的物理地址空间"></a>PCI express的物理地址空间</h1><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/PCI-express.png"
+                      width="50%"
+                >
+* 在 PCI Express 的系统架构中，存在一个统一的物理地址空间。
+* 网卡看到的0x1111和GPU看到的0x1111是一样的
+
+<h1 id="PCI-express-BAR"><a href="#PCI-express-BAR" class="headerlink" title="PCI express BAR"></a>PCI express BAR</h1><ul>
+<li>相当于每个pcie设备有自己的办公室编号范围（BAR空间所规划的范围）<div class="code-container" data-rel="Txt"><figure class="iseeu highlight txt"><table><tr><td class="code"><pre><span class="line">网卡想读GPU显存中偏移500处的数据</span><br><span class="line">↓</span><br><span class="line">网卡知道GPU的BAR2窗口在物理地址1001-2000</span><br><span class="line">↓  </span><br><span class="line">网卡计算目标地址：1001(BAR2基址) + 500(偏移) = 1501</span><br><span class="line">↓</span><br><span class="line">网卡发起对物理地址1501的读请求</span><br><span class="line">↓</span><br><span class="line">PCIe交换机：1501在1001-2000范围内 → 路由给GPU</span><br><span class="line">↓</span><br><span class="line">GPU收到请求：地址1501 → 在我的BAR2窗口内</span><br><span class="line">↓</span><br><span class="line">GPU计算：1501 - 1001 = 500 → 读取我显存中偏移500处的数据</span><br></pre></td></tr></table></figure></div></li>
+</ul>
+<h1 id="PCIe结构"><a href="#PCIe结构" class="headerlink" title="PCIe结构"></a>PCIe结构</h1><!-- ![alt text](image-1.png) -->
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/PCIE.png"
+                      width="50%"
+                >]]></content>
+      <categories>
+        <category>操作系统知识</category>
+      </categories>
+      <tags>
+        <tag>PCIE</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Linux home差异（仅个人记录的超简单知识点）</title>
+    <url>/2025/10/09/Linux-home%E5%B7%AE%E5%BC%82%EF%BC%88%E4%BB%85%E4%B8%AA%E4%BA%BA%E8%AE%B0%E5%BD%95%E7%9A%84%E8%B6%85%E7%AE%80%E5%8D%95%E7%9F%A5%E8%AF%86%E7%82%B9%EF%BC%89/</url>
+    <content><![CDATA[<h1 id="问题起因"><a href="#问题起因" class="headerlink" title="问题起因"></a>问题起因</h1><ul>
+<li>事情是这样的，我之前用linux机器要么只在root权限下用，要么只在普通权限下用</li>
+<li>这次先在普通权限下用，然后我要访问~&#x2F;perf&#x2F;perftest，一切OK</li>
+<li>但是切换到root权限（sudo su）之后就没有这个文件夹了</li>
+</ul>
+<h1 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h1><ul>
+<li>核心是<strong>环境变量差异​​</strong></li>
+<li>​普通用户​​：echo $HOME<ul>
+<li>输出：&#x2F;home&#x2F;your_username</li>
+<li>~指向 &#x2F;home&#x2F;your_username</li>
+</ul>
+</li>
+<li>​root 用户​​ (sudo su后)：echo $HOME<ul>
+<li>输出：&#x2F;root</li>
+<li>~指向 &#x2F;root</li>
+</ul>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>实验室实践</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>cache line优化</title>
+    <url>/2025/11/13/cache-line%E4%BC%98%E5%8C%96/</url>
+    <content><![CDATA[<h2 id="CPU-缓存的一点背景知识"><a href="#CPU-缓存的一点背景知识" class="headerlink" title="CPU 缓存的一点背景知识"></a>CPU 缓存的一点背景知识</h2><p>现代 CPU 访问内存不是按“字节”访问，而是按 <strong>cache line（缓存行）</strong> 为最小单位加载的。<br>典型的 cache line 大小为 <strong>64 字节</strong>。</p>
+<p>当一个线程写入某个地址时，CPU 会把该地址所在的整条 cache line 标记为“已修改 (dirty)”，<br>并通过硬件的 <strong>cache coherence 协议（MESI）</strong><br>去通知其它 CPU 核心“我改过这个 cache line”。</p>
+<hr>
+<h2 id="什么是-“false-sharing（伪共享）”"><a href="#什么是-“false-sharing（伪共享）”" class="headerlink" title="什么是 “false sharing（伪共享）”"></a>什么是 “false sharing（伪共享）”</h2><h3 id="定义："><a href="#定义：" class="headerlink" title="定义："></a>定义：</h3><blockquote>
+<p>当多个线程访问不同的变量，但这些变量恰好位于同一个 cache line 上，<br>CPU 就会把它们当成一个共享单元来同步，<br>从而导致<strong>大量无意义的 cache line 抖动（invalidations）</strong>。</p>
+</blockquote>
+<h3 id="举个例子："><a href="#举个例子：" class="headerlink" title="举个例子："></a>举个例子：</h3><p>假设 cache line 是 64 字节，<br>而 hazard pointer 是 8 字节的指针：</p>
+<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">HP[0] → 属于线程 T1</span><br><span class="line">HP[1] → 属于线程 T2</span><br><span class="line">HP[2] → 属于线程 T3</span><br></pre></td></tr></table></figure></div>
+
+<p>它们可能被编译器紧密排在一起：</p>
+<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">|&lt;------ 64B cache line ------&gt;|</span><br><span class="line">HP[0] (8B) | HP[1] (8B) | HP[2] (8B) | ...</span><br></pre></td></tr></table></figure></div>
+
+<p>现在：</p>
+<ul>
+<li>T1 不断写 <code>HP[0]</code>；</li>
+<li>T2 不断写 <code>HP[1]</code>；</li>
+<li>T3 不断读全局 HP 数组。</li>
+</ul>
+<p>结果是什么？</p>
+<p>虽然每个线程都只修改自己那一小格 8 字节，<br>但它们都落在<strong>同一个 cache line</strong>上。<br>于是每次写入都会触发：</p>
+<ul>
+<li>cache line 在多个核之间来回失效 (invalidate)；</li>
+<li>MESI 协议反复转移该行的所有权；</li>
+<li>造成<strong>严重的总线争用和性能下降</strong>。</li>
+</ul>
+<p>这就是 false sharing（伪共享）。</p>
+]]></content>
+      <categories>
+        <category>操作系统知识</category>
+      </categories>
+      <tags>
+        <tag>cache</tag>
+      </tags>
+  </entry>
 </search>
